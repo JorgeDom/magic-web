@@ -7,7 +7,7 @@ import { FORM_ENDPOINT } from "@/lib/site";
 type Status = "idle" | "sending" | "sent" | "error";
 
 const FIELD =
-  "mt-2 w-full rounded-md border border-hairline bg-transparent px-4 py-3 text-body text-ink " +
+  "mt-2 w-full rounded-md border border-ink-muted bg-transparent px-4 py-3 text-body text-ink " +
   "placeholder:text-ink-muted focus-visible:border-ink";
 
 /**

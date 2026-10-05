@@ -15,7 +15,7 @@ export function Hero() {
       <div className="shell flex min-h-svh flex-col justify-between gap-8 pt-[calc(var(--nav-height)+clamp(20px,3.5svh,48px))] pb-[clamp(28px,5svh,56px)]">
         <LogoSequence />
         <div>
-          <h1 lang="en" className="font-display text-claim uppercase">
+          <h1 lang="en" translate="no" className="font-display text-claim uppercase">
             {CLAIMS.hero}
           </h1>
           <p className="mt-5 max-w-measure text-lead text-ink-muted lg:mt-7">{COPY.hero.line}</p>

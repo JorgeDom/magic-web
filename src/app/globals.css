@@ -175,7 +175,9 @@
 @layer base {
   html {
     background: var(--color-cream);
+    /* Keeps focused and targeted elements clear of the fixed nav and the worlds' bottom pill. */
     scroll-padding-top: var(--nav-height);
+    scroll-padding-bottom: 96px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -199,10 +201,6 @@
     font-family: var(--font-display);
     font-optical-sizing: auto;
     text-wrap: balance;
-  }
-
-  p {
-    text-wrap: pretty;
   }
 
   ::selection {
@@ -232,8 +230,14 @@
   margin-inline: auto;
 }
 
-@utility section-pad {
-  padding-block: var(--section);
+/*
+ * Sections far below the fold are not laid out or painted until they come near the viewport,
+ * which keeps the first paint light on phones. Only for plain sections: never for the worlds,
+ * whose pinned cards and scroll scenes depend on exact positions.
+ */
+@utility deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100svh;
 }
 
 /* Lenis smooth scrolling (desktop pointers only). */

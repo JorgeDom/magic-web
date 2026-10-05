@@ -20,6 +20,9 @@ const BEADS = [
 
 const DRIFT = { stiffness: 38, damping: 14, mass: 1.2 };
 
+/** How long the beads keep floating after the last scroll or pointer movement. */
+const REST_AFTER_MS = 4000;
+
 type BeadSpec = (typeof BEADS)[number];
 
 function Bead({
@@ -42,6 +45,8 @@ function Bead({
   return (
     <m.span
       style={{ x, y, top: `${bead.top}%`, left: `${bead.left}%`, width: `${bead.size}%` }}
+      // Decorative: Motion makes tappable elements focusable, which these must not be.
+      tabIndex={-1}
       whileTap={{ scale: 1.2 }}
       transition={{ type: "spring", stiffness: 260, damping: 11 }}
       className="pointer-events-auto absolute block aspect-square -translate-1/2"
@@ -64,14 +69,15 @@ function Bead({
 }
 
 /**
- * Kids signature: beads float around the photograph and drift toward the pointer. Touch one and
- * it bobs. With reduced motion they sit still.
+ * Kids signature: beads float around the photograph while the visitor scrolls, and drift toward
+ * the pointer. Touch one and it bobs. With reduced motion they sit still.
  */
 export default function KidsBeads() {
   const host = useRef<HTMLDivElement>(null);
   const finePointer = useFinePointer();
   const reduced = useReducedMotion();
   const [onScreen, setOnScreen] = useState(false);
+  const [awake, setAwake] = useState(false);
   const px = useMotionValue(0);
   const py = useMotionValue(0);
 
@@ -84,6 +90,26 @@ export default function KidsBeads() {
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
+
+  // The beads float only while the visitor is scrolling or moving the pointer, and come to
+  // rest a few seconds after. Nothing on the page moves by itself for longer than that
+  // (WCAG 2.2.2), so no pause control is needed.
+  useEffect(() => {
+    if (reduced || !onScreen) return;
+    let timer = 0;
+    const wake = () => {
+      setAwake(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setAwake(false), REST_AFTER_MS);
+    };
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("pointermove", wake, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", wake);
+      window.removeEventListener("pointermove", wake);
+    };
+  }, [reduced, onScreen]);
 
   useEffect(() => {
     if (!finePointer || reduced || !onScreen) return;
@@ -100,7 +126,7 @@ export default function KidsBeads() {
 
   return (
     <MotionScope>
-      <div ref={host} className={`absolute inset-0 ${onScreen ? "" : styles.paused}`}>
+      <div ref={host} className={`absolute inset-0 ${onScreen && awake ? "" : styles.paused}`}>
         {BEADS.map((bead, index) => (
           <Bead key={index} bead={bead} px={px} py={py} />
         ))}

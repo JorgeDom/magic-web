@@ -34,7 +34,10 @@ const LAYOUT = [
 
 export function Making() {
   return (
-    <section aria-labelledby="asi-se-hace-titulo" className="overflow-x-clip bg-ground text-ink">
+    <section
+      aria-labelledby="asi-se-hace-titulo"
+      className="overflow-x-clip bg-ground text-ink deferred"
+    >
       <div className="shell py-(--section)">
         <h2 id="asi-se-hace-titulo" className="text-headline">
           {COPY.making.heading}
@@ -55,7 +58,7 @@ export function Making() {
                   sizes={layout.sizes}
                   aspect={layout.aspect}
                 />
-                <figcaption lang="en" className="mt-4 text-label">
+                <figcaption lang="en" translate="no" className="mt-4 text-label">
                   {shot.caption}
                 </figcaption>
               </figure>

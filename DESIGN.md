@@ -45,9 +45,9 @@ typography:
     textTransform: uppercase
   display:
     fontFamily: "DM Sans, system-ui, sans-serif"
-    fontSize: "clamp(2.75rem, 9vw, 7rem)"
+    fontSize: "clamp(4rem, min(17vw, 26svh), 13rem)"
     fontWeight: 600
-    lineHeight: 0.95
+    lineHeight: 0.9
     letterSpacing: "-0.03em"
   headline:
     fontFamily: "DM Sans, system-ui, sans-serif"
@@ -300,7 +300,7 @@ The logo's organic letterforms are artwork. Communication type supports the logo
 | Token | Size | Weight | Line height | Tracking | Use |
 |---|---|---|---|---|---|
 | `{typography.claim}` | 52 → 168px | 600 | 0.90 | -0.025em | "MAKE SOME MAGIC." in the hero. Uppercase. Once. |
-| `{typography.display}` | 44 → 112px | 600 | 0.95 | -0.03em | World names |
+| `{typography.display}` | 64 → 208px | 600 | 0.90 | -0.03em | Opening cards: world names, "Cómo funciona" |
 | `{typography.headline}` | 32 → 56px | 500 | 1.05 | -0.02em | Section headings |
 | `{typography.statement}` | 26 → 48px | 400 | 1.18 | -0.015em | Intro statement, testimonial quotes |
 | `{typography.title}` | 22 → 28px | 500 | 1.20 | -0.01em | Step names, service names |
@@ -319,7 +319,7 @@ The logo's organic letterforms are artwork. Communication type supports the logo
 - **No emphasis inside a headline.** No italic word, no coloured word, no underline flourish.
 - **Measure.** Body copy never runs wider than `{spacing.measure}` (about 62 characters).
 - **Typographic correctness.** Curly quotes, real apostrophes, en dashes in ranges ("Lun–Sáb"), non-breaking space before "!" where needed, `text-wrap: balance` on headlines and `text-wrap: pretty` on paragraphs.
-- **Fonts load without shifting.** `next/font` with `display: swap` and size-adjusted fallbacks; only DM Sans (hero claim) is preloaded.
+- **Fonts load without shifting.** `next/font` with `display: swap` and size-adjusted fallbacks. DM Sans and Inter are preloaded; Fraunces is not, and only downloads when the closing section is about to appear.
 
 ### Language
 
@@ -343,21 +343,23 @@ Voice (brand book p.34): short, warm, confident, light. Never babyish, never ove
 
 ### The world chapter (one layout, four intensities)
 
+A world is two beats: a full-screen opening card with its name, then its services beside its media.
+
 ```
-Desktop                                      Phone
-┌───────────────────────────────────────┐    ┌───────────────┐
-│ Kids                    ┌───────────┐ │    │ ┌───────────┐ │
-│ One line in Spanish.    │           │ │    │ │   media   │ │
-│                         │   media   │ │    │ │   4 : 5   │ │
-│ Service ─────────────   │   4 : 5   │ │    │ └───────────┘ │
-│ Service ─────────────   │           │ │    │ Kids          │
-│ Service ─────────────   └───────────┘ │    │ One line.     │
-│ [ Reservá ]                           │    │ Service ───── │
-└───────────────────────────────────────┘    │ [ Reservá ]   │
-                                             └───────────────┘
+1. Opening card (100svh)                     2. Services and media
+┌───────────────────────────────────────┐    ┌───────────────────────────────────────┐
+│                                       │    │ Service ─────────────   ┌───────────┐ │
+│                                       │    │ Service ─────────────   │           │ │
+│                                       │    │ Service ─────────────   │   media   │ │
+│ Kids                                  │    │ [ Reservá ]             │   4 : 5   │ │
+│ One line in Spanish.                  │    │                         └───────────┘ │
+└───────────────────────────────────────┘    └───────────────────────────────────────┘
+        [ Kids · Teens · Grown Ups · Brands ]  ← navigator pill, bottom centre
 ```
 
-Every world uses this exact structure. Services are plain text rows separated by hairlines, not chips or cards. Worlds are not numbered (they are not a sequence). Only "How it works" is numbered, because it is one.
+On phones the second beat stacks: media first, then services and the button.
+
+Every world uses this exact structure. The opening card is what the star-warp reveals (see Motion). Services are plain text rows separated by hairlines, not chips or cards. Worlds are not numbered (they are not a sequence). Only "How it works" is numbered, because it is one; it opens with the same kind of card.
 
 ### Whitespace
 
@@ -418,7 +420,7 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 2. **Scroll is the timeline.** The visitor's thumb drives the story; nothing important plays on a timer except the logo sequence.
 3. **Tempo is identity.** Worlds share a layout and differ in pace (see World Modes).
 4. **Transform and opacity only.** Nothing animates layout properties.
-5. **Motion answers the person.** Hover, press and drag respond immediately (`{motion.duration-micro}`); decorative loops pause when off screen and when the tab is hidden.
+5. **Motion answers the person.** Hover, press and drag respond immediately (`{motion.duration-micro}`). Nothing moves by itself for more than a few seconds: the beads float only while the visitor scrolls or moves the pointer and rest four seconds later, the 3D star turns only toward the pointer, and film always has a pause control. This is also what WCAG 2.2.2 asks for.
 6. **Calm is a complete design.** With `prefers-reduced-motion: reduce`, every section still reads as designed: no pinning, no parallax, no warp, no autoplay video. Content is simply present.
 
 ### Logo sequence (hero, 2 seconds, plays once)
@@ -439,7 +441,9 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 
 ### Star-warp (between worlds)
 
-As one world ends, a star-shaped aperture opens from the centre of the viewport, over the outgoing world, and grows until it clears the screen, revealing the next world's ground. It is scrubbed by scroll, lasts half a viewport of scrolling, and starts slowly so the shape reads as a star before it floods. The same aperture closes the worlds, opening from Brands back onto cream. Reduced motion: grounds change with no transition.
+As one world ends, a star-shaped aperture opens from the centre of the viewport, over the outgoing world, and grows until it clears the screen. Through it you see the next world's opening card: its ground and its name. It is scrubbed by scroll, lasts 70% of a viewport of scrolling, and starts slowly so the shape reads as a star before it floods. The outgoing world stays visible and usable outside the star. The same aperture closes the worlds, opening from Brands onto "Cómo funciona" and the cream ground.
+
+It is built as a CSS `clip-path` polygon traced from the logo star and sized by one custom property (`--k`), driven by a view timeline; GSAP drives the same property where scroll timelines are missing. Reduced motion, or no support and no JavaScript: the opening card is simply a card, and grounds change with no transition.
 
 ### Native first
 
@@ -473,7 +477,9 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`nav`**: compact logo left, one `{components.button-primary}` right ("Reservá"). Transparent over the hero, cream with a hairline once scrolled. 64px tall, 56px on phones.
 
-**`world-navigator`**: sticky while the four worlds are on screen, hidden elsewhere. Four text labels in `{typography.label}`; the active one is full ink with the micro star beside it, the others are muted. Active state is conveyed by the marker, weight and `aria-current`, never by colour alone. Right edge on desktop, a bottom pill on phones (above the safe area). Each label is a link to its world.
+**`world-navigator`**: sticky while the four worlds are on screen, absent elsewhere. A cream pill at the bottom centre of the viewport at every size, where it never covers a world's media or copy. Four text labels in `{typography.label}`; the active one sits on a chocolate fill with the micro star beside it. Active state is conveyed by the fill, the star and `aria-current`, never by colour alone. Its colours are fixed so it reads on every ground. Each label is a link that jumps to its world with a cross-fade (View Transitions) and moves focus to the world's heading.
+
+**`opening-card`**: a full-height card in the section's ground with one line of display type at the bottom left. Used to open each world and "Cómo funciona". When it follows a world it is revealed by the star-warp.
 
 **`button-primary`**: chocolate fill, cream text, pill, 52px tall, minimum 44px touch target. Press: `scale(0.97)`. Focus: 2px `{colors.focus}` ring with a 3px offset (cream ring on chocolate). On chocolate grounds it inverts (`button-primary-on-dark`).
 
@@ -493,7 +499,7 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`sound-toggle`**: a pill button with a pressed state ("Sonido: apagado / encendido"). Lives in the hero corner.
 
-**`footer`**: chocolate ground. Vertical logo lockup in its monochrome cream version, then WhatsApp, Instagram, location, hours in four hairline-separated columns.
+**`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp, Instagram, location, hours in four hairline-separated columns.
 
 ## Do's and Don'ts
 
@@ -554,5 +560,7 @@ Designed at 390px first. Most visitors arrive on phones over mobile data.
 - **Testimonials.** None confirmed.
 - **Location and hours.** Only "Asunción, Paraguay" is known; street address and hours are unconfirmed.
 - **Rive artwork.** No `.riv` files exist, so world signatures are specified as SVG and physics-driven motion; a Rive slot can replace them later.
-- **The "ting".** No approved sound exists.
+- **The "ting".** No approved sound exists. The site synthesises a short bell tone as a stand-in.
+- **Logo gold versus token gold.** The star in the raster logo measures about #E8B463; the palette's Magic Gold is #ECAF42. Standalone stars use the token. A vector logo would settle which is right.
+- **Service names.** The lists come from the project brief, not from a service menu.
 - **Star as aperture.** The star-warp uses the star's outline as a window rather than a gold object. This reading of the brand book's "scale it, crop it" needs confirmation.

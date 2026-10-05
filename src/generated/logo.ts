@@ -10,6 +10,13 @@ export const LOGO = {
     "gic": "/brand/logo-gic.webp",
     "descriptor": "/brand/logo-descriptor.webp"
   },
+  "layerSrcSets": {
+    "m": "/brand/logo-m-640.webp 640w, /brand/logo-m.webp 1182w",
+    "a": "/brand/logo-a-640.webp 640w, /brand/logo-a.webp 1182w",
+    "star": "/brand/logo-star-640.webp 640w, /brand/logo-star.webp 1182w",
+    "gic": "/brand/logo-gic-640.webp 640w, /brand/logo-gic.webp 1182w",
+    "descriptor": "/brand/logo-descriptor-640.webp 640w, /brand/logo-descriptor.webp 1182w"
+  },
   "starCentre": {
     "x": 36.32,
     "y": 22.3
@@ -20,12 +27,12 @@ export const LOGO = {
   },
   "compact": {
     "src": "/brand/logo-compact.webp",
-    "width": 671,
-    "height": 314
+    "width": 160,
+    "height": 75
   },
   "mono": {
     "src": "/brand/logo-mono.webp",
-    "width": 1023,
-    "height": 395
+    "width": 544,
+    "height": 210
   }
 } as const;

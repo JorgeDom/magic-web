@@ -6,12 +6,16 @@ import { COPY } from "@/content/copy";
  */
 export function Testimonials() {
   return (
-    <section data-ground="mint" aria-labelledby="testimonios-titulo" className="bg-ground text-ink">
+    <section
+      data-ground="mint"
+      aria-labelledby="testimonios-titulo"
+      className="bg-ground text-ink deferred"
+    >
       <div className="shell py-(--section)">
         <h2 id="testimonios-titulo" className="text-headline">
           {COPY.testimonials.heading}
         </h2>
-        <ul className="mt-12 lg:mt-20">
+        <ul role="list" className="mt-12 lg:mt-20">
           {COPY.testimonials.quotes.map((item) => (
             <li key={item.quote} className="border-t border-hairline py-10 lg:py-14">
               <figure className="grid gap-6 lg:grid-cols-12 lg:gap-x-8">

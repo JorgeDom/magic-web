@@ -21,7 +21,7 @@ export function HowItWorks() {
       <div className="bg-ground text-ink">
         <div className="shell pb-(--section)">
           <div aria-hidden="true" data-scroll="draw" className="h-px bg-ink" />
-          <ol className="grid gap-y-12 pt-10 lg:grid-cols-3 lg:gap-x-12 lg:pt-14">
+          <ol role="list" className="grid gap-y-12 pt-10 lg:grid-cols-3 lg:gap-x-12 lg:pt-14">
             {COPY.how.steps.map((step, index) => (
               <li key={step.title}>
                 <span aria-hidden="true" className="font-display text-title text-ink-muted">

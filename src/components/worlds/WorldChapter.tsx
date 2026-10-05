@@ -21,7 +21,14 @@ export function WorldChapter({ world, previous, media }: WorldChapterProps) {
     <section data-world={world.id} aria-labelledby={headingId} className="relative">
       <OpeningCard from={previous} anchorId={worldAnchor(world.id)}>
         <div className="shell flex flex-col justify-end pt-(--section) pb-[clamp(112px,18svh,176px)]">
-          <h2 id={headingId} lang="en" tabIndex={-1} data-jump-focus className="text-display">
+          <h2
+            id={headingId}
+            lang="en"
+            translate="no"
+            tabIndex={-1}
+            data-jump-focus
+            className="text-display"
+          >
             {world.name}
           </h2>
           <p className="mt-6 max-w-measure text-lead text-ink-muted">{world.line}</p>
@@ -34,7 +41,7 @@ export function WorldChapter({ world, previous, media }: WorldChapterProps) {
         <div className="@container shell pb-[max(var(--section),36svh)]">
           <div className="grid items-center gap-y-12 @4xl:grid-cols-12 @4xl:gap-x-8">
             <div className="order-2 @4xl:order-1 @4xl:col-span-5">
-              <ul className="max-w-measure border-t border-hairline">
+              <ul role="list" className="max-w-measure border-t border-hairline">
                 {world.services.map((service) => (
                   <li
                     key={service}

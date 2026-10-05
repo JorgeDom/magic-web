@@ -33,24 +33,45 @@ function useStarGeometry() {
   }, []);
 }
 
-function StarMesh({ pointer }: { pointer: React.RefObject<{ x: number; y: number }> }) {
+// Resting pose (radians): turned slightly so the star reads as an object, not a flat shape.
+const REST = { x: 0.08, y: -0.3 };
+// Where it starts, so it turns into place once when it first appears.
+const ENTRANCE_Y = -1.25;
+
+function StarMesh() {
   const group = useRef<Group>(null);
+  const pointer = useRef({ x: 0, y: 0 });
   const size = useThree((state) => state.size);
+  const invalidate = useThree((state) => state.invalidate);
   const geometry = useStarGeometry();
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
+  // The star only moves in answer to the pointer. The canvas renders on demand, so a still
+  // pointer costs nothing and nothing loops by itself.
+  useEffect(() => {
+    const onMove = (event: PointerEvent) => {
+      pointer.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.current.y = (event.clientY / window.innerHeight) * 2 - 1;
+      invalidate();
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [invalidate]);
+
   useFrame((state, delta) => {
     const star = group.current;
     if (!star) return;
-    const drift = Math.sin(state.clock.elapsedTime * 0.35) * 0.16;
-    const ease = Math.min(1, delta * 2.2);
-    star.rotation.y += (pointer.current.x * 0.5 + drift - star.rotation.y) * ease;
-    star.rotation.x += (pointer.current.y * 0.22 - star.rotation.x) * ease;
+    const ease = Math.min(1, Math.min(delta, 1 / 30) * 2.4);
+    const dy = REST.y + pointer.current.x * 0.5 - star.rotation.y;
+    const dx = REST.x + pointer.current.y * 0.22 - star.rotation.x;
+    star.rotation.y += dy * ease;
+    star.rotation.x += dx * ease;
+    if (Math.abs(dx) + Math.abs(dy) > 0.0008) state.invalidate();
   });
 
   return (
-    <group ref={group} scale={size.height / STAR_HEIGHT}>
+    <group ref={group} rotation={[REST.x, ENTRANCE_Y, 0]} scale={size.height / STAR_HEIGHT}>
       <mesh geometry={geometry}>
         <meshStandardMaterial color={GOLD} roughness={0.62} metalness={0} />
       </mesh>
@@ -59,24 +80,14 @@ function StarMesh({ pointer }: { pointer: React.RefObject<{ x: number; y: number
 }
 
 /**
- * The hero star in WebGL: the traced outline, extruded, turning slowly toward the pointer.
- * It fills its parent exactly as the static star does, so swapping one for the other does not
- * move anything. Rendering pauses whenever the star is off screen.
+ * The hero star in WebGL: the traced outline, extruded. It turns into place once, then follows
+ * the pointer. It fills its parent exactly as the static star does, so swapping one for the
+ * other does not move anything. Rendering is on demand and stops while it is off screen.
  */
 export default function Star3D({ onReady }: { onReady: () => void }) {
   const host = useRef<HTMLDivElement>(null);
-  const pointer = useRef({ x: 0, y: 0 });
   const [visible, setVisible] = useState(true);
   const [dpr, setDpr] = useState(1.5);
-
-  useEffect(() => {
-    const onMove = (event: PointerEvent) => {
-      pointer.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-      pointer.current.y = (event.clientY / window.innerHeight) * 2 - 1;
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, []);
 
   useEffect(() => {
     const element = host.current;
@@ -94,7 +105,7 @@ export default function Star3D({ onReady }: { onReady: () => void }) {
         orthographic
         flat
         dpr={dpr}
-        frameloop={visible ? "always" : "never"}
+        frameloop={visible ? "demand" : "never"}
         camera={{ position: [0, 0, 1000], near: 1, far: 3000, zoom: 1 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         events={() => ({ enabled: false, priority: 0 })}
@@ -104,7 +115,7 @@ export default function Star3D({ onReady }: { onReady: () => void }) {
         <PerformanceMonitor onDecline={() => setDpr(1)} />
         <ambientLight intensity={2.1} />
         <directionalLight position={[-0.5, 0.9, 1]} intensity={1.25} />
-        <StarMesh pointer={pointer} />
+        <StarMesh />
       </Canvas>
     </div>
   );

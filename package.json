@@ -17,7 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "video": "node scripts/encode-video.mjs",
-    "shots": "node scripts/screenshots.mjs"
+    "shots": "node scripts/screenshots.mjs",
+    "a11y": "node scripts/a11y.mjs"
   },
   "engines": {
     "node": ">=20.9"

@@ -78,6 +78,8 @@ export default function TeensCharms() {
         {CHARMS.map((charm, index) => (
           <m.div
             key={index}
+            // Decorative: Motion makes draggable elements focusable, which these must not be.
+            tabIndex={-1}
             drag={finePointer}
             dragSnapToOrigin
             dragElastic={0.4}

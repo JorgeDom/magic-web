@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { NEW_TAB_HINT } from "@/components/ui/ButtonLink";
 import { COPY } from "@/content/copy";
 import { LOGO } from "@/generated/logo";
 import { SITE, todo, whatsappUrl } from "@/lib/site";
@@ -16,7 +17,7 @@ function Column({ heading, children }: { heading: string; children: ReactNode })
 
 export function Footer() {
   return (
-    <footer data-ground="chocolate" className="bg-ground text-ink">
+    <footer data-ground="chocolate" className="bg-ground text-ink deferred">
       <div className="shell pt-(--section) pb-10">
         {LOGO.mono && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -39,11 +40,13 @@ export function Footer() {
               className={LINK}
             >
               WhatsApp {SITE.whatsapp.display}
+              <span className="sr-only"> {NEW_TAB_HINT}</span>
             </a>
           </Column>
           <Column heading={COPY.footer.follow}>
             <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className={LINK}>
               Instagram @{SITE.instagram.handle}
+              <span className="sr-only"> {NEW_TAB_HINT}</span>
             </a>
           </Column>
           <Column heading={COPY.footer.where}>

@@ -12,12 +12,17 @@ import { ContactForm } from "./ContactForm";
  */
 export function FinalCta() {
   return (
-    <section id="reservar" aria-labelledby="reservar-titulo" className="bg-ground text-ink">
+    <section
+      id="reservar"
+      aria-labelledby="reservar-titulo"
+      className="bg-ground text-ink deferred"
+    >
       <div className="shell flex min-h-[86svh] flex-col items-center justify-center py-(--section) text-center">
         <Star className="h-9 lg:h-12" />
         <h2
           id="reservar-titulo"
           lang="en"
+          translate="no"
           className="mt-8 font-closing text-closing italic lg:mt-10"
         >
           <ClaimLines claim={CLAIMS.closing} />

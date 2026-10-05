@@ -54,6 +54,8 @@ export function LogoSequence() {
           <img
             key={layer}
             src={LOGO.layers[layer]}
+            srcSet={LOGO.layerSrcSets[layer]}
+            sizes="(min-width: 42rem) 26rem, 62vw"
             alt=""
             width={LOGO.width}
             height={LOGO.height}

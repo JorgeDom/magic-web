@@ -21,6 +21,9 @@ const SIZES: Record<Size, string> = {
   compact: "min-h-11 px-5",
 };
 
+/** Read by screen readers after the label of any link that leaves the site. */
+export const NEW_TAB_HINT = "(se abre en una pestaña nueva)";
+
 interface ButtonLinkProps extends Omit<ComponentPropsWithoutRef<"a">, "className"> {
   variant?: Variant;
   size?: Size;
@@ -43,6 +46,7 @@ export function ButtonLink({
       className={`${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
     >
       {children}
+      {external && <span className="sr-only"> {NEW_TAB_HINT}</span>}
     </a>
   );
 }
@@ -58,7 +62,6 @@ export function WhatsAppLink({ message, children, ...rest }: WhatsAppLinkProps) 
     <ButtonLink href={whatsappUrl(message)} {...rest}>
       <WhatsAppIcon />
       {children}
-      <span className="sr-only"> (se abre WhatsApp)</span>
     </ButtonLink>
   );
 }

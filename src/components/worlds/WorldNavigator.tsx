@@ -57,7 +57,10 @@ export function WorldNavigator() {
       aria-label={COPY.worlds.label}
       className="pointer-events-none sticky top-[calc(100svh-76px)] z-30 h-0 lg:top-[calc(100svh-84px)]"
     >
-      <ol className="pointer-events-auto mx-auto flex w-fit gap-0.5 rounded-pill border border-[rgb(76_64_57/0.14)] bg-cream p-1 text-chocolate shadow-contact">
+      <ol
+        role="list"
+        className="pointer-events-auto mx-auto flex w-fit max-w-[calc(100vw-12px)] rounded-pill border border-[rgb(76_64_57/0.14)] bg-cream p-1 text-chocolate shadow-contact"
+      >
         {WORLDS.map((world) => {
           const current = world.id === active;
           return (
@@ -65,9 +68,10 @@ export function WorldNavigator() {
               <a
                 href={`#${worldAnchor(world.id)}`}
                 lang="en"
+                translate="no"
                 aria-current={current ? "true" : undefined}
                 onClick={(event) => jump(event, world.id)}
-                className="flex min-h-11 items-center gap-1.5 rounded-pill px-3 text-label whitespace-nowrap transition-colors duration-(--duration-ui) hover:bg-[rgb(76_64_57/0.08)] aria-[current=true]:bg-chocolate aria-[current=true]:text-cream lg:px-4"
+                className="flex min-h-11 items-center gap-1.5 rounded-pill px-2.5 text-label whitespace-nowrap transition-colors duration-(--duration-ui) hover:bg-[rgb(76_64_57/0.08)] aria-[current=true]:bg-chocolate aria-[current=true]:text-cream min-[23.5rem]:px-3 lg:px-4"
               >
                 {current && <Star className="h-3.5" />}
                 {world.name}
