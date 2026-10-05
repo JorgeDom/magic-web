@@ -14,12 +14,11 @@ function jump(target: HTMLElement): void {
 
 /**
  * Jumps to a section. Where the View Transitions API exists (and motion is welcome) the two
- * states cross-fade; otherwise the jump is immediate. Focus moves to the section's heading so
- * keyboard and screen-reader users land where sighted users do.
+ * states cross-fade; otherwise the jump is immediate. Focus then moves to `focusTarget` (the
+ * section's heading) so keyboard and screen-reader users land where sighted users do.
  */
-export function jumpToSection(target: HTMLElement): void {
-  const focusTarget = target.querySelector<HTMLElement>("[data-jump-focus]") ?? target;
-  const finish = () => focusTarget.focus({ preventScroll: true });
+export function jumpToSection(target: HTMLElement, focusTarget?: HTMLElement | null): void {
+  const finish = () => focusTarget?.focus({ preventScroll: true });
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (reduced || typeof document.startViewTransition !== "function") {

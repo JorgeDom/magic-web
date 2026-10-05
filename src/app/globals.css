@@ -24,8 +24,8 @@
   --text-claim--line-height: 0.9;
   --text-claim--letter-spacing: -0.025em;
   --text-claim--font-weight: 600;
-  --text-display: clamp(2.75rem, 9vw, 7rem);
-  --text-display--line-height: 0.95;
+  --text-display: clamp(4rem, min(17vw, 26svh), 13rem);
+  --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.03em;
   --text-display--font-weight: 600;
   --text-headline: clamp(2rem, 4.6vw, 3.5rem);
@@ -86,6 +86,7 @@
 
   --color-ground: var(--ground);
   --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
   --color-ink-muted: var(--ink-muted);
   --color-hairline: var(--hairline);
   --color-accent: var(--accent);
@@ -94,12 +95,16 @@
 :root {
   --ground: var(--color-cream);
   --ink: var(--color-chocolate);
+  /* Text on an ink-filled surface (buttons). Always cream on chocolate, or the reverse. */
+  --on-ink: var(--color-cream);
   --ink-muted: rgb(76 64 57 / 0.8);
   --hairline: rgb(76 64 57 / 0.14);
   --accent: var(--color-chocolate);
 
   --gutter: clamp(20px, 5vw, 72px);
   --section: clamp(96px, 16svh, 192px);
+  /* Distance from the content column to the viewport edge, for media that bleeds off it. */
+  --bleed: max(var(--gutter), calc((100vw - var(--container-shell)) / 2));
   --nav-height: 56px;
 
   --media-radius: var(--radius-md);
@@ -127,6 +132,7 @@
 [data-world="brands"] {
   --ground: var(--color-chocolate);
   --ink: var(--color-cream);
+  --on-ink: var(--color-chocolate);
   --ink-muted: rgb(250 247 241 / 0.8);
   --hairline: rgb(250 247 241 / 0.18);
 }
@@ -275,6 +281,15 @@ html.lenis body {
   }
 }
 
+@keyframes scroll-draw {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @supports ((animation-timeline: view()) and (animation-range: entry)) {
     [data-scroll="parallax"] {
@@ -293,6 +308,14 @@ html.lenis body {
       animation: scroll-settle linear both;
       animation-timeline: view();
       animation-range: entry 10% cover 60%;
+    }
+
+    /* A rule that draws itself from the left as it crosses the viewport. */
+    [data-scroll="draw"] {
+      transform-origin: left center;
+      animation: scroll-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
     }
   }
 }

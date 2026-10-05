@@ -36,20 +36,37 @@ export async function applyScrollFallback(): Promise<() => void> {
       );
     }
 
-    for (const stage of gsap.utils.toArray<HTMLElement>("[data-warp]")) {
-      const star = stage.querySelector<SVGElement>("[data-warp-star]");
-      if (!star) continue;
+    for (const element of gsap.utils.toArray<HTMLElement>('[data-scroll="draw"]')) {
       gsap.fromTo(
-        star,
-        { scale: 0 },
+        element,
+        { scaleX: 0, transformOrigin: "left center" },
         {
-          scale: Number(stage.dataset.warpScale ?? 6),
-          svgOrigin: "0 0",
-          ease: "power3.in",
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: { trigger: element, start: "top bottom", end: "top 55%", scrub: true },
+        },
+      );
+    }
+
+    // Star-warp: the stylesheet clips each opening card to a star sized by `--k`. The class
+    // switches on the pinned layout; the tween opens the star over the pinned distance.
+    document.documentElement.classList.add("warp-fallback");
+    for (const stage of gsap.utils.toArray<HTMLElement>("[data-warp]")) {
+      const card = stage.querySelector<HTMLElement>("[data-warp-pin]");
+      if (!card) continue;
+      gsap.fromTo(
+        card,
+        { "--k": "0vmax" },
+        {
+          "--k": stage.dataset.warp ?? "4.1vmax",
+          ease: "power2.in",
           scrollTrigger: { trigger: stage, start: "top top", end: "bottom bottom", scrub: true },
         },
       );
     }
   });
-  return () => context.revert();
+  return () => {
+    context.revert();
+    document.documentElement.classList.remove("warp-fallback");
+  };
 }

@@ -10,10 +10,10 @@ const BASE =
   "whitespace-nowrap select-none transition-[transform,background-color,color] duration-(--duration-micro) " +
   "ease-out active:scale-[0.97]";
 
-// Ink on ground inverts by itself on chocolate sections, so there is no "on dark" variant.
+// Ink and on-ink invert by themselves on chocolate sections, so there is no "on dark" variant.
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-ink text-ground hover:bg-ink/88",
-  quiet: "border-[1.5px] border-ink text-ink hover:bg-ink hover:text-ground",
+  primary: "bg-ink text-on-ink hover:bg-ink/88",
+  quiet: "border-[1.5px] border-ink text-ink hover:bg-ink hover:text-on-ink",
 };
 
 const SIZES: Record<Size, string> = {

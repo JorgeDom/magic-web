@@ -62,4 +62,16 @@ export const WORLDS: readonly World[] = [
   },
 ];
 
-export const WORLD_IDS: readonly WorldId[] = WORLDS.map((world) => world.id);
+/** The in-page anchor of a world's section. */
+export const worldAnchor = (id: WorldId) => `mundo-${id}`;
+
+/**
+ * Tempo per world, for JavaScript-driven scenes. Mirrors the `--world-*` tokens in globals.css
+ * and the World Modes table in DESIGN.md: change all three together.
+ */
+export const WORLD_TEMPO: Record<WorldId, { duration: number; scrub: number; ease: string }> = {
+  kids: { duration: 1.2, scrub: 1.2, ease: "sine.inOut" },
+  teens: { duration: 0.36, scrub: 0.3, ease: "back.out(2)" },
+  "grown-ups": { duration: 0.9, scrub: 0.8, ease: "expo.out" },
+  brands: { duration: 1.4, scrub: 1.5, ease: "power1.inOut" },
+};

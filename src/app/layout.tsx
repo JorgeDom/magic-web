@@ -7,6 +7,7 @@ import { COPY } from "@/content/copy";
 import { localBusinessJsonLd } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 import "./globals.css";
+import "@/generated/star-clip.css";
 
 // Headlines and claims.
 const dmSans = DM_Sans({

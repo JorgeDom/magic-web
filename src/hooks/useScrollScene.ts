@@ -25,13 +25,23 @@ export function useScrollScene<T extends HTMLElement>(
     if (reduced || !root) return;
     let revert: (() => void) | undefined;
     let cancelled = false;
-    void loadGsap().then((tools) => {
-      if (cancelled) return;
-      const context = tools.gsap.context(() => latest.current(tools, root), root);
-      revert = () => context.revert();
-    });
+    // GSAP is only fetched once the scene is within a viewport of being seen.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        void loadGsap().then((tools) => {
+          if (cancelled) return;
+          const context = tools.gsap.context(() => latest.current(tools, root), root);
+          revert = () => context.revert();
+        });
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(root);
     return () => {
       cancelled = true;
+      observer.disconnect();
       revert?.();
     };
   }, [reduced, scope]);

@@ -1,0 +1,45 @@
+/* Kids tempo: slow and soft. Each bead bobs on its own period so they never move in unison. */
+.float {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: float var(--float-duration, 9s) var(--ease-soft) var(--float-delay, 0s) infinite
+    alternate;
+}
+
+/* The contact shadow lives on the wrapper so the bead's mask does not cut it off. */
+.shadow {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 12px 12px rgb(76 64 57 / 0.22));
+}
+
+/* A bead is a flat disc with a threading hole punched through it (a mask, not a gradient fill). */
+.bead {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  mask: radial-gradient(circle, transparent 0 13%, #000 14.5%);
+}
+
+@keyframes float {
+  from {
+    transform: translate3d(0, -7%, 0) rotate(-3deg);
+  }
+  to {
+    transform: translate3d(0, 9%, 0) rotate(4deg);
+  }
+}
+
+/* Beads rest while the world is off screen. */
+.paused .float {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+}

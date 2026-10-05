@@ -10,3 +10,6 @@ docs
 public
 src/generated
 DESIGN.md
+AGENTS.md
+CLAUDE.md
+wrangler.jsonc

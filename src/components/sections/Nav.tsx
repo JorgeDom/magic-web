@@ -57,7 +57,7 @@ export function Nav() {
           <WhatsAppLink
             message={COPY.hero.message}
             size="compact"
-            className="[--ground:var(--color-cream)] [--ink:var(--color-chocolate)]"
+            className="[--ink:var(--color-chocolate)] [--on-ink:var(--color-cream)]"
           >
             {COPY.nav.book}
           </WhatsAppLink>

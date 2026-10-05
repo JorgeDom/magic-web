@@ -2,7 +2,7 @@
 //
 //   pnpm shots                         top of the page
 //   pnpm shots -- --at=0,900,1800      at these scroll offsets (px)
-//   pnpm shots -- --sel=#mundo-teens   scrolled to an element
+//   pnpm shots -- --sel=#mundo-teens   scrolled to an element (add @-300 to stop 300px before)
 //   pnpm shots -- --reduced            with prefers-reduced-motion: reduce
 //   pnpm shots -- --url=http://localhost:3000 --out=.shots --wait=2600
 import { chromium } from "playwright";
@@ -67,10 +67,23 @@ for (const viewport of VIEWPORTS) {
       tag: `y${y}`,
       go: () => page.evaluate((top) => window.scrollTo(0, top), y),
     })),
-    ...selectors.map((selector) => ({
-      tag: selector.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, ""),
-      go: () => page.locator(selector).first().scrollIntoViewIfNeeded(),
-    })),
+    // "#id" puts the element's top at the top of the viewport; "#id@-300" stops 300px before.
+    ...selectors.map((entry) => {
+      const [selector, shift = "0"] = entry.split("@");
+      return {
+        tag: entry.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, ""),
+        go: () =>
+          page.evaluate(
+            ([target, dy]) => {
+              const element = document.querySelector(target);
+              if (!element) return;
+              const top = element.getBoundingClientRect().top + window.scrollY;
+              window.scrollTo(0, top + Number(dy));
+            },
+            [selector, shift],
+          ),
+      };
+    }),
   ];
   for (const stop of stops) {
     await stop.go();
