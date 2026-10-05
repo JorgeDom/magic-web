@@ -1,0 +1,88 @@
+/*
+ * The 2-second logo sequence: M, then A, then the star's sparkle, then "gic!" completes, then
+ * the descriptor settles. It reveals regions of the approved lockup; no letter is moved on its
+ * own or redrawn. Pure CSS, so it plays before any JavaScript has loaded.
+ */
+.logo {
+  position: relative;
+  aspect-ratio: var(--logo-ratio);
+  width: 100%;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .m {
+    transform-origin: 18% 78%;
+    animation: letter 450ms var(--ease-editorial) both;
+  }
+
+  .a {
+    transform-origin: 48% 78%;
+    animation: letter 450ms var(--ease-editorial) 350ms both;
+  }
+
+  .star {
+    transform-origin: var(--star-x) var(--star-y);
+    animation: sparkle 380ms cubic-bezier(0.3, 1.4, 0.5, 1) 800ms both;
+  }
+
+  .gic {
+    animation: complete 700ms var(--ease-editorial) 1100ms both;
+  }
+
+  .descriptor {
+    animation: settle 300ms ease-out 1700ms both;
+  }
+}
+
+@keyframes letter {
+  from {
+    opacity: 0;
+    transform: translateY(7%) scale(0.96);
+  }
+}
+
+/* One beat: a small overshoot and a few degrees of turn. No burst, no particles. */
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-12deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.08) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes complete {
+  from {
+    opacity: 0;
+    clip-path: inset(0 calc(100% - var(--gic-left)) 0 0);
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(5%);
+  }
+}
