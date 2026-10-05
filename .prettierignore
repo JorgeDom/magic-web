@@ -1,0 +1,12 @@
+.next
+out
+.wrangler
+node_modules
+pnpm-lock.yaml
+legacy
+claude_design
+brand
+docs
+public
+src/generated
+DESIGN.md
