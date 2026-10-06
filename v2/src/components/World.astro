@@ -1,0 +1,51 @@
+---
+// One world, in two beats: a full-screen opening card with its name, then its services beside
+// its media (the default slot). Every world uses this exact layout. Ground, ink, corner radius
+// and tempo come from the world's tokens through `data-world`; nothing here branches on which
+// world it is.
+import { worldAnchor, type World, type WorldId } from "../lib/content";
+import Button from "./Button.astro";
+import OpeningCard from "./OpeningCard.astro";
+
+interface Props {
+  world: World;
+  /** The world before this one, which the star-warp opens over. */
+  previous?: WorldId;
+}
+
+const { world, previous } = Astro.props;
+const anchor = worldAnchor(world.id);
+---
+
+<section data-world={world.id} aria-labelledby={`${anchor}-titulo`} class="relative">
+  <OpeningCard from={previous} anchor={anchor}>
+    <div class="shell flex flex-col justify-end pt-(--section) pb-[clamp(112px,18svh,176px)]">
+      <h2 id={`${anchor}-titulo`} lang="en" translate="no" tabindex="-1" class="text-display">
+        {world.name}
+      </h2>
+      <p class="mt-6 max-w-measure text-lead text-ink-muted">{world.line}</p>
+    </div>
+  </OpeningCard>
+
+  {/* The deep bottom padding lets the call to action clear the middle of the screen before
+       the next card's star opens there. */}
+  <div class="overflow-x-clip bg-ground text-ink">
+    <div class="@container shell pb-[max(var(--section),36svh)]">
+      <div class="grid items-center gap-y-12 @4xl:grid-cols-12 @4xl:gap-x-8">
+        <div class="order-2 @4xl:order-1 @4xl:col-span-5">
+          <ul role="list" class="max-w-measure border-t border-hairline">
+            {world.services.map((service) => (
+              <li class="border-b border-hairline py-4 font-display text-title">{service}</li>
+            ))}
+          </ul>
+          <Button whatsapp={world.cta.message} class="mt-9">
+            {world.cta.label}
+          </Button>
+        </div>
+        <div class="order-1 @4xl:order-2 @4xl:col-span-6 @4xl:col-start-7">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

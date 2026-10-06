@@ -1,0 +1,123 @@
+---
+// The close. The only place on the page that uses Fraunces: one phrase, once. Centred, like
+// the intro, so the page ends the way it began to breathe.
+//
+// The contact form below the buttons is optional and off by default. There is no backend: it
+// posts JSON to a third-party form service (PUBLIC_FORM_ENDPOINT). WhatsApp stays the primary
+// way to book.
+import { CLAIMS, COPY, sentences } from "../lib/content";
+import { FORM_ENDPOINT, SITE } from "../lib/site";
+import Button from "./Button.astro";
+import Star from "./Star.astro";
+
+const field =
+  "mt-2 w-full rounded-md border border-ink-muted bg-transparent px-4 py-3 text-body text-ink focus-visible:border-ink";
+---
+
+<section id="reservar" aria-labelledby="reservar-titulo" class="deferred bg-ground text-ink">
+  <div class="shell flex min-h-[86svh] flex-col items-center justify-center py-(--section) text-center">
+    <Star class="h-9 lg:h-12" />
+    <h2
+      id="reservar-titulo"
+      lang="en"
+      translate="no"
+      class="mt-8 font-closing text-closing italic lg:mt-10"
+    >
+      {sentences(CLAIMS.closing).map((sentence) => (
+        <span class="block">{sentence} </span>
+      ))}
+    </h2>
+    <p class="mt-6 max-w-[28rem] text-lead text-ink-muted">{COPY.final.line}</p>
+    <div class="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+      <Button whatsapp={COPY.final.message}>{COPY.final.cta}</Button>
+      <Button href={SITE.instagram.url} variant="quiet">
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+          <circle cx="12" cy="12" r="3.8"></circle>
+          <circle cx="17" cy="7" r="0.9" fill="currentColor" stroke="none"></circle>
+        </svg>
+        {COPY.final.instagram}
+      </Button>
+    </div>
+
+    {FORM_ENDPOINT && (
+      <form
+        data-contact-form
+        action={FORM_ENDPOINT}
+        method="post"
+        data-sending={COPY.form.sending}
+        data-sent={COPY.form.sent}
+        data-error={COPY.form.error}
+        class="mx-auto mt-16 w-full max-w-measure text-left"
+      >
+        <h3 class="text-title">{COPY.form.heading}</h3>
+        <label class="mt-6 block text-label">
+          {COPY.form.name}
+          <input name="name" type="text" autocomplete="name" required class={field} />
+        </label>
+        <label class="mt-5 block text-label">
+          {COPY.form.contact}
+          <input
+            name="contact"
+            type="text"
+            inputmode="email"
+            autocomplete="email"
+            spellcheck="false"
+            required
+            class={field}
+          />
+        </label>
+        <label class="mt-5 block text-label">
+          {COPY.form.message}
+          <textarea name="message" rows="4" required class={field} />
+        </label>
+        <button
+          type="submit"
+          class="mt-7 inline-flex min-h-[52px] items-center justify-center rounded-pill bg-ink px-7 font-sans text-body leading-none font-medium text-on-ink transition-transform duration-(--duration-micro) active:scale-[0.97] disabled:opacity-60"
+        >
+          {COPY.form.submit}
+        </button>
+        <p role="status" aria-live="polite" class="mt-4 min-h-6 text-label" />
+      </form>
+    )}
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const button = form?.querySelector("button");
+  const status = form?.querySelector("[role=status]");
+
+  if (form && button && status) {
+    const label = button.textContent;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      button.textContent = form.dataset.sending ?? label;
+      status.textContent = "";
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        if (!response.ok) throw new Error(`Form service responded ${response.status}`);
+        form.reset();
+        status.textContent = form.dataset.sent ?? "";
+      } catch {
+        status.textContent = form.dataset.error ?? "";
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  }
+</script>

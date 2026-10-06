@@ -1,0 +1,59 @@
+---
+// One frame per shot type from the brand book: Making, Details, Experience, Result. The grid is
+// deliberately uneven (an editorial spread, not a gallery), and each frame drifts at its own
+// rate so the page has depth without anything flying in.
+import { COPY } from "../lib/content";
+import Media from "./Media.astro";
+
+const LAYOUT = [
+  {
+    span: "lg:col-span-7",
+    aspect: "aspect-[4/3]",
+    parallax: 20,
+    sizes: "(min-width: 64rem) 55vw, 90vw",
+  },
+  {
+    span: "ml-auto w-3/4 lg:col-span-4 lg:col-start-9 lg:mt-28 lg:ml-0 lg:w-auto",
+    aspect: "aspect-[4/5]",
+    parallax: 52,
+    sizes: "(min-width: 64rem) 30vw, 68vw",
+  },
+  {
+    span: "w-3/4 lg:col-span-4 lg:col-start-2 lg:w-auto",
+    aspect: "aspect-[4/5]",
+    parallax: 36,
+    sizes: "(min-width: 64rem) 30vw, 68vw",
+  },
+  {
+    span: "lg:col-span-6 lg:col-start-7 lg:mt-36",
+    aspect: "aspect-[4/3]",
+    parallax: 24,
+    sizes: "(min-width: 64rem) 46vw, 90vw",
+  },
+];
+---
+
+<section aria-labelledby="asi-se-hace-titulo" class="deferred overflow-x-clip bg-ground text-ink">
+  <div class="shell py-(--section)">
+    <h2 id="asi-se-hace-titulo" class="text-headline">
+      {COPY.making.heading}
+    </h2>
+    <div class="mt-12 grid gap-y-14 lg:mt-20 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-24">
+      {COPY.making.shots.map((shot, index) => {
+        const layout = LAYOUT[index % LAYOUT.length]!;
+        return (
+          <figure
+            data-scroll="parallax"
+            style={`--parallax:${layout.parallax}px`}
+            class={layout.span}
+          >
+            <Media photo={shot.key} shot={shot.shot} sizes={layout.sizes} aspect={layout.aspect} />
+            <figcaption lang="en" translate="no" class="mt-4 text-label">
+              {shot.caption}
+            </figcaption>
+          </figure>
+        );
+      })}
+    </div>
+  </div>
+</section>

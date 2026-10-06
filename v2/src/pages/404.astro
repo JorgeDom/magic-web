@@ -1,0 +1,21 @@
+---
+import Base from "../components/Base.astro";
+import Button from "../components/Button.astro";
+import Star from "../components/Star.astro";
+import { COPY } from "../lib/content";
+import { SITE } from "../lib/site";
+---
+
+<Base title={`${COPY.notFound.title} | ${SITE.name}`} noindex>
+  <main
+    id="contenido"
+    class="shell flex min-h-svh flex-col items-start justify-center py-(--section)"
+  >
+    <Star class="h-12" />
+    <h1 class="mt-8 text-headline">{COPY.notFound.title}</h1>
+    <p class="mt-4 max-w-measure text-lead text-ink-muted">{COPY.notFound.text}</p>
+    <Button href="/" class="mt-8">
+      {COPY.notFound.cta}
+    </Button>
+  </main>
+</Base>

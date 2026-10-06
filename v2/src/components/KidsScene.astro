@@ -1,0 +1,142 @@
+---
+// Kids signature: the roundest frame, with beads floating around it. They float while the
+// visitor scrolls or moves the pointer, drift toward the pointer, and bob when touched. Kids
+// is the one world that unlocks the full palette, and it does so through these objects. Gold
+// is absent on purpose: gold belongs to the star.
+import type { World } from "../lib/content";
+import Media from "./Media.astro";
+
+interface Props {
+  world: World;
+}
+
+const { world } = Astro.props;
+
+// Position and size are percentages of the frame; depth is how far (px) a bead drifts.
+const BEADS = [
+  { color: "bg-lavender", size: 17, top: -5, left: -6, depth: 22, period: 9, delay: 0 },
+  { color: "bg-rosa", size: 10, top: 16, left: 99, depth: 38, period: 7.5, delay: -2 },
+  { color: "bg-peach", size: 19, top: 93, left: 74, depth: 18, period: 11, delay: -4 },
+  { color: "bg-sage", size: 13, top: 76, left: -4, depth: 30, period: 10, delay: -1 },
+  { color: "bg-blue", size: 8, top: 55, left: 103, depth: 44, period: 8, delay: -5 },
+  { color: "bg-blue", size: 12, top: -4, left: 66, depth: 26, period: 8.5, delay: -3 },
+  { color: "bg-rosa", size: 7, top: 102, left: 22, depth: 40, period: 7, delay: -6 },
+];
+---
+
+<div class="relative">
+  <Media photo={world.media.key} shot={world.media.shot} sizes="(min-width: 64rem) 46vw, 90vw" />
+  <div data-beads aria-hidden="true" class="beads paused pointer-events-none absolute inset-0">
+    {BEADS.map((bead) => (
+      <span
+        data-depth={bead.depth}
+        class="bead pointer-events-auto absolute block aspect-square -translate-1/2"
+        style={`top:${bead.top}%;left:${bead.left}%;width:${bead.size}%;--period:${bead.period}s;--delay:${bead.delay}s`}
+      >
+        <span class="float">
+          <span class:list={["disc", bead.color]} />
+        </span>
+      </span>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Kids tempo: slow and soft. Each bead bobs on its own period so they never move in unison. */
+  .float {
+    display: block;
+    height: 100%;
+    /* The contact shadow lives here so the disc's mask does not cut it off. */
+    filter: drop-shadow(0 12px 12px rgb(76 64 57 / 0.22));
+    animation: bead-float var(--period) var(--ease-soft) var(--delay) infinite alternate;
+  }
+
+  /* A bead is a flat disc with a threading hole punched through it (a mask, not a gradient). */
+  .disc {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    mask: radial-gradient(circle, transparent 0 13%, #000 14.5%);
+  }
+
+  @keyframes bead-float {
+    from {
+      transform: translate3d(0, -7%, 0) rotate(-3deg);
+    }
+    to {
+      transform: translate3d(0, 9%, 0) rotate(4deg);
+    }
+  }
+
+  /* At rest: off screen, a few seconds after the last input, and always under reduced motion. */
+  .paused .float {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { finePointer, reducedMotion, watchVisibility, whenNear } from "../lib/client";
+
+  // Nothing on the page moves by itself for more than a few seconds (WCAG 2.2.2): the beads
+  // float only while the visitor is scrolling or moving the pointer, and rest shortly after.
+  const REST_AFTER_MS = 4000;
+  const DRIFT = { type: "spring", stiffness: 38, damping: 14, mass: 1.2 } as const;
+  const BOB = { type: "spring", stiffness: 260, damping: 11 } as const;
+
+  const host = document.querySelector<HTMLElement>("[data-beads]");
+  if (host && !reducedMotion()) {
+    whenNear(host, async () => {
+      const { animate } = await import("motion");
+      const beads = [...host.querySelectorAll<HTMLElement>(".bead")];
+      let onScreen = false;
+      let rest = 0;
+
+      const wake = () => {
+        if (!onScreen) return;
+        host.classList.remove("paused");
+        clearTimeout(rest);
+        rest = window.setTimeout(() => host.classList.add("paused"), REST_AFTER_MS);
+      };
+      watchVisibility(host, (visible) => {
+        onScreen = visible;
+        if (visible) wake();
+        else host.classList.add("paused");
+      });
+      addEventListener("scroll", wake, { passive: true });
+
+      let frame = 0;
+      addEventListener(
+        "pointermove",
+        (event) => {
+          wake();
+          if (!onScreen || !finePointer() || frame) return;
+          frame = requestAnimationFrame(() => {
+            frame = 0;
+            const box = host.getBoundingClientRect();
+            const clamp = (value: number) => Math.max(-1, Math.min(1, value));
+            const px = clamp((event.clientX - (box.left + box.width / 2)) / (innerWidth / 2));
+            const py = clamp((event.clientY - (box.top + box.height / 2)) / (innerHeight / 2));
+            for (const bead of beads) {
+              const depth = Number(bead.dataset.depth);
+              animate(bead, { x: px * depth, y: py * depth }, DRIFT);
+            }
+          });
+        },
+        { passive: true },
+      );
+
+      for (const bead of beads) {
+        bead.addEventListener("pointerdown", () => animate(bead, { scale: 1.2 }, BOB));
+        for (const release of ["pointerup", "pointerleave", "pointercancel"]) {
+          bead.addEventListener(release, () => animate(bead, { scale: 1 }, BOB));
+        }
+      }
+    });
+  }
+</script>

@@ -1,0 +1,126 @@
+---
+// A full-height opening card, optionally revealed by the signature star-warp.
+//
+// At rest this is a plain card in its section's ground. When `from` is set, and motion is
+// welcome, and scroll timelines exist (or the GSAP fallback has switched itself on), the card
+// overlaps the last viewport of the section before it, pins for --pin-scroll, and is clipped
+// to a star that opens from the centre: a star-shaped window onto what comes next. Outside
+// the star, the outgoing section stays visible and usable.
+import type { WorldId } from "../lib/content";
+import { STAR_K_OPEN } from "../lib/star";
+
+interface Props {
+  /** The world being left, whose ground shows around the star. Omit for a plain card. */
+  from?: WorldId;
+  /** Id for in-page links. It marks the scroll position at which the card is fully open. */
+  anchor?: string;
+  /**
+   * Open over the world navigator too. Used when leaving the worlds, so the navigator is
+   * covered by the star like the rest of the last world instead of floating across it.
+   */
+  overNavigator?: boolean;
+}
+
+const { from, anchor, overNavigator } = Astro.props;
+---
+
+<div
+  data-warp={from ? STAR_K_OPEN : undefined}
+  class:list={["stage", from && "warp"]}
+  style={`--k-open:${STAR_K_OPEN};--warp-z:${overNavigator ? 40 : 20}`}
+>
+  {anchor && <div id={anchor} class="anchor" />}
+  <div data-warp-pin class:list={["pin", from && "star-clip"]}>
+    <slot />
+  </div>
+  {from && <div aria-hidden="true" data-world={from} class="tail" />}
+</div>
+
+<style>
+  .stage {
+    --pin-scroll: 70svh;
+    position: relative;
+  }
+
+  .pin {
+    display: grid;
+    min-height: 100svh;
+    background: var(--ground);
+    color: var(--ink);
+  }
+
+  .anchor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    height: 100svh;
+    pointer-events: none;
+  }
+
+  /* Keeps the outgoing ground under the aperture while the card is pinned. */
+  .tail {
+    display: none;
+    height: var(--pin-scroll);
+    background: var(--ground);
+  }
+
+  /* Slow start, so the shape reads as a star before it floods the screen. */
+  @keyframes star-warp-open {
+    from {
+      --k: 0vmax;
+    }
+    to {
+      --k: var(--k-open);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .warp {
+        z-index: var(--warp-z);
+        height: calc(100svh + var(--pin-scroll));
+        margin-top: -100svh;
+        pointer-events: none;
+        view-timeline: --warp block;
+        /* The default inset follows scroll-padding (the nav height) and would start early. */
+        view-timeline-inset: 0px;
+      }
+
+      .warp > .pin {
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        min-height: 0;
+        clip-path: var(--star-polygon);
+        animation: star-warp-open cubic-bezier(0.55, 0.055, 0.675, 0.19) both;
+        animation-timeline: --warp;
+        animation-range: contain 0% contain 100%;
+      }
+
+      .warp > .tail {
+        display: block;
+      }
+    }
+  }
+
+  /* Same layout for the GSAP fallback, which tweens --k itself (see lib/client.ts). */
+  :global(html.warp-fallback) .warp {
+    z-index: var(--warp-z);
+    height: calc(100svh + var(--pin-scroll));
+    margin-top: -100svh;
+    pointer-events: none;
+  }
+
+  :global(html.warp-fallback) .warp > .pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+    clip-path: var(--star-polygon);
+  }
+
+  :global(html.warp-fallback) .warp > .tail {
+    display: block;
+  }
+</style>

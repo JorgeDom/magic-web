@@ -1,0 +1,52 @@
+---
+// The whole site is this one page: one component per section, in reading order.
+import Base from "../components/Base.astro";
+import BrandsScene from "../components/BrandsScene.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Footer from "../components/Footer.astro";
+import GrownUpsScene from "../components/GrownUpsScene.astro";
+import Hero from "../components/Hero.astro";
+import HowItWorks from "../components/HowItWorks.astro";
+import Intro from "../components/Intro.astro";
+import KidsScene from "../components/KidsScene.astro";
+import Making from "../components/Making.astro";
+import Nav from "../components/Nav.astro";
+import TeensScene from "../components/TeensScene.astro";
+import Testimonials from "../components/Testimonials.astro";
+import World from "../components/World.astro";
+import WorldNav from "../components/WorldNav.astro";
+import { WORLDS, type WorldId } from "../lib/content";
+
+// Each world's media and signature interaction. The chapter layout around them is shared.
+const SCENES = {
+  kids: KidsScene,
+  teens: TeensScene,
+  "grown-ups": GrownUpsScene,
+  brands: BrandsScene,
+} satisfies Record<WorldId, unknown>;
+---
+
+<Base>
+  <Nav />
+  <main id="contenido">
+    <Hero />
+    <Intro />
+    {/* Four chapters with one layout and four intensities, each opened by the star-warp. */}
+    <div id="mundos" class="relative">
+      <WorldNav />
+      {WORLDS.map((world, index) => {
+        const Scene = SCENES[world.id];
+        return (
+          <World world={world} previous={WORLDS[index - 1]?.id}>
+            <Scene world={world} />
+          </World>
+        );
+      })}
+    </div>
+    <HowItWorks />
+    <Making />
+    <Testimonials />
+    <FinalCta />
+  </main>
+  <Footer />
+</Base>

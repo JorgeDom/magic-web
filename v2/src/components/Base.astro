@@ -1,0 +1,95 @@
+---
+// The page shell: metadata, fonts, structured data, the skip link and the shared star outline.
+import { Font } from "astro:assets";
+import "../global.css";
+import { COPY } from "../lib/content";
+import { SITE, localBusinessJsonLd } from "../lib/site";
+import { STAR_PATH, starClipPolygon } from "../lib/star";
+
+interface Props {
+  title?: string;
+  noindex?: boolean;
+}
+
+const { title = SITE.title, noindex = false } = Astro.props;
+const origin = (Astro.site ?? Astro.url).origin;
+const canonical = new URL(Astro.url.pathname, origin).href;
+const image = `${origin}/og-image.png`;
+// "<" is escaped so the JSON can never close its own script tag.
+const jsonLd = JSON.stringify(localBusinessJsonLd(origin)).replace(/</g, "\\u003c");
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={SITE.description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex" : "index, follow"} />
+    <meta name="theme-color" content="#FAF7F1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_PY" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={SITE.description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={SITE.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={SITE.description} />
+    <meta name="twitter:image" content={image} />
+
+    {/* Only the fonts painted above the fold are preloaded. */}
+    <Font cssVariable="--font-dm-sans" preload />
+    <Font cssVariable="--font-inter" preload={[{ weight: 400 }]} />
+    <Font cssVariable="--font-fraunces" />
+
+    {/* The star as a clip-path, defined once for every star-warp on the page. */}
+    <style is:inline set:html={`.star-clip{--star-polygon:${starClipPolygon()}}`}></style>
+    <script is:inline type="application/ld+json" set:html={jsonLd}></script>
+  </head>
+  <body>
+    <a
+      href="#contenido"
+      class="sr-only z-[100] rounded-pill bg-chocolate px-5 py-3 text-label text-cream focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3"
+    >
+      {COPY.skipLink}
+    </a>
+
+    {/* The star outline, defined once. Every <Star /> references it. */}
+    <svg aria-hidden="true" focusable="false" width="0" height="0" class="absolute">
+      <defs>
+        <path id="magic-star" d={STAR_PATH}></path>
+      </defs>
+    </svg>
+
+    <slot />
+
+    <script>
+      // Page-level scroll behaviour, all optional and started once the page is idle.
+      import {
+        applyScrollFallback,
+        finePointer,
+        reducedMotion,
+        startSmoothScroll,
+        whenIdle,
+      } from "../lib/client";
+
+      whenIdle(() => {
+        if (finePointer() && !reducedMotion()) void startSmoothScroll();
+        void applyScrollFallback();
+      });
+    </script>
+  </body>
+</html>

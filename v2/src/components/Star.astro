@@ -1,0 +1,21 @@
+---
+// The MAgic! star, traced from the approved logo. Always decorative and always gold unless a
+// caller has a documented reason (see "The Star" in DESIGN.md). Size it with a height utility;
+// the width follows from the artwork's proportions.
+import { STAR_VIEWBOX } from "../lib/star";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<svg
+  viewBox={STAR_VIEWBOX}
+  aria-hidden="true"
+  focusable="false"
+  class:list={["block aspect-[85/100] text-gold", className]}
+>
+  <use href="#magic-star" fill="currentColor"></use>
+</svg>

@@ -1,0 +1,363 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. DESIGN.md is the source of truth; this file is its only implementation.
+ * Tailwind's default palette, type scale, radii and shadows are cleared so nothing outside the
+ * brand system can be reached by accident.
+ */
+@theme {
+  --color-*: initial;
+  --color-lavender: #9c91ce;
+  --color-rosa: #e78f96;
+  --color-sage: #91a18d;
+  --color-cream: #faf7f1;
+  --color-chocolate: #4c4039;
+  --color-gold: #ecaf42;
+  --color-blue: #88a5da;
+  --color-peach: #f3a172;
+  --color-blush: #f4e0e4;
+  --color-mint: #e7f0ea;
+  --color-arena: #d9c7a6;
+
+  --text-*: initial;
+  --text-claim: clamp(3.25rem, min(13.5vw, 19svh), 10.5rem);
+  --text-claim--line-height: 0.9;
+  --text-claim--letter-spacing: -0.025em;
+  --text-claim--font-weight: 600;
+  --text-display: clamp(4rem, min(17vw, 26svh), 13rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 600;
+  --text-headline: clamp(2rem, 4.6vw, 3.5rem);
+  --text-headline--line-height: 1.05;
+  --text-headline--letter-spacing: -0.02em;
+  --text-headline--font-weight: 500;
+  --text-statement: clamp(1.625rem, 4.2vw, 3rem);
+  --text-statement--line-height: 1.18;
+  --text-statement--letter-spacing: -0.015em;
+  --text-statement--font-weight: 400;
+  --text-title: clamp(1.375rem, 2.2vw, 1.75rem);
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.01em;
+  --text-title--font-weight: 500;
+  --text-lead: clamp(1.0625rem, 1.5vw, 1.25rem);
+  --text-lead--line-height: 1.5;
+  --text-lead--letter-spacing: -0.005em;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.3;
+  --text-label--font-weight: 500;
+  --text-descriptor: clamp(0.6875rem, 1vw, 0.8125rem);
+  --text-descriptor--line-height: 1;
+  --text-descriptor--letter-spacing: 0.42em;
+  --text-descriptor--font-weight: 500;
+  --text-closing: clamp(2rem, 5.4vw, 4.25rem);
+  --text-closing--line-height: 1.08;
+  --text-closing--letter-spacing: -0.015em;
+  --text-closing--font-weight: 400;
+
+  --radius-*: initial;
+  --radius-sm: 6px;
+  --radius-md: 16px;
+  --radius-lg: 32px;
+  --radius-xl: 56px;
+  --radius-pill: 9999px;
+
+  --shadow-*: initial;
+  --shadow-contact: 0 24px 48px -24px rgb(76 64 57 / 0.3);
+
+  --ease-*: initial;
+  --ease-soft: cubic-bezier(0.45, 0, 0.25, 1);
+  --ease-snap: cubic-bezier(0.2, 1.4, 0.4, 1);
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cinema: cubic-bezier(0.33, 0, 0.15, 1);
+
+  --container-measure: 34rem;
+  --container-shell: 1320px;
+}
+
+/* Values that resolve at runtime (next/font variables, per-section ground and ink). */
+@theme inline {
+  --font-*: initial;
+  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-closing: var(--font-fraunces), Georgia, serif;
+
+  --color-ground: var(--ground);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+}
+
+:root {
+  --ground: var(--color-cream);
+  --ink: var(--color-chocolate);
+  /* Text on an ink-filled surface (buttons). Always cream on chocolate, or the reverse. */
+  --on-ink: var(--color-cream);
+  --ink-muted: rgb(76 64 57 / 0.8);
+  --hairline: rgb(76 64 57 / 0.14);
+  --accent: var(--color-chocolate);
+
+  --gutter: clamp(20px, 5vw, 72px);
+  --section: clamp(96px, 16svh, 192px);
+  /* Distance from the content column to the viewport edge, for media that bleeds off it. */
+  --bleed: max(var(--gutter), calc((100vw - var(--container-shell)) / 2));
+  --nav-height: 56px;
+
+  --media-radius: var(--radius-md);
+  --world-ease: var(--ease-editorial);
+  --world-duration: 900ms;
+
+  --duration-micro: 160ms;
+  --duration-ui: 280ms;
+
+  color-scheme: light;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --nav-height: 64px;
+  }
+}
+
+/* Grounds for sections that are not worlds. */
+[data-ground="mint"] {
+  --ground: var(--color-mint);
+}
+
+[data-ground="chocolate"],
+[data-world="brands"] {
+  --ground: var(--color-chocolate);
+  --ink: var(--color-cream);
+  --on-ink: var(--color-chocolate);
+  --ink-muted: rgb(250 247 241 / 0.8);
+  --hairline: rgb(250 247 241 / 0.18);
+}
+
+/* World modes: one layout, three dials (ground, radius, tempo). */
+[data-world="kids"] {
+  --ground: var(--color-cream);
+  --accent: var(--color-lavender);
+  --media-radius: var(--radius-xl);
+  --world-ease: var(--ease-soft);
+  --world-duration: 1200ms;
+}
+
+[data-world="teens"] {
+  --ground: var(--color-peach);
+  /* Muted ink fails AA on peach (3.42:1), so secondary copy uses full ink here. */
+  --ink-muted: var(--color-chocolate);
+  --hairline: rgb(76 64 57 / 0.22);
+  --accent: var(--color-lavender);
+  --media-radius: var(--radius-md);
+  --world-ease: var(--ease-snap);
+  --world-duration: 360ms;
+}
+
+[data-world="grown-ups"] {
+  --ground: var(--color-blush);
+  --accent: var(--color-rosa);
+  --media-radius: var(--radius-sm);
+  --world-ease: var(--ease-editorial);
+  --world-duration: 900ms;
+}
+
+[data-world="brands"] {
+  --accent: var(--color-sage);
+  --media-radius: 0px;
+  --world-ease: var(--ease-cinema);
+  --world-duration: 1400ms;
+}
+
+@layer base {
+  html {
+    background: var(--color-cream);
+    /* Keeps focused and targeted elements clear of the fixed nav and the worlds' bottom pill. */
+    scroll-padding-top: var(--nav-height);
+    scroll-padding-bottom: 96px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--color-chocolate);
+    color: var(--color-cream);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Headings that receive focus after an in-page jump should not show a ring. */
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
+}
+
+@utility shell {
+  width: min(100% - var(--gutter) * 2, var(--container-shell));
+  margin-inline: auto;
+}
+
+/*
+ * Sections far below the fold are not laid out or painted until they come near the viewport,
+ * which keeps the first paint light on phones. Only for plain sections: never for the worlds,
+ * whose pinned cards and scroll scenes depend on exact positions.
+ */
+@utility deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100svh;
+}
+
+/* Lenis smooth scrolling (desktop pointers only). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/*
+ * Scroll-driven primitives. Native CSS where the browser supports it; where it does not,
+ * src/lib/client.ts reproduces the same attributes with GSAP ScrollTrigger.
+ */
+
+/*
+ * Size of the star-warp aperture: the length of one of the star's 100 vertical units.
+ * The initial value is never seen (the star is only clipped while --k is being driven), and it
+ * is deliberately not zero: minifiers rewrite `0px` to `0`, which is not a valid <length>
+ * here and would unregister the property.
+ */
+@property --k {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 1px;
+}
+@keyframes scroll-parallax {
+  from {
+    translate: 0 var(--parallax, 48px);
+  }
+  to {
+    translate: 0 calc(var(--parallax, 48px) * -1);
+  }
+}
+
+@keyframes scroll-unveil {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes scroll-settle {
+  from {
+    scale: 1.12;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@keyframes scroll-draw {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    [data-scroll="parallax"] {
+      animation: scroll-parallax linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    [data-scroll="unveil"] {
+      animation: scroll-unveil linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+
+    [data-scroll="unveil"] > * {
+      animation: scroll-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 60%;
+    }
+
+    /* A rule that draws itself from the left as it crosses the viewport. */
+    [data-scroll="draw"] {
+      transform-origin: left center;
+      animation: scroll-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+
+/* View transitions: world jumps cross-fade; everything else is left alone. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 420ms;
+    animation-timing-function: var(--ease-editorial);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

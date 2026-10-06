@@ -1,0 +1,17 @@
+---
+// One statement and a great deal of air.
+import { CLAIMS, COPY, sentences } from "../lib/content";
+import Star from "./Star.astro";
+---
+
+<section class="bg-ground text-ink">
+  <div class="shell flex min-h-[80svh] flex-col items-center justify-center py-(--section) text-center">
+    <Star class="h-9 lg:h-12" />
+    <h2 lang="en" translate="no" class="mt-8 text-headline lg:mt-10">
+      {sentences(CLAIMS.intro).map((sentence) => (
+        <span class="block">{sentence} </span>
+      ))}
+    </h2>
+    <p class="mt-6 max-w-[28rem] text-lead text-ink-muted">{COPY.intro.line}</p>
+  </div>
+</section>

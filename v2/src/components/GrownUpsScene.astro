@@ -1,0 +1,38 @@
+---
+// Grown Ups signature: an editorial pairing. The photographs unveil behind a slow mask as they
+// arrive, over a rosa sheet that drifts a little slower than the page. All of it is CSS
+// scroll-driven (see global.css), so this scene ships no JavaScript.
+import type { World } from "../lib/content";
+import Media from "./Media.astro";
+
+interface Props {
+  world: World;
+}
+
+const { world } = Astro.props;
+---
+
+<div class="relative pb-[12%] pl-[12%]">
+  <div
+    aria-hidden="true"
+    data-scroll="parallax"
+    style="--parallax:32px"
+    class="absolute bottom-0 left-0 h-[46%] w-[44%] rounded-(--media-radius) bg-accent"
+  ></div>
+  <Media
+    photo={world.media.key}
+    shot={world.media.shot}
+    sizes="(min-width: 64rem) 46vw, 90vw"
+    scroll="unveil"
+  />
+  <div class="absolute bottom-[6%] left-[5%] w-[34%]">
+    <Media
+      photo={`${world.media.key}-detail`}
+      shot="The Details: primer plano de la mesa"
+      sizes="(min-width: 64rem) 18vw, 36vw"
+      aspect="aspect-square"
+      scroll="unveil"
+      class="shadow-contact"
+    />
+  </div>
+</div>

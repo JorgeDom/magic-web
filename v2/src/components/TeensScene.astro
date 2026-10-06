@@ -1,0 +1,109 @@
+---
+// Teens signature: charms hang over the photograph and swing with the speed of the scroll,
+// settling with a quick, springy overshoot. With a mouse they can be pulled and let go; on
+// touch a tap sets one swinging (dragging would fight the page scroll). Peach ground,
+// lavender accent and chocolate: three colours, as the Teens mode allows.
+import type { World } from "../lib/content";
+import Media from "./Media.astro";
+
+interface Props {
+  world: World;
+}
+
+const { world } = Astro.props;
+
+// left and drop are percentages of the frame; weight scales how far a charm swings.
+const CHARMS = [
+  { left: 14, drop: 22, weight: 1, shape: "size-[15cqw] rounded-pill bg-lavender" },
+  { left: 36, drop: 38, weight: 0.8, shape: "size-[11cqw] rotate-45 rounded-md bg-chocolate" },
+  { left: 60, drop: 27, weight: 0.9, shape: "h-[17cqw] w-[10cqw] rounded-pill bg-cream" },
+  { left: 83, drop: 44, weight: 0.7, shape: "size-[12cqw] rounded-pill bg-lavender" },
+];
+---
+
+<div class="relative">
+  <Media photo={world.media.key} shot={world.media.shot} sizes="(min-width: 64rem) 46vw, 90vw" />
+  <div data-charms aria-hidden="true" class="@container pointer-events-none absolute inset-0">
+    {CHARMS.map((charm) => (
+      <div
+        data-pull
+        class="pointer-events-auto absolute -top-[3%] -translate-x-1/2 touch-pan-y"
+        style={`left:${charm.left}%;height:${charm.drop}%`}
+      >
+        <div
+          data-charm
+          data-weight={charm.weight}
+          class="flex h-full origin-top flex-col items-center"
+        >
+          <span class="w-[1.5px] flex-1 bg-chocolate" />
+          <span class="-mt-px size-3 rounded-pill border-[1.5px] border-chocolate" />
+          <span class:list={["-mt-0.5 block shadow-contact", charm.shape]} />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  import { finePointer, scrollScene } from "../lib/client";
+
+  const MAX_SWING = 18; // degrees
+  const SETTLE = { rotation: 0, duration: 1.5, ease: "elastic.out(1, 0.26)", overwrite: true };
+
+  scrollScene(
+    document.querySelector<HTMLElement>("[data-charms]"),
+    ({ gsap, ScrollTrigger }, root) => {
+      const charms = gsap.utils.toArray<HTMLElement>("[data-charm]", root);
+
+      // Swing with scroll velocity; settle a moment after scrolling stops.
+      const settle = gsap
+        .delayedCall(0.1, () => gsap.to(charms, { ...SETTLE, stagger: 0.04 }))
+        .pause();
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate(self) {
+          const swing = gsap.utils.clamp(-MAX_SWING, MAX_SWING, self.getVelocity() / -150);
+          for (const charm of charms) {
+            gsap.to(charm, {
+              rotation: swing * Number(charm.dataset.weight),
+              duration: 0.36,
+              ease: "power2.out",
+              overwrite: true,
+            });
+          }
+          settle.restart(true);
+        },
+      });
+
+      for (const pull of gsap.utils.toArray<HTMLElement>("[data-pull]", root)) {
+        const charm = pull.querySelector<HTMLElement>("[data-charm]");
+        if (!finePointer()) {
+          // Touch: a tap sets the charm swinging.
+          pull.addEventListener("pointerdown", () => gsap.fromTo(charm, { rotation: 14 }, SETTLE));
+          continue;
+        }
+        // Mouse: pull the charm, let go, and it snaps back with an overshoot.
+        pull.style.cursor = "grab";
+        pull.addEventListener("pointerdown", (down) => {
+          pull.setPointerCapture(down.pointerId);
+          pull.style.cursor = "grabbing";
+          const move = (event: PointerEvent) =>
+            gsap.set(pull, {
+              x: (event.clientX - down.clientX) * 0.6,
+              y: (event.clientY - down.clientY) * 0.6,
+            });
+          const release = () => {
+            pull.removeEventListener("pointermove", move);
+            pull.style.cursor = "grab";
+            gsap.to(pull, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.4)" });
+          };
+          pull.addEventListener("pointermove", move);
+          pull.addEventListener("pointerup", release, { once: true });
+          pull.addEventListener("pointercancel", release, { once: true });
+        });
+      }
+    },
+  );
+</script>

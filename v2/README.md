@@ -1,0 +1,110 @@
+# MAgic! Creative Studio: website, v2 (Astro)
+
+A single static page, built by Astro and served as plain files from Cloudflare. Same design as
+`../v1` with about half the files: sections are plain HTML with no JavaScript by default, and
+only the parts that move ship a script.
+
+`DESIGN.md` is the design system and the source of truth for every visual decision.
+
+## Requirements
+
+- Node.js 22.12 or newer
+- pnpm (`npm install -g pnpm`)
+
+## Commands
+
+| Command                                        | What it does                                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `pnpm install`                                 | Install dependencies                                                                       |
+| `pnpm dev`                                     | Local development at http://localhost:4321 (Astro picks the next free port if it is taken) |
+| `pnpm build`                                   | Build the site into `out/` and check Cloudflare's limits                                   |
+| `pnpm preview`                                 | Serve `out/` locally the way Cloudflare will (stop it before building again)               |
+| `pnpm deploy`                                  | Build and deploy to Cloudflare                                                             |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format` | Code quality                                                                               |
+
+Always check the built site (`pnpm build`, then `pnpm preview`) before deploying: the build
+minifies CSS, and the scroll animations depend on how it does that (see `astro.config.mjs`).
+
+## Where things live
+
+```
+src/pages/index.astro     The page: one component per section, in reading order
+src/components/           One file per section; each holds its own markup, styles and script
+src/global.css            Design tokens (colours, type, radii, world modes) and scroll primitives
+src/lib/content.ts        Every word on the page, and the four worlds
+src/lib/site.ts           Business facts (WhatsApp, Instagram, address, hours) and env switches
+src/lib/client.ts         Browser helpers shared by the components' scripts
+src/lib/star.ts           The star's outline, traced from the logo
+src/lib/star3d.ts         The WebGL star (loaded on capable desktops only)
+src/assets/logo/          Logo artwork
+src/assets/photos/        Photographs (create this folder when the first one arrives)
+public/                   Files served as they are: icons, Open Graph image, robots.txt, video
+```
+
+## Editing content
+
+- **Copy and worlds:** `src/lib/content.ts`.
+- **WhatsApp, Instagram, address, hours:** `src/lib/site.ts`.
+
+Anything not yet confirmed shows on the page as `[TODO]`. Search the built page for `[TODO]`
+before launch.
+
+## Photos
+
+Drop the original files (JPG or PNG, at least 1800px on the long side, true colours) into
+`src/assets/photos/` with exactly these names. Astro makes the AVIF and WebP sizes at build
+time. Until a file exists, the page shows a labelled placeholder in its place.
+
+| File name                                   | Where it appears                     | Shot                                                |
+| ------------------------------------------- | ------------------------------------ | --------------------------------------------------- |
+| `kids`                                      | Kids world                           | The Experience: children making charms at the table |
+| `teens`                                     | Teens world                          | The Details: bag charms hanging, close-up           |
+| `grown-ups`                                 | Grown Ups world, main frame          | The Experience: a set table, warm light             |
+| `grown-ups-detail`                          | Grown Ups world, small frame         | The Details: close-up of the table                  |
+| `brands`                                    | Brands world (when there is no film) | The Making: hands at work, clean table              |
+| `making`, `details`, `experience`, `result` | The Making grid                      | One per shot type                                   |
+
+## Video
+
+The Brands world plays a silent loop if these files exist in `public/media/`:
+`brands.webm`, `brands.mp4` and `brands-poster.webp`. Aim for 6 to 12 seconds and 3 to 8 MB.
+With ffmpeg:
+
+```
+ffmpeg -i source.mov -t 12 -an -vf "scale=-2:1080" -c:v libsvtav1 -crf 36 -preset 6 public/media/brands.webm
+ffmpeg -i source.mov -t 12 -an -vf "scale=-2:1080" -c:v libx264 -crf 24 -preset slow -movflags +faststart public/media/brands.mp4
+ffmpeg -i source.mov -frames:v 1 -vf "scale=-2:1080" public/media/brands-poster.webp
+```
+
+A file over 25 MiB cannot be deployed with the site. Upload it to a public Cloudflare R2
+bucket under `/media/` and set `PUBLIC_MEDIA_BASE_URL` to the bucket's address.
+
+## Logo and star
+
+The hero animates the approved logo by revealing five regions of it (`src/assets/logo/m`, `a`,
+`star`, `gic`, `descriptor`). Those regions and the star outline in `src/lib/star.ts` were cut
+from the master PNG by `../v1/scripts/build-brand-assets.mjs`. If the logo artwork changes,
+run that script in `v1` and copy its output here.
+
+## Configuration
+
+Copy `.env.example` to `.env`. Every value is optional.
+
+| Variable                     | Purpose                                            |
+| ---------------------------- | -------------------------------------------------- |
+| `PUBLIC_SITE_URL`            | Canonical origin for metadata and the sitemap      |
+| `PUBLIC_MEDIA_BASE_URL`      | Public R2 bucket for video over 25 MiB             |
+| `PUBLIC_ENABLE_CONTACT_FORM` | `true` shows the optional contact form             |
+| `PUBLIC_FORM_ENDPOINT`       | Where that form posts (a third-party form service) |
+
+## Deploying to Cloudflare
+
+The site has no server code. `wrangler.jsonc` tells Cloudflare to serve `out/` as static assets.
+
+1. `pnpm exec wrangler login` (once per machine).
+2. `pnpm deploy`.
+3. In the Cloudflare dashboard, open the `magic-web` Worker, then Settings, then Domains and
+   Routes, and add `magic.com.py` as a custom domain.
+
+Free-tier limits are checked at build time by `check-limits.mjs`: at most 20,000 files and
+25 MiB per file.

@@ -1,0 +1,9 @@
+out
+.astro
+.wrangler
+node_modules
+pnpm-lock.yaml
+public
+DESIGN.md
+wrangler.jsonc
+src/lib/star.ts

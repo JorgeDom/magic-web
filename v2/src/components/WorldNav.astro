@@ -1,0 +1,71 @@
+---
+// Sticky navigator, present only while the four worlds are on screen (it is sticky inside
+// their wrapper). A pill at the bottom of the viewport, where it never covers a world's media
+// or copy. The active world is marked by a filled pill, the star and `aria-current`, not by
+// colour alone. Its own colours are fixed (cream and chocolate) so it reads on every ground.
+import { COPY, WORLDS, worldAnchor } from "../lib/content";
+import Star from "./Star.astro";
+---
+
+<nav
+  data-world-nav
+  aria-label={COPY.worlds.label}
+  class="pointer-events-none sticky top-[calc(100svh-76px)] z-30 h-0 lg:top-[calc(100svh-84px)]"
+>
+  <ol
+    role="list"
+    class="pointer-events-auto mx-auto flex w-fit max-w-[calc(100vw-12px)] rounded-pill border border-[rgb(76_64_57/0.14)] bg-cream p-1 text-chocolate shadow-contact"
+  >
+    {WORLDS.map((world) => (
+      <li>
+        <a
+          href={`#${worldAnchor(world.id)}`}
+          lang="en"
+          translate="no"
+          class="group flex min-h-11 items-center gap-1.5 rounded-pill px-2.5 text-label whitespace-nowrap transition-colors duration-(--duration-ui) hover:bg-[rgb(76_64_57/0.08)] aria-[current=true]:bg-chocolate aria-[current=true]:text-cream min-[23.5rem]:px-3 lg:px-4"
+        >
+          <Star class="hidden h-3.5 group-aria-[current=true]:block" />
+          {world.name}
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  import { jumpTo } from "../lib/client";
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-world-nav] a")];
+  const anchors = links.map((link) => document.getElementById(link.hash.slice(1)));
+  const setActive = (index: number) =>
+    links.forEach((link, i) =>
+      i === index
+        ? link.setAttribute("aria-current", "true")
+        : link.removeAttribute("aria-current"),
+    );
+
+  // Each world's anchor marks where its opening card is fully open. The active world is the
+  // last one whose anchor has reached the middle of the viewport. It is re-read whenever an
+  // anchor crosses that line and whenever a scroll ends, so jumps that skip worlds stay right.
+  const update = () => {
+    const middle = innerHeight / 2;
+    setActive(
+      anchors.findLastIndex((anchor) => anchor && anchor.getBoundingClientRect().top <= middle),
+    );
+  };
+  const observer = new IntersectionObserver(update, { rootMargin: "-50% 0px -50% 0px" });
+  for (const anchor of anchors) if (anchor) observer.observe(anchor);
+  addEventListener("scrollend", update);
+
+  // Jumps cross-fade (View Transitions) and move focus to the world's heading.
+  links.forEach((link, index) => {
+    link.addEventListener("click", (event) => {
+      const anchor = anchors[index];
+      if (!anchor) return;
+      event.preventDefault();
+      history.pushState(null, "", link.hash);
+      jumpTo(anchor, document.getElementById(`${anchor.id}-titulo`));
+      setActive(index);
+    });
+  });
+</script>

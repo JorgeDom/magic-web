@@ -1,0 +1,66 @@
+---
+// Chocolate ground: the monochrome logo from the brand book, then how to reach the studio.
+// Unconfirmed facts (address, hours) render as visible [TODO]s.
+import { Image } from "astro:assets";
+import monoLogo from "../assets/logo/mono.png";
+import { COPY } from "../lib/content";
+import { SITE, todo, whatsappUrl } from "../lib/site";
+
+const link = "inline-flex min-h-11 items-center underline underline-offset-4 hover:decoration-2";
+const heading = "border-t border-hairline pt-5 font-sans text-label text-ink-muted";
+---
+
+<footer data-ground="chocolate" class="deferred bg-ground text-ink">
+  <div class="shell pt-(--section) pb-10">
+    <Image
+      src={monoLogo}
+      alt={SITE.name}
+      width={544}
+      loading="lazy"
+      class="h-auto w-[min(60vw,17rem)]"
+    />
+    <div class="mt-14 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+      <div>
+        <h3 class={heading}>{COPY.footer.write}</h3>
+        <a
+          href={whatsappUrl(COPY.final.message)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class:list={["mt-2", link]}
+        >
+          WhatsApp {SITE.whatsapp.display}
+          <span class="sr-only">&nbsp;{COPY.newTab}</span>
+        </a>
+      </div>
+      <div>
+        <h3 class={heading}>{COPY.footer.follow}</h3>
+        <a
+          href={SITE.instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class:list={["mt-2", link]}
+        >
+          Instagram @{SITE.instagram.handle}
+          <span class="sr-only">&nbsp;{COPY.newTab}</span>
+        </a>
+      </div>
+      <div>
+        <h3 class={heading}>{COPY.footer.where}</h3>
+        <p class="mt-2 flex min-h-11 flex-col justify-center">
+          <span>
+            {SITE.location.city}, {SITE.location.country}
+          </span>
+          <span class="text-ink-muted">{SITE.location.address ?? todo("Dirección")}</span>
+        </p>
+      </div>
+      <div>
+        <h3 class={heading}>{COPY.footer.hours}</h3>
+        <p class="mt-2 flex min-h-11 items-center">{SITE.hours ?? todo("Horarios de atención")}</p>
+      </div>
+    </div>
+    <p class="mt-16 text-label font-normal text-ink-muted">
+      © {new Date().getFullYear()}
+      {SITE.name}. {COPY.footer.rights}
+    </p>
+  </div>
+</footer>

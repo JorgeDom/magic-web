@@ -1,0 +1,11 @@
+node_modules/
+out/
+.astro/
+.wrangler/
+.shots/
+.lighthouse/
+.dev.vars
+.env
+.env.local
+.env.*.local
+*.log

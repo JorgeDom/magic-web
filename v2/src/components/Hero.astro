@@ -1,0 +1,250 @@
+---
+// Full-viewport opening: the logo sequence top left, the claim bottom left, and the giant gold
+// star cropped by the right edge. The claim is plain text in the first paint (it is the LCP
+// element), so it has no entrance animation; the logo sequence is the section's one moment.
+import { Image } from "astro:assets";
+import a from "../assets/logo/a.webp";
+import descriptor from "../assets/logo/descriptor.webp";
+import gic from "../assets/logo/gic.webp";
+import m from "../assets/logo/m.webp";
+import star from "../assets/logo/star.webp";
+import { CLAIMS, COPY } from "../lib/content";
+import { SITE } from "../lib/site";
+import Button from "./Button.astro";
+import Star from "./Star.astro";
+
+// The approved lockup, split into the regions the sequence reveals (see README: logo layers).
+const layers = { m, a, star, gic, descriptor };
+// Where the star sits in the lockup, and where "gic!" begins, as fractions of its canvas.
+const geometry = `--logo-ratio:${m.width}/${m.height};--star-x:36.33%;--star-y:22.32%;--gic-left:60.74%`;
+---
+
+<section id="inicio" class="relative isolate overflow-clip bg-ground text-ink">
+  <div
+    data-hero-star
+    aria-hidden="true"
+    class="hero-star pointer-events-none absolute top-[21svh] right-0 -z-10 aspect-[85/100] h-[58svh] translate-x-[52%] lg:top-[2svh] lg:h-[96svh] lg:translate-x-[18%]"
+  >
+    <Star class="h-full" />
+  </div>
+
+  <div class="shell flex min-h-svh flex-col justify-between gap-8 pt-[calc(var(--nav-height)+clamp(20px,3.5svh,48px))] pb-[clamp(28px,5svh,56px)]">
+    <div class="w-[min(62vw,26rem)]">
+      <div data-logo role="img" aria-label={SITE.name} class="logo play" style={geometry}>
+        {Object.entries(layers).map(([name, source]) => (
+          <Image
+            src={source}
+            alt=""
+            widths={[480, 640, source.width]}
+            sizes="(min-width: 42rem) 26rem, 62vw"
+            loading="eager"
+            draggable="false"
+            class={name}
+          />
+        ))}
+      </div>
+      <button
+        type="button"
+        data-sound
+        aria-pressed="false"
+        class="group mt-5 inline-flex min-h-11 items-center gap-2 rounded-pill border border-hairline px-4 font-sans text-label text-ink-muted transition-colors duration-(--duration-micro) hover:text-ink lg:mt-6"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z"></path>
+          <path class="group-aria-pressed:hidden" d="M16 9.5l5 5m0-5l-5 5"></path>
+          <path
+            class="hidden group-aria-pressed:block"
+            d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"
+          ></path>
+        </svg>
+        {COPY.hero.sound}
+      </button>
+    </div>
+
+    <div>
+      <h1 lang="en" translate="no" class="font-display text-claim uppercase">
+        {CLAIMS.hero}
+      </h1>
+      <p class="mt-5 max-w-measure text-lead text-ink-muted lg:mt-7">{COPY.hero.line}</p>
+      <Button whatsapp={COPY.hero.message} class="mt-7 lg:mt-9">
+        {COPY.hero.cta}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * The 2-second logo sequence: M, then A, then the star's sparkle, then "gic!" completes, then
+   * the descriptor settles. It reveals regions of the approved lockup; no letter is moved on
+   * its own or redrawn. Pure CSS, so it plays before any JavaScript has loaded.
+   */
+  .logo {
+    position: relative;
+    aspect-ratio: var(--logo-ratio);
+  }
+
+  .logo :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .logo.play :global(.m) {
+      transform-origin: 18% 78%;
+      animation: logo-letter 450ms var(--ease-editorial) both;
+    }
+
+    .logo.play :global(.a) {
+      transform-origin: 48% 78%;
+      animation: logo-letter 450ms var(--ease-editorial) 350ms both;
+    }
+
+    .logo.play :global(.star) {
+      transform-origin: var(--star-x) var(--star-y);
+      animation: logo-sparkle 380ms cubic-bezier(0.3, 1.4, 0.5, 1) 800ms both;
+    }
+
+    .logo.play :global(.gic) {
+      animation: logo-complete 700ms var(--ease-editorial) 1100ms both;
+    }
+
+    .logo.play :global(.descriptor) {
+      animation: logo-settle 300ms ease-out 1700ms both;
+    }
+  }
+
+  @keyframes logo-letter {
+    from {
+      opacity: 0;
+      transform: translateY(7%) scale(0.96);
+    }
+  }
+
+  /* One beat: a small overshoot and a few degrees of turn. No burst, no particles. */
+  @keyframes logo-sparkle {
+    0% {
+      opacity: 0;
+      transform: scale(0.6) rotate(-12deg);
+    }
+    55% {
+      opacity: 1;
+      transform: scale(1.08) rotate(3deg);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes logo-complete {
+    from {
+      opacity: 0;
+      clip-path: inset(0 calc(100% - var(--gic-left)) 0 0);
+    }
+    12% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes logo-settle {
+    from {
+      opacity: 0;
+      transform: translateY(5%);
+    }
+  }
+
+  /* The WebGL star fades in over the static one once its first frame is drawn. */
+  .hero-star :global(svg),
+  .hero-star :global(canvas) {
+    transition: opacity 700ms ease-out;
+  }
+
+  .hero-star :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  .hero-star:global(.is-3d) :global(canvas) {
+    opacity: 1;
+  }
+
+  .hero-star:global(.is-3d) :global(svg) {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  import { canRenderWebGL, reducedMotion, whenIdle } from "../lib/client";
+
+  // The static star is the designed default and the first thing painted. On capable desktops
+  // the WebGL star is fetched once the page is idle and cross-fades in over it.
+  const starHost = document.querySelector<HTMLElement>("[data-hero-star]");
+  if (starHost && canRenderWebGL()) {
+    whenIdle(async () => {
+      const { mountStar } = await import("../lib/star3d");
+      mountStar(starHost, () => starHost.classList.add("is-3d"));
+    });
+  }
+
+  // Optional "ting" on the sparkle. Off until the visitor turns it on; turning it on replays
+  // the sequence once so the sound lands on the sparkle. Audio never starts without that
+  // click. The tone is synthesised (nothing is downloaded); no approved brand sound exists yet.
+  const SPARKLE_PEAK = 1.0; // seconds from the start of the sequence
+  const logo = document.querySelector<HTMLElement>("[data-logo]");
+  const toggle = document.querySelector<HTMLButtonElement>("[data-sound]");
+  let audio: AudioContext | undefined;
+
+  function ting(delay: number) {
+    if (!audio) return;
+    const start = audio.currentTime + delay;
+    for (const [frequency, level] of [
+      [2093, 0.11],
+      [3136, 0.05],
+      [4186, 0.025],
+    ] as const) {
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(level, start + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.9);
+      oscillator.connect(gain).connect(audio.destination);
+      oscillator.start(start);
+      oscillator.stop(start + 0.95);
+    }
+  }
+
+  toggle?.addEventListener("click", () => {
+    const on = toggle.getAttribute("aria-pressed") !== "true";
+    toggle.setAttribute("aria-pressed", String(on));
+    if (!on || !logo || typeof AudioContext === "undefined") return;
+    audio ??= new AudioContext();
+    void audio.resume();
+    // Restart the CSS sequence.
+    logo.classList.remove("play");
+    void logo.offsetWidth;
+    logo.classList.add("play");
+    ting(reducedMotion() ? 0 : SPARKLE_PEAK);
+  });
+</script>
