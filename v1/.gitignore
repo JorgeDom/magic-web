@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# cloudflare
+.wrangler/
+.dev.vars
+
+# env
+.env
+.env.local
+.env.*.local
+
+# generated at build time (see scripts/)
+public/media/
+
+# local tooling
+.shots/
+.lighthouse/
+*.log
+.DS_Store
+Thumbs.db
