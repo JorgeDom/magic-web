@@ -12,6 +12,7 @@ import { CLAIMS, COPY } from "../lib/content";
 import { SITE } from "../lib/site";
 import Button from "./Button.astro";
 import Star from "./Star.astro";
+import Wash from "./Wash.astro";
 
 // The approved lockup, split into the regions the sequence reveals (see README: logo layers).
 const layers = { m, a, star, gic, descriptor };
@@ -20,6 +21,7 @@ const geometry = `--logo-ratio:${m.width}/${m.height};--star-x:36.33%;--star-y:2
 ---
 
 <section id="inicio" class="relative isolate overflow-clip bg-ground text-ink">
+  <Wash set="hero" fade="bottom" />
   <div
     data-hero-star
     aria-hidden="true"

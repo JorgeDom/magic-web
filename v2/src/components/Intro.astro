@@ -1,17 +1,331 @@
 ---
-// One statement and a great deal of air.
+// The claim, acted out. "Little details." sits small among loose beads scattered across the
+// screen; as the visitor scrolls, the section holds still and the beads gather, turn gold and
+// fuse into the star, and "Big magic." arrives at full size. Scroll drives all of it, in both
+// directions.
+//
+// At rest (no JavaScript, or reduced motion) this is a plain section: the small line, the
+// star, the big line. The script below only switches on the pinned, scrubbed version.
 import { CLAIMS, COPY, sentences } from "../lib/content";
 import Star from "./Star.astro";
+import Wash from "./Wash.astro";
+
+const [little, big] = sentences(CLAIMS.intro);
 ---
 
-<section class="bg-ground text-ink">
-  <div class="shell flex min-h-[80svh] flex-col items-center justify-center py-(--section) text-center">
-    <Star class="h-9 lg:h-12" />
-    <h2 lang="en" translate="no" class="mt-8 text-headline lg:mt-10">
-      {sentences(CLAIMS.intro).map((sentence) => (
-        <span class="block">{sentence} </span>
-      ))}
-    </h2>
-    <p class="mt-6 max-w-[28rem] text-lead text-ink-muted">{COPY.intro.line}</p>
+<section data-intro class="intro relative isolate bg-ground text-ink">
+  <Wash set="intro" fade="both" />
+  <div data-intro-pin class="pin">
+    <canvas data-intro-canvas aria-hidden="true"></canvas>
+    <div class="shell flex flex-col items-center text-center">
+      <h2 lang="en" translate="no">
+        <span data-intro-little class="block text-title">
+          {little}{" "}
+        </span>
+        <span data-intro-slot aria-hidden="true" class="slot">
+          <Star class="h-full" />
+        </span>
+        <span class="big block text-claim">{big}</span>
+      </h2>
+      <p class="line mt-6 max-w-[28rem] text-lead text-ink-muted lg:mt-8">{COPY.intro.line}</p>
+    </div>
   </div>
 </section>
+
+<style>
+  .pin {
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    padding-block: var(--section);
+  }
+
+  .slot {
+    display: flex;
+    height: clamp(96px, 20svh, 200px);
+    margin-block: clamp(20px, 3.5svh, 40px);
+    justify-content: center;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Live: the section is a long track and the stage pins while the scene plays. */
+  .intro:global(.is-live) {
+    height: 240svh;
+  }
+
+  .intro:global(.is-live) .pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+    padding-block: var(--nav-height);
+  }
+
+  .intro:global(.is-live) canvas {
+    display: block;
+  }
+
+  /* The canvas draws the star; the slot keeps its place in the layout. */
+  .intro:global(.is-live) .slot {
+    height: clamp(132px, 30svh, 300px);
+    visibility: hidden;
+  }
+
+  .intro:global(.is-live) .big {
+    opacity: var(--big, 0);
+    scale: calc(0.9 + var(--big, 0) * 0.1);
+    translate: 0 calc((1 - var(--big, 0)) * 0.25em);
+  }
+
+  .intro:global(.is-live) .line {
+    opacity: var(--line, 0);
+    translate: 0 calc((1 - var(--line, 0)) * 16px);
+  }
+</style>
+
+<script>
+  import { reducedMotion } from "../lib/client";
+  import { STAR_PATH } from "../lib/star";
+
+  // The star's box in its own units (see lib/star.ts): 100 tall, centred on 0,0.
+  const STAR_HALF_WIDTH = 42.5;
+  const STAR_HALF_HEIGHT = 50;
+  const BEAD_COLOURS = ["lavender", "rosa", "peach", "blue", "sage"];
+
+  // Where the scene's beats fall along the scroll, 0 to 1.
+  const GATHER = { from: 0.06, span: 0.3, stagger: 0.3 }; // every bead is home by 0.66
+  const FUSE = { from: 0.62, span: 0.12 }; // beads turn gold
+  const STAR = { from: 0.68, span: 0.12 }; // the star takes their place
+  const BIG = { from: 0.76, span: 0.12 };
+  const LINE = { from: 0.86, span: 0.1 };
+
+  interface Bead {
+    /** Home, inside the star, in star units. */
+    tx: number;
+    ty: number;
+    /** Loose position, as a fraction of the stage. */
+    sx: number;
+    sy: number;
+    size: number;
+    colour: number;
+    delay: number;
+    spin: number;
+    depth: number;
+  }
+
+  const clamp = (value: number) => Math.max(0, Math.min(1, value));
+  const beat = (p: number, { from, span }: { from: number; span: number }) =>
+    clamp((p - from) / span);
+  const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  const easeOutBack = (t: number) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
+
+  /** A small seeded generator, so the beads lie in the same places on every visit. */
+  function seeded(seed: number) {
+    return () => {
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const section = document.querySelector<HTMLElement>("[data-intro]");
+  const pin = section?.querySelector<HTMLElement>("[data-intro-pin]");
+  const canvas = section?.querySelector<HTMLCanvasElement>("[data-intro-canvas]");
+  const slot = section?.querySelector<HTMLElement>("[data-intro-slot]");
+  const little = section?.querySelector<HTMLElement>("[data-intro-little]");
+  const context = canvas?.getContext("2d");
+
+  if (section && pin && canvas && slot && little && context && !reducedMotion()) {
+    const star = new Path2D(STAR_PATH);
+    const random = seeded(7);
+
+    // Brand colours come from the stylesheet's tokens; the canvas normalises them to #rrggbb.
+    const token = (name: string): [number, number, number] => {
+      context.fillStyle = getComputedStyle(section).getPropertyValue(`--color-${name}`).trim();
+      const hex = context.fillStyle;
+      return [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16)) as [number, number, number];
+    };
+    const colours = BEAD_COLOURS.map(token);
+    const gold = token("gold");
+
+    // Homes: points spread evenly inside the star (best of a few candidates each time).
+    const count = matchMedia("(min-width: 64rem)").matches ? 170 : 96;
+    const homes: [number, number][] = [];
+    let tries = 0;
+    let hits = 0;
+    const inside = (): [number, number] => {
+      for (;;) {
+        tries++;
+        const x = (random() * 2 - 1) * STAR_HALF_WIDTH;
+        const y = (random() * 2 - 1) * STAR_HALF_HEIGHT;
+        if (context.isPointInPath(star, x, y)) {
+          hits++;
+          return [x, y];
+        }
+      }
+    };
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    while (homes.length < count) {
+      let best = inside();
+      let bestGap = -1;
+      for (let candidate = 0; candidate < 10; candidate++) {
+        const point = candidate ? inside() : best;
+        let gap = Infinity;
+        for (const [x, y] of homes) gap = Math.min(gap, (x - point[0]) ** 2 + (y - point[1]) ** 2);
+        if (gap > bestGap) [best, bestGap] = [point, gap];
+      }
+      homes.push(best);
+    }
+    // Radius, in star units, at which this many discs just cover the star.
+    const starArea = 4 * STAR_HALF_WIDTH * STAR_HALF_HEIGHT * (hits / tries);
+    const homeRadius = Math.sqrt(starArea / count / Math.PI) * 1.25;
+
+    const beads: Bead[] = homes.map(([tx, ty]) => ({
+      tx,
+      ty,
+      sx: -0.04 + random() * 1.08,
+      sy: -0.04 + random() * 1.08,
+      size: 0.45 + random() ** 2 * 0.85,
+      colour: Math.floor(random() * colours.length),
+      delay: random(),
+      spin: (random() < 0.5 ? -1 : 1) * (0.5 + random() * 0.9),
+      depth: random(),
+    }));
+
+    // Stage geometry, re-measured whenever the layout changes.
+    let width = 0;
+    let height = 0;
+    let centreX = 0;
+    let centreY = 0;
+    let unit = 1; // px per star unit
+    let keepOut = { left: 0, right: 0, top: 0, bottom: 0 };
+
+    function measure() {
+      const stage = pin!.getBoundingClientRect();
+      const ratio = Math.min(devicePixelRatio || 1, 2);
+      width = stage.width;
+      height = stage.height;
+      canvas!.width = Math.round(width * ratio);
+      canvas!.height = Math.round(height * ratio);
+      context!.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const home = slot!.getBoundingClientRect();
+      centreX = home.left - stage.left + home.width / 2;
+      centreY = home.top - stage.top + home.height / 2;
+      unit = home.height / (STAR_HALF_HEIGHT * 2);
+      // Loose beads stay off the small line so it can be read.
+      const text = little!.getBoundingClientRect();
+      keepOut = {
+        left: text.left - stage.left - 20,
+        right: text.right - stage.left + 20,
+        top: text.top - stage.top - 14,
+        bottom: text.bottom - stage.top + 14,
+      };
+      drawn = -1;
+    }
+
+    /** `p` is the scene, 0 to 1; `approach` is the section rising into view before it pins. */
+    function render(p: number, approach: number) {
+      context!.clearRect(0, 0, width, height);
+      const loose = Math.max(9, Math.min(15, width * 0.011));
+      const fuse = beat(p, FUSE);
+      const landed = beat(p, STAR);
+      const hole = 0.17;
+
+      if (landed < 1) {
+        context!.globalAlpha = 1 - landed;
+        for (const bead of beads) {
+          const e = easeInOut(clamp((p - GATHER.from - bead.delay * GATHER.stagger) / GATHER.span));
+          const x0 = bead.sx * width;
+          let y0 = bead.sy * height;
+          const radius0 = loose * bead.size;
+          if (
+            x0 > keepOut.left - radius0 &&
+            x0 < keepOut.right + radius0 &&
+            y0 > keepOut.top - radius0 &&
+            y0 < keepOut.bottom + radius0
+          ) {
+            y0 = bead.sy < 0.5 ? keepOut.top - radius0 : keepOut.bottom + radius0;
+          }
+          // Loose beads drift at their own depth as the page moves.
+          y0 += (bead.depth - 0.5) * (220 * (1 - approach) - 140 * p);
+          const x1 = centreX + bead.tx * unit;
+          const y1 = centreY + bead.ty * unit;
+          // Each bead spirals home instead of flying straight.
+          const turn = (1 - e) * bead.spin;
+          const cos = Math.cos(turn);
+          const sin = Math.sin(turn);
+          const dx = (x0 - x1) * (1 - e);
+          const dy = (y0 - y1) * (1 - e);
+          const x = x1 + dx * cos - dy * sin;
+          const y = y1 + dx * sin + dy * cos;
+          const radius = radius0 + (homeRadius * unit - radius0) * e;
+
+          const from = colours[bead.colour]!;
+          const mix = (channel: 0 | 1 | 2) =>
+            Math.round(from[channel] + (gold[channel] - from[channel]) * fuse);
+          context!.fillStyle = `rgb(${mix(0)} ${mix(1)} ${mix(2)})`;
+          context!.beginPath();
+          context!.arc(x, y, radius, 0, Math.PI * 2);
+          // The threading hole closes as the bead packs in.
+          if (e < 1) context!.arc(x, y, radius * hole * (1 - e), 0, Math.PI * 2, true);
+          context!.fill("evenodd");
+        }
+      }
+
+      if (landed > 0) {
+        const scale = unit * (0.9 + 0.1 * easeOutBack(landed));
+        context!.save();
+        context!.globalAlpha = Math.min(1, landed * 1.6);
+        context!.translate(centreX, centreY);
+        context!.rotate((1 - landed) * -0.16);
+        context!.scale(scale, scale);
+        context!.fillStyle = `rgb(${gold.join(" ")})`;
+        context!.fill(star);
+        context!.restore();
+      }
+      context!.globalAlpha = 1;
+
+      section!.style.setProperty("--big", beat(p, BIG).toFixed(3));
+      section!.style.setProperty("--line", beat(p, LINE).toFixed(3));
+    }
+
+    // Scroll is the timeline. The loop runs only while the section is on screen, eases toward
+    // the scroll position, and draws only when something has changed.
+    let shown = 0;
+    let drawn = -1;
+    let frame = 0;
+
+    function tick() {
+      const box = section!.getBoundingClientRect();
+      const target = clamp(-box.top / Math.max(1, box.height - height));
+      const approach = clamp(1 - box.top / innerHeight);
+      shown += (target - shown) * 0.16;
+      if (Math.abs(target - shown) < 0.0004) shown = target;
+      const key = shown + approach * 10;
+      if (key !== drawn) {
+        render(shown, approach);
+        drawn = key;
+      }
+      frame = requestAnimationFrame(tick);
+    }
+
+    section.classList.add("is-live");
+    measure();
+    new ResizeObserver(measure).observe(pin);
+    void document.fonts.ready.then(measure);
+    new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(frame);
+      if (entry?.isIntersecting) frame = requestAnimationFrame(tick);
+    }).observe(section);
+  }
+</script>

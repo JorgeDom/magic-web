@@ -2,6 +2,12 @@
 // The close. The only place on the page that uses Fraunces: one phrase, once. Centred, like
 // the intro, so the page ends the way it began to breathe.
 //
+// Its moment is the finished piece. As the section arrives, a string of beads drops in across
+// the top and settles with the gold star hanging over the phrase, which rises into place
+// beneath it. The string is real rope physics: it sways with the scroll, gives way to the
+// pointer, and comes to rest by itself within a few seconds. At rest (no JavaScript, or
+// reduced motion) the section is the star, the phrase and the buttons, already in place.
+//
 // The contact form below the buttons is optional and off by default. There is no backend: it
 // posts JSON to a third-party form service (PUBLIC_FORM_ENDPOINT). WhatsApp stays the primary
 // way to book.
@@ -9,14 +15,24 @@ import { CLAIMS, COPY, sentences } from "../lib/content";
 import { FORM_ENDPOINT, SITE } from "../lib/site";
 import Button from "./Button.astro";
 import Star from "./Star.astro";
+import Wash from "./Wash.astro";
 
 const field =
   "mt-2 w-full rounded-md border border-ink-muted bg-transparent px-4 py-3 text-body text-ink focus-visible:border-ink";
 ---
 
-<section id="reservar" aria-labelledby="reservar-titulo" class="deferred bg-ground text-ink">
+<section
+  id="reservar"
+  aria-labelledby="reservar-titulo"
+  data-closing
+  class="closing relative isolate bg-ground text-ink"
+>
+  <Wash set="final" fade="top" />
+  <canvas data-necklace aria-hidden="true"></canvas>
   <div class="shell flex min-h-[86svh] flex-col items-center justify-center py-(--section) text-center">
-    <Star class="h-9 lg:h-12" />
+    <span data-necklace-slot aria-hidden="true" class="slot">
+      <Star class="h-full" />
+    </span>
     <h2
       id="reservar-titulo"
       lang="en"
@@ -24,11 +40,13 @@ const field =
       class="mt-8 font-closing text-closing italic lg:mt-10"
     >
       {sentences(CLAIMS.closing).map((sentence) => (
-        <span class="block">{sentence} </span>
+        <span class="phrase">
+          <span>{sentence} </span>
+        </span>
       ))}
     </h2>
-    <p class="mt-6 max-w-[28rem] text-lead text-ink-muted">{COPY.final.line}</p>
-    <div class="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+    <p class="rise mt-6 max-w-[28rem] text-lead text-ink-muted">{COPY.final.line}</p>
+    <div class="rise mt-9 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
       <Button whatsapp={COPY.final.message}>{COPY.final.cta}</Button>
       <Button href={SITE.instagram.url} variant="quiet">
         <svg
@@ -90,6 +108,409 @@ const field =
     )}
   </div>
 </section>
+
+<style>
+  .slot {
+    display: flex;
+    height: 36px;
+    justify-content: center;
+  }
+
+  @media (width >= 64rem) {
+    .slot {
+      height: 48px;
+    }
+  }
+
+  .phrase,
+  .phrase > span {
+    display: block;
+  }
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -10;
+    display: none;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  /* Live: the canvas hangs the star in the slot, and the copy waits for it. */
+  .closing:global(.is-live) canvas {
+    display: block;
+  }
+
+  .closing:global(.is-live) .slot {
+    height: clamp(64px, 8vw, 104px);
+    visibility: hidden;
+  }
+
+  /* Room for the italic's overhang and descenders inside the clip. */
+  .closing:global(.is-live) .phrase {
+    margin: -0.1em -0.2em -0.18em;
+    padding: 0.1em 0.2em 0.18em;
+    overflow: clip;
+  }
+
+  .closing:global(.is-live) .phrase > span {
+    translate: 0 115%;
+    transition: translate 1000ms var(--ease-editorial) 350ms;
+  }
+
+  .closing:global(.is-live) .phrase + .phrase > span {
+    transition-delay: 490ms;
+  }
+
+  .closing:global(.is-live) .rise {
+    opacity: 0;
+    translate: 0 16px;
+    transition:
+      opacity 700ms ease-out 900ms,
+      translate 900ms var(--ease-editorial) 900ms;
+  }
+
+  .closing:global(.is-in) .phrase > span,
+  .closing:global(.is-in) .rise {
+    opacity: 1;
+    translate: 0 0;
+  }
+</style>
+
+<script>
+  import { reducedMotion } from "../lib/client";
+  import { STAR_PATH } from "../lib/star";
+
+  const BEAD_COLOURS = ["lavender", "rosa", "peach", "blue", "sage"];
+  const GRAVITY = 0.42; // px per step, per step
+  const DAMPING = 0.975;
+  const STIFFNESS = 6; // length-restoring sweeps (there and back) per step
+  const LOWERING_STEPS = 54; // the entrance: 0.9s to lower the string into place
+  const STEP_MS = 1000 / 60;
+  const REACH = 84; // how close the pointer gets before beads give way, px
+
+  interface Node {
+    x: number;
+    y: number;
+    px: number;
+    py: number;
+  }
+
+  const section = document.querySelector<HTMLElement>("[data-closing]");
+  const canvas = section?.querySelector<HTMLCanvasElement>("[data-necklace]");
+  const slot = section?.querySelector<HTMLElement>("[data-necklace-slot]");
+  const context = canvas?.getContext("2d");
+
+  if (section && canvas && slot && context && !reducedMotion()) {
+    const star = new Path2D(STAR_PATH);
+    const token = (name: string) =>
+      getComputedStyle(section).getPropertyValue(`--color-${name}`).trim();
+    const colours = BEAD_COLOURS.map(token);
+    const gold = token("gold");
+    const ink = token("chocolate");
+
+    let width = 0;
+    let height = 0;
+    let rise = 0; // how far the canvas reaches above the section
+    let nodes: Node[] = [];
+    let pendant: Node = { x: 0, y: 0, px: 0, py: 0 };
+    let segment = 0; // rest length between neighbouring nodes
+    let link = 0; // rest length from the middle node to the star's centre
+    let starHeight = 0;
+    let beadMax = 0;
+    let built = false;
+    let fade = 0;
+    let anchorY = 0;
+    let lowerFrom = 0; // how far above its place the string starts its entrance
+    let lowered = LOWERING_STEPS;
+
+    const middle = () => nodes[(nodes.length - 1) / 2]!;
+
+    function constrain(a: Node, b: Node, rest: number, aFixed: boolean, bFixed: boolean) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      const slack = (distance - rest) / distance;
+      const shareA = aFixed ? 0 : bFixed ? 1 : 0.5;
+      const shareB = bFixed ? 0 : aFixed ? 1 : 0.5;
+      a.x += dx * slack * shareA;
+      a.y += dy * slack * shareA;
+      b.x -= dx * slack * shareB;
+      b.y -= dy * slack * shareB;
+    }
+
+    /** One step of Verlet integration; the two end nodes are pinned. Returns total movement. */
+    function step(damping: number): number {
+      let movement = 0;
+      const last = nodes.length - 1;
+      const move = (node: Node) => {
+        const vx = (node.x - node.px) * damping;
+        const vy = (node.y - node.py) * damping;
+        node.px = node.x;
+        node.py = node.y;
+        node.x += vx;
+        node.y += vy + GRAVITY;
+        movement += Math.abs(vx) + Math.abs(vy);
+      };
+      for (let index = 1; index < last; index++) move(nodes[index]!);
+      move(pendant);
+      if (lowered < LOWERING_STEPS) {
+        lowered++;
+        const lift = lowerFrom * (1 - lowered / LOWERING_STEPS) ** 3;
+        nodes[0]!.y = nodes[last]!.y = anchorY - lift;
+      }
+      // Lengths are restored by reaching along the string from one pinned end, then back from
+      // the other (as in FABRIK). Averaging neighbours instead leaves a long string stretchy.
+      for (let pass = 0; pass < STIFFNESS; pass++) {
+        for (let index = 0; index < last - 1; index++) {
+          constrain(nodes[index]!, nodes[index + 1]!, segment, true, false);
+        }
+        for (let index = last; index > 1; index--) {
+          constrain(nodes[index - 1]!, nodes[index]!, segment, false, true);
+        }
+      }
+      // The star follows the string; it is too light to pull it out of shape.
+      constrain(middle(), pendant, link, true, false);
+      return movement;
+    }
+
+    /** Lays a string of the given length between the anchors and lets it settle. */
+    function hang(length: number, count: number, left: number, right: number, top: number) {
+      segment = length / (count - 1);
+      const sag = Math.sqrt(Math.max(1, length * length - (right - left) ** 2)) / 2;
+      nodes = Array.from({ length: count }, (_, index) => {
+        const t = index / (count - 1);
+        const x = left + (right - left) * t;
+        const y = top + sag * (1 - (2 * t - 1) ** 2);
+        return { x, y, px: x, py: y };
+      });
+      const hub = middle();
+      pendant = { x: hub.x, y: hub.y + link, px: hub.x, py: hub.y + link };
+      for (let settle = 0; settle < 3000; settle++) {
+        if (step(0.9) < count * 0.0002 && settle > 120) break;
+      }
+      return pendant.y;
+    }
+
+    /**
+     * Builds the string so that, at rest, the star hangs exactly where the page's own star
+     * sits. The length that does this is found by trying lengths (secant method).
+     */
+    function build() {
+      const box = section!.getBoundingClientRect();
+      const home = slot!.getBoundingClientRect();
+      const ratio = Math.min(devicePixelRatio || 1, 2);
+      width = box.width;
+      starHeight = home.height;
+      const targetX = home.left - box.left + home.width / 2;
+      const targetY = home.top - box.top + home.height / 2;
+      beadMax = Math.max(7, Math.min(11, width * 0.0075));
+      link = starHeight / 2 + beadMax + 6;
+      const left = -0.03 * width;
+      const right = 1.03 * width;
+      const top = Math.max(14, (targetY - link) * 0.1);
+      const span = right - left;
+      const sag = Math.max(24, targetY - link - top);
+
+      // The canvas reaches above the section, so the string can fall in from over its edge.
+      rise = Math.round(sag + beadMax);
+      height = Math.min(box.height, targetY + starHeight / 2 + 160);
+      canvas!.style.top = `${-rise}px`;
+      canvas!.style.height = `${height + rise}px`;
+      canvas!.width = Math.round(width * ratio);
+      canvas!.height = Math.round((height + rise) * ratio);
+      context!.setTransform(ratio, 0, 0, ratio, 0, rise * ratio);
+
+      // First guess: the arc length of a parabola with this sag.
+      let length = span * (1 + (8 / 3) * (sag / span) ** 2);
+      const count = 2 * Math.round(length / (beadMax * 2 + 2) / 2) + 1;
+      let previousLength = length;
+      let previousY = hang(length, count, left, right, top);
+      length += (targetY - previousY) * 0.9;
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const y = hang(length, count, left, right, top);
+        if (Math.abs(y - targetY) < 0.4 || y === previousY) break;
+        const next = length + ((targetY - y) * (length - previousLength)) / (y - previousY);
+        previousLength = length;
+        previousY = y;
+        length = Math.max(span * 1.001, next);
+      }
+      // Centre the whole string on the slot (the slot is centred, but be exact).
+      const shift = targetX - pendant.x;
+      for (const node of [...nodes, pendant]) {
+        node.x += shift;
+        node.px += shift;
+      }
+      anchorY = top;
+      built = true;
+      return targetY + starHeight;
+    }
+
+    /**
+     * The entrance: the settled string starts above the section, out of sight, and its two
+     * ends are lowered into place. It arrives with its own momentum and swings to rest.
+     */
+    function drop(depth: number) {
+      lowerFrom = depth + rise;
+      lowered = 0;
+      for (const node of [...nodes, pendant]) {
+        node.y -= lowerFrom;
+        node.py = node.y;
+        node.px = node.x;
+      }
+      fade = 0;
+    }
+
+    function draw() {
+      context!.clearRect(0, -rise, width, height + rise);
+      context!.globalAlpha = fade;
+      const last = nodes.length - 1;
+      const hub = middle();
+
+      // The string, as a smooth curve through the nodes.
+      context!.beginPath();
+      context!.moveTo(nodes[0]!.x, nodes[0]!.y);
+      for (let index = 1; index < last; index++) {
+        const node = nodes[index]!;
+        const next = nodes[index + 1]!;
+        context!.quadraticCurveTo(node.x, node.y, (node.x + next.x) / 2, (node.y + next.y) / 2);
+      }
+      context!.lineTo(nodes[last]!.x, nodes[last]!.y);
+      context!.moveTo(hub.x, hub.y);
+      context!.lineTo(pendant.x, pendant.y);
+      context!.strokeStyle = ink;
+      context!.lineWidth = 1.5;
+      context!.stroke();
+
+      // Beads, graduated: largest beside the star, smallest at the ends.
+      const half = last / 2;
+      for (let index = 1; index < last; index++) {
+        const fromCentre = Math.abs(index - half);
+        if (fromCentre === 0) continue;
+        const node = nodes[index]!;
+        const radius = beadMax - (beadMax - 3.5) * (fromCentre / half) ** 0.8;
+        context!.fillStyle = colours[(fromCentre - 1) % colours.length]!;
+        context!.beginPath();
+        context!.arc(node.x, node.y, radius, 0, Math.PI * 2);
+        context!.fill();
+      }
+
+      // The star hangs from the middle and turns with the swing.
+      const angle = Math.atan2(pendant.y - hub.y, pendant.x - hub.x) - Math.PI / 2;
+      const unit = starHeight / 100;
+      context!.save();
+      context!.translate(pendant.x, pendant.y);
+      context!.rotate(angle);
+      context!.scale(unit, unit);
+      context!.fillStyle = gold;
+      context!.fill(star);
+      context!.restore();
+      context!.globalAlpha = 1;
+    }
+
+    // The loop runs only while the string is moving: it stops once the string has been still
+    // for a moment, and starts again when the page scrolls or the pointer comes near.
+    let frame = 0;
+    let before = 0;
+    let owed = 0;
+    let still = 0;
+    let visible = false;
+
+    function tick(now: number) {
+      owed = Math.min(owed + (now - before), STEP_MS * 3);
+      before = now;
+      let movement = 1;
+      while (owed >= STEP_MS) {
+        movement = step(DAMPING);
+        owed -= STEP_MS;
+      }
+      fade = Math.min(1, fade + 0.06);
+      draw();
+      still = movement < nodes.length * 0.012 && fade === 1 ? still + 1 : 0;
+      frame = still > 45 ? 0 : requestAnimationFrame(tick);
+    }
+
+    function wake() {
+      if (!built || !visible || frame) return;
+      still = 0;
+      before = performance.now();
+      frame = requestAnimationFrame(tick);
+    }
+
+    // Arrival: build, drop the string, and let the copy rise.
+    const arrival = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        arrival.disconnect();
+        visible = true;
+        drop(build());
+        section.classList.add("is-in");
+        wake();
+      },
+      { threshold: 0.25 },
+    );
+    section.classList.add("is-live");
+    arrival.observe(section);
+
+    new IntersectionObserver(([entry]) => {
+      if (!built) return;
+      visible = Boolean(entry?.isIntersecting);
+      if (visible) wake();
+    }).observe(section);
+
+    // The page moving sets the string swaying, as if it were carried.
+    let lastScroll = scrollY;
+    addEventListener(
+      "scroll",
+      () => {
+        const delta = Math.max(-40, Math.min(40, scrollY - lastScroll));
+        lastScroll = scrollY;
+        if (!built || !visible) return;
+        for (const node of [...nodes.slice(1, -1), pendant]) node.py -= delta * 0.05;
+        wake();
+      },
+      { passive: true },
+    );
+
+    // The pointer pushes beads aside.
+    addEventListener(
+      "pointermove",
+      (event) => {
+        if (!built || !visible) return;
+        const box = canvas.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const y = event.clientY - box.top - rise;
+        if (y > height + REACH) return;
+        let touched = false;
+        for (const node of [...nodes.slice(1, -1), pendant]) {
+          const dx = node.x - x;
+          const dy = node.y - y;
+          const distance = Math.hypot(dx, dy);
+          if (distance >= REACH || distance === 0) continue;
+          const push = ((REACH - distance) / REACH) * 2.2;
+          node.x += (dx / distance) * push;
+          node.y += (dy / distance) * push;
+          touched = true;
+        }
+        if (touched) wake();
+      },
+      { passive: true },
+    );
+
+    // A new width means a new string; it is rebuilt at rest, without the entrance.
+    let resizing = 0;
+    new ResizeObserver(() => {
+      if (!built || Math.abs(section.getBoundingClientRect().width - width) < 1) return;
+      clearTimeout(resizing);
+      resizing = window.setTimeout(() => {
+        build();
+        fade = 1;
+        draw();
+      }, 150);
+    }).observe(section);
+  }
+</script>
 
 <script>
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");

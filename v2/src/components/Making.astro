@@ -4,6 +4,7 @@
 // rate so the page has depth without anything flying in.
 import { COPY } from "../lib/content";
 import Media from "./Media.astro";
+import Wash from "./Wash.astro";
 
 const LAYOUT = [
   {
@@ -33,7 +34,11 @@ const LAYOUT = [
 ];
 ---
 
-<section aria-labelledby="asi-se-hace-titulo" class="deferred overflow-x-clip bg-ground text-ink">
+<section
+  aria-labelledby="asi-se-hace-titulo"
+  class="deferred relative isolate overflow-x-clip bg-ground text-ink"
+>
+  <Wash set="making" fade="both" />
   <div class="shell py-(--section)">
     <h2 id="asi-se-hace-titulo" class="text-headline">
       {COPY.making.heading}

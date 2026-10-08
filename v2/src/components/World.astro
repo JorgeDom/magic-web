@@ -6,6 +6,7 @@
 import { worldAnchor, type World, type WorldId } from "../lib/content";
 import Button from "./Button.astro";
 import OpeningCard from "./OpeningCard.astro";
+import Wash from "./Wash.astro";
 
 interface Props {
   world: World;
@@ -19,6 +20,7 @@ const anchor = worldAnchor(world.id);
 
 <section data-world={world.id} aria-labelledby={`${anchor}-titulo`} class="relative">
   <OpeningCard from={previous} anchor={anchor}>
+    <Wash set={`${world.id}-card`} fade="both" />
     <div class="shell flex flex-col justify-end pt-(--section) pb-[clamp(112px,18svh,176px)]">
       <h2 id={`${anchor}-titulo`} lang="en" translate="no" tabindex="-1" class="text-display">
         {world.name}
@@ -29,7 +31,8 @@ const anchor = worldAnchor(world.id);
 
   {/* The deep bottom padding lets the call to action clear the middle of the screen before
        the next card's star opens there. */}
-  <div class="overflow-x-clip bg-ground text-ink">
+  <div class="relative isolate overflow-x-clip bg-ground text-ink">
+    <Wash set={world.id} fade="both" />
     <div class="@container shell pb-[max(var(--section),36svh)]">
       <div class="grid items-center gap-y-12 @4xl:grid-cols-12 @4xl:gap-x-8">
         <div class="order-2 @4xl:order-1 @4xl:col-span-5">

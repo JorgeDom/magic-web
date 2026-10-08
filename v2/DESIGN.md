@@ -215,11 +215,12 @@ The brand's formula is the test for every decision: **expressive colour + discip
 **Key characteristics**
 
 - Cream is the page. Colour is a room you enter, never a sprinkle.
-- At most three colours in view at once, counting ground and ink. Kids is the only exception.
+- No ground is a flat fill. Each carries a wash: soft pools of brand colour in its empty space (see Washes).
+- At most three solid colours in view at once, counting ground and ink. Kids and the bead scenes (the intro, the thread in How it works, the closing string) are the only exceptions. Washes are atmosphere and are not counted.
 - Product photos and video keep their true colours. Nothing is tinted, duotoned or overlaid.
 - Gold belongs to the star. Nothing else on the page is gold.
 - Type is large, tight and left-aligned. Hierarchy comes from size and weight, never from colour or decoration.
-- Depth comes from layering and scroll, not from shadows or gradients.
+- Depth comes from layering and scroll, not from shadows. The washes are the only gradient.
 - One orchestrated moment per section. If two things move at once, one of them is cut.
 
 **Page rhythm (ground colours)**
@@ -256,7 +257,7 @@ Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown U
 - **Hairline** (`{colors.hairline}`, chocolate at 14%): the only divider.
 - On chocolate: `{colors.on-dark}`, `{colors.on-dark-muted}`, `{colors.hairline-on-dark}`.
 
-No hex value outside this list may be introduced. Opacity steps of chocolate and cream are the only derived colours.
+No hex value outside this list may be introduced. Opacity steps of chocolate and cream are the only derived colours, apart from the washes below.
 
 ### Contrast (measured, WCAG 2.1)
 
@@ -281,9 +282,26 @@ No hex value outside this list may be introduced. Opacity steps of chocolate and
 
 Consequences: body copy only ever sits on cream, blush, mint, arena, peach or chocolate. Lavender, rosa, sage and blue are object and shape colours, not reading surfaces. Buttons are chocolate with cream text (or the inverse on chocolate), never a pastel fill with light text.
 
-### Gradients
+### Washes
 
-None. No gradient washes, no glows, no glass.
+The one gradient on the site. A wash is a set of soft pools of brand colour lying on a section's ground, the way light through coloured beads lies on a table. It is what keeps a ground from reading as a flat fill, and it comes from the coming-soon page that preceded this site.
+
+- **Atmosphere only.** A pool carries no meaning and frames nothing. Every section reads as designed with its wash removed.
+- **Brand colours at partial opacity**, each fading to nothing. No new hex values, no blur filters, no multi-colour gradient ramps, no glows around objects, no glass.
+- **Pools live in the empty ground.** They sit in corners and margins, never centred behind a headline or a photograph.
+- **Each ground has its own rule**, set by contrast:
+
+| Ground | Pools | Under copy |
+|---|---|---|
+| Cream | Lavender, rosa, peach, blue, sage. Never gold. | At most about 28% of wash beneath muted text. Stronger pools (up to 56%) are centred in a corner or off the edge, so only their faint outer part reaches copy |
+| Peach (Teens) | Cream as light, rosa, lavender | Cream only. Rosa and lavender stay off the copy (chocolate on peach is already 4.83) |
+| Blush (Grown Ups) | Cream as light, rosa, lavender | Cream only under muted text; rosa may sit under full ink |
+| Chocolate (Brands) | Sage only | At most 34% under copy; up to 50% in a corner |
+
+- **They drift with scroll and never by themselves** (see Motion). With reduced motion they are still.
+- **Measured, not assumed.** Text contrast was measured on the painted page at 390px and 1440px after the washes were added; no text run lost its AA rating. Re-measure when a pool is moved, enlarged or strengthened.
+
+The pools for every section are listed in `src/components/Wash.astro`. No other gradient is allowed: no gradient fills on type, buttons or shapes.
 
 ## Typography
 
@@ -313,7 +331,7 @@ The logo's organic letterforms are artwork. Communication type supports the logo
 
 ### Principles
 
-- **Two sizes do the talking.** A section has one large line and one reading size. If a third size is needed, the section has too much in it.
+- **Two sizes do the talking.** A section has one large line and one reading size. If a third size is needed, the section has too much in it. The intro is the one exception, and the size difference is its point: "Little details." at title size, "Big magic." at claim size.
 - **Uppercase is reserved** for the hero claim and the "CREATIVE STUDIO" descriptor. Labels, navigation and buttons are sentence case.
 - **Left-aligned by default.** Centred type is reserved for the intro statement and the Final CTA, the two places the page stops to breathe.
 - **No emphasis inside a headline.** No italic word, no coloured word, no underline flourish.
@@ -401,8 +419,10 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 1. **Giant and cropped**: the hero star, cut by the viewport edge. One per page.
 2. **Beside a headline**: cap-height size, one per section at most.
 3. **Marker**: the active marker in the world navigator. (Steps in "How it works" use numerals, not stars: three stars in a row would be a pattern.)
-4. **Aperture**: the star-warp between worlds (see Motion).
-5. **Sparkle**: the brief highlight in the logo sequence.
+4. **Charm**: the finished piece. The last piece on the thread in "How it works", and the pendant on the closing string. Once each.
+5. **Gathered**: in the intro, loose beads fuse into the star. It is the same artwork, drawn at the size of a headline.
+6. **Aperture**: the star-warp between worlds (see Motion).
+7. **Sparkle**: the brief highlight in the logo sequence.
 
 **Star budget**
 
@@ -420,7 +440,7 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 2. **Scroll is the timeline.** The visitor's thumb drives the story; nothing important plays on a timer except the logo sequence.
 3. **Tempo is identity.** Worlds share a layout and differ in pace (see World Modes).
 4. **Transform and opacity only.** Nothing animates layout properties.
-5. **Motion answers the person.** Hover, press and drag respond immediately (`{motion.duration-micro}`). Nothing moves by itself for more than a few seconds: the beads float only while the visitor scrolls or moves the pointer and rest four seconds later, the 3D star turns only toward the pointer, and film always has a pause control. This is also what WCAG 2.2.2 asks for.
+5. **Motion answers the person.** Hover, press and drag respond immediately (`{motion.duration-micro}`). Nothing moves by itself for more than a few seconds: the wash pools drift only as the page scrolls, the beads float only while the visitor scrolls or moves the pointer and rest four seconds later, the 3D star turns only toward the pointer, and film always has a pause control. This is also what WCAG 2.2.2 asks for.
 6. **Calm is a complete design.** With `prefers-reduced-motion: reduce`, every section still reads as designed: no pinning, no parallax, no warp, no autoplay video. Content is simply present.
 
 ### Logo sequence (hero, 2 seconds, plays once)
@@ -438,6 +458,14 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 - Built with CSS keyframes so it runs before JavaScript loads and never blocks the first paint.
 - Optional "ting" on the sparkle: **off by default**, behind an explicit, labelled toggle. Turning it on replays the sequence once so the sound lands on the sparkle. The choice is not remembered between visits, because browsers will not start audio without a fresh click and the site never autoplays sound.
 - Reduced motion: the logo is simply there.
+
+### Little details, big magic (intro)
+
+The claim, acted out. The section pins for about one and a half viewports of scrolling. "Little details." sits at title size among loose beads scattered across the screen; as the visitor scrolls, the beads spiral together, turn gold and fuse into the star, and "Big magic." arrives at claim size with the Spanish line after it. Scroll drives every frame, in both directions; nothing plays on a timer. Drawn on one canvas, in brand colours read from the tokens. Reduced motion, or no JavaScript: the small line, the star and the big line, in place.
+
+### The closing string (final CTA)
+
+The finished piece. When the section arrives, a string of graduated beads is lowered in across the top and settles with the gold star hanging over the closing phrase, which rises from behind a clip as the string lands; the line and buttons follow. The string is simulated rope: it sways when the page scrolls, gives way to the pointer, and comes to rest by itself within about three seconds, after which nothing runs. Reduced motion, or no JavaScript: star, phrase and buttons, in place.
 
 ### Star-warp (between worlds)
 
@@ -465,6 +493,7 @@ Same layout. Three dials: **ground**, **radius**, **tempo**.
 | Ground | Cream | Peach | Blush | Chocolate |
 | Ink | Chocolate | Chocolate | Chocolate | Cream |
 | Colour in view | Full palette, in objects only | Peach + lavender | Blush + rosa, gold star | Chocolate + sage, gold star |
+| Wash | Lavender, peach, blue, rosa, sage | Cream light, rosa, lavender | Cream light, rosa, lavender | Sage |
 | Media radius | 56px | 16px | 6px | 0 (full-bleed) |
 | Tempo | Slow, soft | Quick, with overshoot | Unhurried, decelerating | Very slow, linear, cinematic |
 | Duration / scrub | 1200ms / 1.2 | 360ms / 0.3 | 900ms / 0.8 | 1400ms / 1.5 |
@@ -496,6 +525,8 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`step`** (How it works): a number, a one-word Spanish title (Elegí, Hacé, Recordá), one sentence. Three across on desktop, stacked on phones.
 
+**`thread`** (How it works): one chocolate line that runs across the page edge to edge (down the left on phones) and carries the steps' pieces, seen from the side: one bead at Elegí, three at Hacé, and the finished charm with its gold star at Recordá. It is the second place, after Kids, where the palette appears as objects: lavender, rosa, peach and blue, plus the star. Pieces have the contact shadow. The thread draws with scroll and each piece lands as the thread reaches it; with reduced motion, or without scroll timelines, everything is simply in place.
+
 **`sound-toggle`**: a pill button with a pressed state ("Sonido: apagado / encendido"). Lives in the hero corner.
 
 **`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp, Instagram, location, hours in four hairline-separated columns.
@@ -518,7 +549,8 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 - Don't use gold for anything but the star.
 - Don't put light text on a pastel, or body text on lavender, rosa, sage or blue.
 - Don't show more than three colours at once outside Kids.
-- Don't add gradients, glows, glass, drop shadows on UI, or tinted photo overlays.
+- Don't add gradients other than the washes, or glows, glass, drop shadows on UI, or tinted photo overlays.
+- Don't centre a wash pool behind a headline or a photo, and don't strengthen one without re-measuring contrast.
 - Don't animate loose letters, or the logo anywhere but the hero sequence.
 - Don't stretch, rotate, recolour or add effects to the logo.
 - Don't use Fraunces as a heading font, or more than twice.

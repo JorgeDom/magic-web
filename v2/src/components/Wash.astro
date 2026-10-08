@@ -1,0 +1,149 @@
+---
+// Soft pools of brand colour lying on a section's ground, the way light through coloured beads
+// lies on a table. They are the page's atmosphere and nothing else: no pool carries meaning,
+// and every section still reads as designed without them (see "Washes" in DESIGN.md).
+//
+// A pool is one brand colour fading to nothing, with no blur filter, so it costs a phone
+// nothing to paint. Pools drift a little with scroll and never move by themselves. Their
+// strengths are capped so the text above them keeps its contrast; `pnpm build` does not check
+// this, so re-measure when a pool is moved or strengthened.
+import type { WorldId } from "../lib/content";
+
+type Colour = "lavender" | "rosa" | "sage" | "blue" | "peach" | "cream";
+
+interface Pool {
+  colour: Colour;
+  /** Centre, as a percentage of the section's box. May sit outside it. */
+  x: number;
+  y: number;
+  /** Diameter in vw. A floor keeps pools generous on phones. */
+  size: number;
+  /** Opacity at the centre, 0 to 1. */
+  strength: number;
+  /** How far the pool travels as its section crosses the viewport, in px. */
+  drift: number;
+}
+
+const pool = (
+  colour: Colour,
+  x: number,
+  y: number,
+  size: number,
+  strength: number,
+  drift: number,
+): Pool => ({ colour, x, y, size, strength, drift });
+
+type WashSet =
+  "hero" | "intro" | "how-card" | "how" | "making" | "final" | WorldId | `${WorldId}-card`;
+
+// On cream, muted text needs the wash beneath it to stay under about 0.28, so stronger pools
+// are centred in a corner or off the edge, where only their faint outer part can reach copy.
+// On peach and blush only lighter colours (cream) may sit under copy; on chocolate, sage alone.
+const SETS: Record<WashSet, Pool[]> = {
+  hero: [
+    pool("rosa", 84, 22, 76, 0.56, 70),
+    pool("lavender", 0, 34, 62, 0.52, -50),
+    pool("peach", 68, 92, 50, 0.36, 90),
+    pool("blue", 46, 0, 36, 0.3, -30),
+  ],
+  intro: [pool("blue", -2, 38, 54, 0.36, 60), pool("rosa", 103, 70, 58, 0.36, -80)],
+  "kids-card": [
+    pool("lavender", 88, 16, 50, 0.44, 60),
+    pool("peach", 26, 2, 36, 0.32, -40),
+    pool("blue", 102, 84, 42, 0.36, 90),
+  ],
+  kids: [pool("rosa", 0, 62, 46, 0.3, -70), pool("sage", 100, 24, 42, 0.28, 60)],
+  "teens-card": [
+    pool("cream", 12, 8, 60, 0.6, -50),
+    pool("lavender", 102, 18, 48, 0.4, 70),
+    pool("rosa", 72, 108, 52, 0.42, -60),
+  ],
+  teens: [pool("cream", -2, 26, 62, 0.6, 60), pool("rosa", 102, 84, 54, 0.42, -80)],
+  "grown-ups-card": [
+    pool("rosa", 96, 6, 56, 0.56, 60),
+    pool("lavender", 44, -4, 38, 0.3, -40),
+    pool("cream", 8, 62, 60, 0.7, 50),
+  ],
+  "grown-ups": [pool("cream", 94, 8, 60, 0.7, -60), pool("rosa", -2, 88, 54, 0.48, 70)],
+  "brands-card": [pool("sage", 92, 12, 66, 0.5, 60), pool("sage", 8, 104, 46, 0.2, -50)],
+  brands: [pool("sage", -4, 42, 62, 0.34, 70)],
+  "how-card": [
+    pool("sage", 86, 24, 50, 0.42, 60),
+    pool("lavender", 18, -2, 42, 0.36, -40),
+    pool("peach", 102, 96, 40, 0.32, 80),
+  ],
+  how: [pool("blue", 102, 44, 46, 0.3, -60), pool("rosa", -2, 94, 46, 0.26, 70)],
+  making: [
+    pool("lavender", 102, 10, 50, 0.4, 80),
+    pool("peach", -2, 44, 46, 0.36, -70),
+    pool("sage", 98, 80, 44, 0.34, 60),
+  ],
+  final: [
+    pool("rosa", 4, 84, 62, 0.38, -70),
+    pool("lavender", 98, 16, 56, 0.33, 60),
+    pool("peach", 64, 106, 48, 0.38, 80),
+  ],
+};
+
+interface Props {
+  set: WashSet;
+  /**
+   * Edges at which the pools fade out. Set it where the neighbouring section shares this
+   * ground, so a pool is never cut by a straight line.
+   */
+  fade?: "top" | "bottom" | "both";
+}
+
+const { set, fade } = Astro.props;
+
+const tint = (colour: Colour, opacity: number) =>
+  `color-mix(in srgb, var(--color-${colour}) ${(opacity * 100).toFixed(1)}%, transparent)`;
+
+// An eased falloff. A plain two-stop gradient reads as a cone with a visible centre.
+const style = ({ colour, x, y, size, strength, drift }: Pool) =>
+  [
+    `--x:${x}%`,
+    `--y:${y}%`,
+    `--size:max(${size}vw,${Math.round(size * 7.5)}px)`,
+    `--parallax:${drift}px`,
+    `background:radial-gradient(closest-side,${tint(colour, strength)},${tint(colour, strength * 0.62)} 38%,${tint(colour, strength * 0.2)} 72%,transparent)`,
+  ].join(";");
+---
+
+<div aria-hidden="true" data-fade={fade} class="wash">
+  {SETS[set].map((item) => (
+    <span data-scroll="parallax" style={style(item)} />
+  ))}
+</div>
+
+<style>
+  /* Sits behind its section's content: the section needs `relative isolate`. */
+  .wash {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .wash[data-fade="top"] {
+    mask-image: linear-gradient(to bottom, transparent, #000 16%);
+  }
+
+  .wash[data-fade="bottom"] {
+    mask-image: linear-gradient(to top, transparent, #000 16%);
+  }
+
+  .wash[data-fade="both"] {
+    mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+  }
+
+  /* Placed by its centre with offsets, not a transform: `translate` belongs to the drift. */
+  .wash > span {
+    position: absolute;
+    top: calc(var(--y) - var(--size) / 2);
+    left: calc(var(--x) - var(--size) / 2);
+    width: var(--size);
+    aspect-ratio: 1;
+  }
+</style>

@@ -42,7 +42,10 @@ const { from, anchor, overNavigator } = Astro.props;
     position: relative;
   }
 
+  /* Isolated, so a wash placed in the card stays above its ground and below its copy. */
   .pin {
+    position: relative;
+    isolation: isolate;
     display: grid;
     min-height: 100svh;
     background: var(--ground);
