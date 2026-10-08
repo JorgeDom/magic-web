@@ -1,6 +1,5 @@
 // Every word on the page. Brand claims are English; everything functional is Spanish (es-PY,
 // voseo). One language per sentence, one claim per section.
-import { todo } from "./site";
 
 export const CLAIMS = {
   hero: "MAKE SOME MAGIC.",
@@ -41,15 +40,6 @@ export const COPY = {
       { key: "details", caption: "The Details", shot: "Primer plano de charms y materiales" },
       { key: "experience", caption: "The Experience", shot: "Personas creando juntas" },
       { key: "result", caption: "The Result", shot: "La pieza terminada, puesta" },
-    ],
-  },
-  testimonials: {
-    heading: "Lo que cuentan",
-    // None confirmed yet. Replace with real quotes and attributions before launch.
-    quotes: [
-      { quote: todo("Testimonio real de un cumpleaños"), by: todo("Nombre, ocasión") },
-      { quote: todo("Testimonio real de un evento privado"), by: todo("Nombre, ocasión") },
-      { quote: todo("Testimonio real de una marca"), by: todo("Nombre, empresa") },
     ],
   },
   final: {

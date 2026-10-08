@@ -224,7 +224,7 @@ The brand's formula is the test for every decision: **expressive colour + discip
 
 **Page rhythm (ground colours)**
 
-Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown Ups) → chocolate (Brands) → cream (How it works) → cream (The Making) → mint (Testimonials) → cream (Final CTA) → chocolate (footer).
+Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown Ups) → chocolate (Brands) → cream (How it works) → cream (The Making) → cream (Final CTA) → chocolate (footer).
 
 **Personality** (brand book p.3): creative, sophisticated, joyful, warm, detail-led, contemporary. **Never:** childish, school-craft, cheap DIY, cold corporate, cluttered.
 
@@ -246,7 +246,7 @@ Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown U
 ### Neutrals
 
 - **Blush** (`{colors.blush}`, #F4E0E4): Grown Ups ground.
-- **Mint** (`{colors.mint}`, #E7F0EA): Testimonials ground.
+- **Mint** (`{colors.mint}`, #E7F0EA): not used on the page at present. It was the ground of the testimonials section, which was removed; it stays available as a calm section ground.
 - **Arena** (`{colors.arena}`, #D9C7A6): media placeholders and tactile neutral surfaces.
 
 ### Text and structure
@@ -302,7 +302,7 @@ The logo's organic letterforms are artwork. Communication type supports the logo
 | `{typography.claim}` | 52 → 168px | 600 | 0.90 | -0.025em | "MAKE SOME MAGIC." in the hero. Uppercase. Once. |
 | `{typography.display}` | 64 → 208px | 600 | 0.90 | -0.03em | Opening cards: world names, "Cómo funciona" |
 | `{typography.headline}` | 32 → 56px | 500 | 1.05 | -0.02em | Section headings |
-| `{typography.statement}` | 26 → 48px | 400 | 1.18 | -0.015em | Intro statement, testimonial quotes |
+| `{typography.statement}` | 26 → 48px | 400 | 1.18 | -0.015em | Long quotations and statements (not used on the page at present) |
 | `{typography.title}` | 22 → 28px | 500 | 1.20 | -0.01em | Step names, service names |
 | `{typography.lead}` | 17 → 20px | 400 | 1.50 | -0.005em | One-line world descriptions |
 | `{typography.body}` | 16px | 400 | 1.60 | 0 | Paragraphs |
@@ -382,7 +382,7 @@ Shadows are chocolate, never grey, and only under things that could be picked up
 | `{rounded.none}` | 0 | Brands media (full-bleed, letterboxed) |
 | `{rounded.sm}` | 6px | Grown Ups media (editorial print feel) |
 | `{rounded.md}` | 16px | Teens media, The Making grid |
-| `{rounded.lg}` | 32px | Testimonial media, large panels |
+| `{rounded.lg}` | 32px | Large panels |
 | `{rounded.xl}` | 56px | Kids media (roundest) |
 | `{rounded.pill}` | 9999px | Every button, the navigator, the sound toggle |
 
@@ -496,8 +496,6 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`step`** (How it works): a number, a one-word Spanish title (Elegí, Hacé, Recordá), one sentence. Three across on desktop, stacked on phones.
 
-**`quote`** (Testimonials): the quote in `{typography.statement}`, attribution in `{typography.label}`. No cards, no avatars, no star ratings.
-
 **`sound-toggle`**: a pill button with a pressed state ("Sonido: apagado / encendido"). Lives in the hero corner.
 
 **`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp, Instagram, location, hours in four hairline-separated columns.
@@ -558,7 +556,7 @@ Designed at 390px first. Most visitors arrive on phones over mobile data.
 - **Vector logo and star.** Only raster artwork exists (the master lockup is 1182 × 460px). The logo sequence and the 3D star need a vector source, or a careful trace of the approved artwork that must be signed off.
 - **Service menu.** Not in the repository. World service lists stay `[TODO]` until it arrives. The brand book supplies only experience names: Charm Bar by MAgic!, MAgic! Workshop, MAgic! Station, MAgic! Corner.
 - **Photography and film.** None available yet. Every media frame is an Arena placeholder labelled with its required shot type.
-- **Testimonials.** None confirmed.
+- **Testimonials.** The "Lo que cuentan" section was removed on 2026-10-08 at the studio's request. If it returns, it needs real quotes: none were ever confirmed.
 - **Location and hours.** Only "Asunción, Paraguay" is known; street address and hours are unconfirmed.
 - **Rive artwork.** No `.riv` files exist, so world signatures are CSS shapes with physics-driven motion and Rive is not installed. Add it when there is artwork to play.
 - **The "ting".** No approved sound exists. The site synthesises a short bell tone as a stand-in.

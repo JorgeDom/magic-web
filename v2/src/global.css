@@ -124,10 +124,6 @@
 }
 
 /* Grounds for sections that are not worlds. */
-[data-ground="mint"] {
-  --ground: var(--color-mint);
-}
-
 [data-ground="chocolate"],
 [data-world="brands"] {
   --ground: var(--color-chocolate);
