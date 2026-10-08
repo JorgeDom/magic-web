@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700;9..40,800&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9E3D8;-webkit-font-smoothing:antialiased}
+a{color:#4C4039;text-decoration:underline}
+a:hover{color:#9C91CE}
+@keyframes mgUp{from{opacity:0;transform:translateY(.22em)}to{opacity:1;transform:none}}
+@keyframes mgSpark{0%{opacity:0;transform:scale(0) rotate(-40deg)}55%{opacity:1;transform:scale(1.25) rotate(10deg)}78%{transform:scale(.94) rotate(-3deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes mgRing{0%{opacity:.55;transform:scale(.3)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes mgFade{from{opacity:0}to{opacity:1}}
+</style>
+</helmet>
+
+<div style="padding:120px;display:flex;flex-direction:column;gap:120px;font-family:Inter,sans-serif;color:#4C4039">
+
+<!-- Cover / motion legend -->
+<header style="width:1828px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end">
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div style="font:500 13px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">Landing page mockup · Desktop 1440 · Mobile 390 · Oct 2026</div>
+    <img src="assets/magic-logo.png" alt="MAgic!" style="height:138px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+    <div style="font:500 15px Inter;letter-spacing:.5em;text-transform:uppercase">Creative Studio</div>
+    <p style="margin:12px 0 0;font-size:18px;line-height:1.55;max-width:620px;text-wrap:pretty">Photos are placeholders labeled by shot type. Numbered notes beside each section describe the intended motion.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;font-size:14px;line-height:1.5">
+    <div style="grid-column:1 / -1;font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px">Motion legend</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Smooth scroll</span><span>Global, inertia lerp 0.08. Native scroll on touch.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Pinned</span><span>Hero, each World, How it works.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Parallax</span><span>Giant star, world visuals, The Making grid.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Cursor-reactive</span><span>Kids beads (live in this mockup: hover the Kids board).</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42;color:#4C4039">Star sparkle</span><span>Logo build, transitions, final CTA. Under 400ms, once.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42;color:#4C4039">Star warp</span><span>World-to-world transition.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1.5px solid #4C4039">Sound · ting</span><span>Soft chime on sparkle. Off by default, toggle in hero.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1.5px solid #4C4039">Reduced motion</span><span>Fades only, no pin, no parallax, no warp. Sound disabled.</span></div>
+  </div>
+</header>
+
+<!-- DESKTOP -->
+<div style="display:flex;flex-direction:column;gap:96px">
+<div style="font:700 48px 'DM Sans';letter-spacing:-0.02em">Desktop · 1440</div>
+
+<!-- 01 HERO -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">01 — Hero · 1440 × 900</div>
+    <div data-screen-label="01 Hero" style="width:1440px;height:900px;position:relative;overflow:hidden;background:#FAF7F1;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <svg viewBox="0 0 100 100" style="position:absolute;width:1000px;height:1000px;right:-330px;top:-150px;transform:rotate(14deg)"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+      <div style="position:absolute;left:-180px;bottom:-260px;width:620px;height:520px;border-radius:58% 42% 55% 45% / 50% 60% 40% 50%;background:#9C91CE;opacity:.18"></div>
+      <nav style="position:absolute;left:0;right:0;top:0;padding:36px 120px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font:500 12px Inter;letter-spacing:.42em;text-transform:uppercase">Creative Studio · Asunción</div>
+        <div style="display:flex;gap:40px;align-items:center;font:500 15px Inter">
+          <span>Mundos</span><span>Cómo funciona</span><span>Galería</span><span>Contacto</span>
+          <span style="padding:12px 22px;border-radius:999px;background:#4C4039;color:#FAF7F1;font-weight:600">Reservar</span>
+        </div>
+      </nav>
+      <div style="position:absolute;left:120px;top:210px;display:flex;flex-direction:column">
+        <div style="width:580px;height:185px">{{ heroLogo }}</div>
+        <div style="margin-top:14px;font:500 15px Inter;letter-spacing:.52em;text-transform:uppercase">Creative Studio</div>
+        <h1 style="margin:84px 0 0;font:700 76px/0.95 'DM Sans';letter-spacing:-0.035em">MAKE SOME MAGIC.</h1>
+        <p style="margin:24px 0 0;font:400 20px/1.5 Inter;max-width:470px;text-wrap:pretty">Un estudio creativo donde hacés tus propios charms, llaveros y accesorios.</p>
+        <div style="margin-top:40px;display:flex;gap:28px;align-items:center">
+          <span style="padding:20px 34px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter">Reservá tu experiencia</span>
+          <span style="font:500 16px Inter;border-bottom:1.5px solid #4C4039;padding-bottom:3px">Conocé los mundos ↓</span>
+        </div>
+      </div>
+      <div style="position:absolute;left:120px;bottom:40px;display:flex;align-items:center;gap:14px;font:500 12px Inter;letter-spacing:.2em;text-transform:uppercase"><span style="width:40px;height:1.5px;background:#4C4039"></span>Scroll</div>
+      <div onClick="{{ toggleSound }}" style="position:absolute;right:48px;bottom:36px;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#FAF7F1;font:600 12px Inter;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">♪ Sonido · {{ soundLabel }}</div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42">1 · Logo build · 2s</span><span>0.0s “M” rises · 0.35s “A” · 0.75s star sparkles (scale 0→1.25→1, one ring pulse) · 1.25s “gic!” completes. Headline, line and CTA fade up at 1.6–2.0s.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">2 · Pinned + parallax</span><span>Hero pins for 60vh. Giant star drifts at 0.4× scroll and rotates 14°→24°; lavender shape at 0.2×.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1.5px solid #4C4039">3 · Sound</span><span>“Ting” fires with the sparkle only if the visitor turned sound on. Never autoplays.</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span onClick="{{ replay }}" style="padding:10px 16px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 13px Inter;cursor:pointer">↻ Replay logo</span>
+    </div>
+    <div style="color:#4C4039"><b>Reduced motion:</b> full logo fades in at once, no pin, star static.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 02 INTRO -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">02 — Intro · 1440 × 680</div>
+    <div data-screen-label="02 Intro" style="width:1440px;height:680px;position:relative;overflow:hidden;background:#FAF7F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <svg viewBox="0 0 100 100" style="width:28px;height:28px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+      <p style="margin:0;max-width:900px;text-align:center;font:500 52px/1.15 'DM Sans';letter-spacing:-0.025em;text-wrap:balance">MAgic! es un estudio creativo donde no venís a mirar. <span style="color:#9C91CE">Venís a hacer.</span></p>
+      <div style="font:500 13px Inter;letter-spacing:.24em;text-transform:uppercase;display:flex;gap:22px">
+        <span>Charms</span><span>·</span><span>Bag charms</span><span>·</span><span>Llaveros</span><span>·</span><span>Piezas pintadas</span><span>·</span><span>Accesorios personalizados</span>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Smooth scroll</span><span>Statement reveals line by line (mask up, 80ms stagger). “Venís a hacer.” tints to lavender as it crosses center.</span></div>
+    <div><b>Reduced motion:</b> static text, single fade.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 03 KIDS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">03 — World 01 · Kids · full palette · 1440 × 900</div>
+    <div data-screen-label="03 Kids" ref="{{ kidsRef }}" style="width:1440px;height:900px;position:relative;overflow:hidden;background:#FAF7F1;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="position:absolute;left:120px;right:120px;top:36px;display:flex;justify-content:space-between;align-items:center">
+        <img src="assets/magic-logo.png" alt="MAgic!" style="height:30px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+        <div style="font:500 13px Inter;letter-spacing:.2em;text-transform:uppercase">01 / 04</div>
+      </div>
+      <div style="position:absolute;left:720px;top:140px;width:600px;height:620px;border-radius:64px;overflow:hidden;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#EFE8DC;display:flex;align-items:flex-end;padding:28px;box-sizing:border-box" data-depth="-8">
+        <span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Experience — niños en el bead bar</span>
+      </div>
+      <div data-depth="46" style="position:absolute;left:660px;top:120px;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle,#FAF7F1 0 17%,#E78F96 18%);transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="28" style="position:absolute;left:1260px;top:110px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,#FAF7F1 0 17%,#88A5DA 18%);transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="60" style="position:absolute;left:1290px;top:430px;width:110px;height:110px;border-radius:50%;border:26px solid #F3A172;box-sizing:border-box;transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="36" style="position:absolute;left:640px;top:600px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,#FAF7F1 0 16%,#9C91CE 17%);transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="22" style="position:absolute;left:1180px;top:730px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#FAF7F1 0 18%,#91A18D 19%);transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="52" style="position:absolute;left:880px;top:770px;width:38px;height:38px;border-radius:50%;background:#E78F96;transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div data-depth="18" style="position:absolute;left:600px;top:360px;width:30px;height:30px;border-radius:50%;background:#88A5DA;transition:transform .9s cubic-bezier(.2,.8,.2,1)"></div>
+      <div style="position:absolute;left:120px;top:190px;width:520px;display:flex;flex-direction:column">
+        <div style="font:600 13px Inter;letter-spacing:.24em;text-transform:uppercase">Mundo 01</div>
+        <h2 style="margin:12px 0 0;font:700 190px/0.85 'DM Sans';letter-spacing:-0.05em">Kids</h2>
+        <p style="margin:36px 0 0;font:400 21px/1.5 Inter;text-wrap:pretty">Cumpleaños y talleres donde cada chico se lleva algo hecho con sus propias manos.</p>
+        <div style="margin-top:32px;display:flex;flex-wrap:wrap;gap:10px">
+          <span style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:#fff;font:500 15px Inter"><span style="width:10px;height:10px;border-radius:50%;background:#9C91CE"></span>Charm bar</span>
+          <span style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:#fff;font:500 15px Inter"><span style="width:10px;height:10px;border-radius:50%;background:#E78F96"></span>Bead bar</span>
+          <span style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:#fff;font:500 15px Inter"><span style="width:10px;height:10px;border-radius:50%;background:#F3A172"></span>Paint lab</span>
+          <span style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:#fff;font:500 15px Inter"><span style="width:10px;height:10px;border-radius:50%;background:#88A5DA"></span>Playdates</span>
+        </div>
+        <span style="margin-top:44px;align-self:flex-start;padding:20px 32px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter">Armá su cumple</span>
+      </div>
+      <div style="position:absolute;left:50%;bottom:32px;transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:999px;background:#fff;box-shadow:0 10px 30px -12px rgba(76,64,57,.3);font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">
+        <span style="display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#4C4039;color:#FAF7F1"><svg viewBox="0 0 100 100" style="width:11px;height:11px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Kids</span>
+        <span style="padding:11px 18px">Teens</span><span style="padding:11px 18px">Grown ups</span><span style="padding:11px 18px">Brands</span>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes · tempo: slow, soft</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">1 · Pinned 150vh</span><span>Title, copy, chips enter in a slow 900ms ease. Photo scales 1.06→1.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">2 · Cursor-reactive beads</span><span>Beads float with a 6s idle bob and lean toward the cursor by depth (18–60px). Hover the board to try it.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">3 · Sticky navigator</span><span>Pill sticks to the bottom through all four worlds; active world fills chocolate with the star as its bullet.</span></div>
+    <div><b>Reduced motion:</b> beads static, no cursor follow.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- TRANSITION -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">World transition — “Star warp” · between every world</div>
+    <div data-screen-label="Transition" style="width:1440px;box-sizing:border-box;padding:56px 64px;background:#FAF7F1;display:grid;grid-template-columns:repeat(4,1fr);gap:28px;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="height:190px;border-radius:16px;background:#FAF7F1;border:1px solid #D9C7A6;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 100 100" style="width:26px;height:26px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></div>
+        <div style="font:600 14px Inter">01 · End of Kids</div><div style="font-size:14px;line-height:1.5">Small star appears center, one sparkle.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="height:190px;border-radius:16px;background:#FAF7F1;border:1px solid #D9C7A6;display:flex;align-items:center;justify-content:center;overflow:hidden"><svg viewBox="0 0 100 100" style="width:130px;height:130px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></div>
+        <div style="font:600 14px Inter">02 · Expand</div><div style="font-size:14px;line-height:1.5">Scroll-scrubbed. Star grows and rotates 30°; content pulls inward.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="height:190px;border-radius:16px;background:#ECAF42;display:flex;align-items:center;justify-content:center;overflow:hidden"><svg viewBox="0 0 100 100" style="width:520px;height:520px;flex-shrink:0"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#9C91CE" stroke="#9C91CE" stroke-width="6" stroke-linejoin="round"></polygon></svg></div>
+        <div style="font:600 14px Inter">03 · Warp</div><div style="font-size:14px;line-height:1.5">Star fills viewport (450ms). Its center already shows the next world’s color.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="height:190px;border-radius:16px;background:#9C91CE;display:flex;align-items:flex-end;padding:18px;box-sizing:border-box;font:800 44px/1 'DM Sans';letter-spacing:-0.04em">Teens</div>
+        <div style="font:600 14px Inter">04 · Arrive</div><div style="font-size:14px;line-height:1.5">Teens revealed through the star mask. Navigator updates.</div>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42">Star warp</span><span>Same mechanic each time; speed follows the next world: Kids→Teens fast, Teens→Grown ups eased, Grown ups→Brands slow cinematic fade.</span></div>
+    <div><b>Reduced motion:</b> 300ms crossfade between world colors.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 04 TEENS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">04 — World 02 · Teens · lavender lead · 1440 × 900</div>
+    <div data-screen-label="04 Teens" style="width:1440px;height:900px;position:relative;overflow:hidden;background:#9C91CE;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="position:absolute;left:120px;right:120px;top:36px;display:flex;justify-content:space-between;align-items:center">
+        <img src="assets/magic-logo.png" alt="MAgic!" style="background:#FAF7F1;padding:8px 16px;border-radius:999px;height:30px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+        <div style="font:500 13px Inter;letter-spacing:.2em;text-transform:uppercase">02 / 04</div>
+      </div>
+      <div style="position:absolute;left:780px;top:0;width:2px;height:190px;background:#4C4039"></div>
+      <div style="position:absolute;left:676px;top:186px;width:210px;height:290px;transform:rotate(-5deg);transform-origin:50% -186px;display:flex;flex-direction:column;align-items:center">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #4C4039;box-sizing:border-box"></div>
+        <div style="flex:1;width:100%;margin-top:-4px;border-radius:40px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.08) 0 1px,transparent 1px 11px),#E3DFF2;display:flex;align-items:flex-end;padding:18px;box-sizing:border-box"><span style="font:500 11px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Result — bag charm</span></div>
+      </div>
+      <div style="position:absolute;left:1030px;top:0;width:2px;height:330px;background:#4C4039"></div>
+      <div style="position:absolute;left:931px;top:326px;width:200px;height:250px;transform:rotate(4deg);display:flex;flex-direction:column;align-items:center">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #4C4039;box-sizing:border-box"></div>
+        <div style="flex:1;width:100%;margin-top:-4px;border-radius:999px 999px 40px 40px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.08) 0 1px,transparent 1px 11px),#E3DFF2;display:flex;align-items:flex-end;padding:18px;box-sizing:border-box;position:relative"><span style="font:500 11px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Result — llavero</span>
+          <svg viewBox="0 0 100 100" style="position:absolute;right:-22px;top:30px;width:64px;height:64px;transform:rotate(12deg);filter:drop-shadow(0 4px 0 #FAF7F1)"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#FAF7F1" stroke-width="7" stroke-linejoin="round"></polygon></svg>
+        </div>
+      </div>
+      <div style="position:absolute;left:1240px;top:0;width:2px;height:110px;background:#4C4039"></div>
+      <div style="position:absolute;left:1166px;top:106px;width:150px;height:240px;transform:rotate(-3deg);display:flex;flex-direction:column;align-items:center">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #4C4039;box-sizing:border-box"></div>
+        <div style="flex:1;width:100%;margin-top:-4px;border-radius:32px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.08) 0 1px,transparent 1px 11px),#E3DFF2;display:flex;align-items:flex-end;padding:16px;box-sizing:border-box"><span style="font:500 11px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">Phone charm</span></div>
+      </div>
+      <div style="position:absolute;left:120px;top:170px;width:560px;display:flex;flex-direction:column">
+        <div style="font:600 13px Inter;letter-spacing:.24em;text-transform:uppercase">Mundo 02</div>
+        <h2 style="margin:12px 0 0;font:800 190px/0.85 'DM Sans';letter-spacing:-0.06em">Teens</h2>
+        <div style="margin-top:28px;font:800 56px/0.98 'DM Sans';letter-spacing:-0.035em;color:#FAF7F1;-webkit-text-stroke:0">Make it.<br>Wear it.<br>Post it.</div>
+        <p style="margin:26px 0 0;font:400 20px/1.5 Inter;max-width:460px;text-wrap:pretty">Diseñá tu charm, colgalo en tu mochila y mostralo esa misma noche.</p>
+        <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:10px">
+          <span style="padding:11px 18px;border-radius:999px;background:#FAF7F1;font:500 15px Inter">Bag charms</span>
+          <span style="padding:11px 18px;border-radius:999px;background:#FAF7F1;font:500 15px Inter">Llaveros</span>
+          <span style="padding:11px 18px;border-radius:999px;background:#FAF7F1;font:500 15px Inter">Gorras</span>
+          <span style="padding:11px 18px;border-radius:999px;background:#FAF7F1;font:500 15px Inter">Phone charms</span>
+        </div>
+      </div>
+      <span style="position:absolute;left:120px;top:770px;padding:20px 32px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter">Reservá con tus amigas</span>
+      <div style="position:absolute;left:50%;bottom:32px;transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:999px;background:#FAF7F1;font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">
+        <span style="padding:11px 18px">Kids</span>
+        <span style="display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#4C4039;color:#FAF7F1"><svg viewBox="0 0 100 100" style="width:11px;height:11px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Teens</span>
+        <span style="padding:11px 18px">Grown ups</span><span style="padding:11px 18px">Brands</span>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes · tempo: snappy</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">1 · Pinned 120vh</span><span>“Make it. / Wear it. / Post it.” snaps in one line at a time (180ms, overshoot easing), tied to scroll steps.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">2 · Swinging charms</span><span>Charms drop in on cords, then swing as a pendulum driven by scroll velocity; settle within 1.2s.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42">3 · Sticker</span><span>Star sticker slaps onto the keychain with a quick sparkle.</span></div>
+    <div><b>Reduced motion:</b> charms hang still, lines fade in.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 05 GROWN UPS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">05 — World 03 · Grown ups · Celebration mode · 1440 × 900</div>
+    <div data-screen-label="05 Grown ups" style="width:1440px;height:900px;position:relative;overflow:hidden;background:#F4E0E4;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="position:absolute;left:120px;right:120px;top:36px;display:flex;justify-content:space-between;align-items:center">
+        <img src="assets/magic-logo.png" alt="MAgic!" style="height:30px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+        <div style="font:500 13px Inter;letter-spacing:.2em;text-transform:uppercase">03 / 04</div>
+      </div>
+      <div style="position:absolute;left:700px;top:120px;width:400px;height:600px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#ECCFD5;display:flex;align-items:flex-end;padding:24px;box-sizing:border-box"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Experience — mesa de bridal shower</span></div>
+      <div style="position:absolute;left:1060px;top:360px;width:280px;height:380px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#E8C4CB;border:10px solid #F4E0E4;display:flex;align-items:flex-end;padding:20px;box-sizing:border-box"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Details — copas y charms</span></div>
+      <div style="position:absolute;left:700px;top:744px;font:500 13px Inter;letter-spacing:.18em;text-transform:uppercase;color:#4C4039">Viernes · 20:00 · Mesa para 12</div>
+      <div style="position:absolute;left:120px;top:200px;width:520px;display:flex;flex-direction:column">
+        <div style="font:600 13px Inter;letter-spacing:.24em;text-transform:uppercase;display:flex;align-items:center;gap:12px">Mundo 03<span style="width:48px;height:1.5px;background:#E78F96"></span></div>
+        <h2 style="margin:16px 0 0;font:300 128px/0.92 'DM Sans';letter-spacing:-0.045em;display:flex;align-items:flex-start;gap:10px">Grown<br>ups<svg viewBox="0 0 100 100" style="width:30px;height:30px;margin-top:18px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></h2>
+        <p style="margin:36px 0 0;font:400 20px/1.6 Inter;max-width:440px;text-wrap:pretty">Noches de amigas, bridal showers y baby showers con la mesa lista, materiales premium y alguien que guía.</p>
+        <div style="margin-top:30px;display:flex;flex-direction:column;border-top:1px solid #E78F96;max-width:440px">
+          <span style="padding:14px 0;border-bottom:1px solid #E78F96;font:500 16px Inter;display:flex;justify-content:space-between">Girls night<span>→</span></span>
+          <span style="padding:14px 0;border-bottom:1px solid #E78F96;font:500 16px Inter;display:flex;justify-content:space-between">Bridal shower<span>→</span></span>
+          <span style="padding:14px 0;border-bottom:1px solid #E78F96;font:500 16px Inter;display:flex;justify-content:space-between">Baby shower<span>→</span></span>
+          <span style="padding:14px 0;border-bottom:1px solid #E78F96;font:500 16px Inter;display:flex;justify-content:space-between">Talleres privados<span>→</span></span>
+        </div>
+        <span style="margin-top:36px;align-self:flex-start;padding:20px 32px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter">Planificá tu evento</span>
+      </div>
+      <div style="position:absolute;left:50%;bottom:32px;transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:999px;background:#FAF7F1;font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">
+        <span style="padding:11px 18px">Kids</span><span style="padding:11px 18px">Teens</span>
+        <span style="display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#4C4039;color:#FAF7F1"><svg viewBox="0 0 100 100" style="width:11px;height:11px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Grown ups</span>
+        <span style="padding:11px 18px">Brands</span>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes · tempo: editorial</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">1 · Parallax pair</span><span>Tall photo moves at 0.9×, detail photo at 1.15×, so they slide past each other like a magazine spread.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">2 · Hairlines</span><span>Rosa rules draw left→right (600ms); list rows reveal with a soft 40ms stagger.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42">3 · Star beside headline</span><span>Single slow sparkle on arrival.</span></div>
+    <div><b>Reduced motion:</b> no parallax, fades only.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 06 BRANDS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">06 — World 04 · Brands · Corporate mode · 1440 × 900</div>
+    <div data-screen-label="06 Brands" style="width:1440px;height:900px;position:relative;overflow:hidden;background:#4C4039;color:#FAF7F1;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="position:absolute;left:120px;right:120px;top:36px;display:flex;justify-content:space-between;align-items:center">
+        <img src="assets/magic-logo.png" alt="MAgic!" style="height:30px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+        <div style="font:500 13px Inter;letter-spacing:.2em;text-transform:uppercase;color:#91A18D">04 / 04</div>
+      </div>
+      <div style="position:absolute;left:660px;top:190px;width:780px;height:440px;background:repeating-linear-gradient(135deg,rgba(250,247,241,.07) 0 1px,transparent 1px 11px),#5E5249;display:flex;align-items:flex-end;justify-content:space-between;padding:26px;box-sizing:border-box">
+        <span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Experience — activación pop-up · video loop 8s</span>
+      </div>
+      <div style="position:absolute;left:660px;top:654px;display:flex;gap:28px;font:500 13px Inter;letter-spacing:.18em;text-transform:uppercase;color:#91A18D"><span>Pop-up</span><span>·</span><span>Retail</span><span>·</span><span>PR gifting</span></div>
+      <div style="position:absolute;left:120px;top:190px;width:470px;display:flex;flex-direction:column">
+        <div style="font:600 13px Inter;letter-spacing:.24em;text-transform:uppercase;color:#91A18D">Mundo 04</div>
+        <h2 style="margin:14px 0 0;font:400 140px/0.9 'DM Sans';letter-spacing:-0.03em">Brands</h2>
+        <p style="margin:36px 0 0;font:400 20px/1.6 Inter;text-wrap:pretty">Activaciones participativas: tu marca, en las manos de tu público.</p>
+        <div style="margin-top:30px;display:flex;flex-wrap:wrap;gap:10px">
+          <span style="padding:11px 18px;border-radius:999px;border:1.5px solid #91A18D;font:500 15px Inter">Eventos corporativos</span>
+          <span style="padding:11px 18px;border-radius:999px;border:1.5px solid #91A18D;font:500 15px Inter">Pop-ups</span>
+          <span style="padding:11px 18px;border-radius:999px;border:1.5px solid #91A18D;font:500 15px Inter">PR gifting</span>
+          <span style="padding:11px 18px;border-radius:999px;border:1.5px solid #91A18D;font:500 15px Inter">Retail</span>
+          <span style="padding:11px 18px;border-radius:999px;border:1.5px solid #91A18D;font:500 15px Inter">Co-branding</span>
+        </div>
+        <span style="margin-top:44px;align-self:flex-start;padding:20px 32px;border-radius:999px;background:#FAF7F1;color:#4C4039;font:600 16px Inter">Hablemos de tu activación</span>
+      </div>
+      <div style="position:absolute;left:50%;bottom:32px;transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:999px;background:#FAF7F1;color:#4C4039;font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">
+        <span style="padding:11px 18px">Kids</span><span style="padding:11px 18px">Teens</span><span style="padding:11px 18px">Grown ups</span>
+        <span style="display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#91A18D;color:#4C4039"><svg viewBox="0 0 100 100" style="width:11px;height:11px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Brands</span>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes · tempo: calm, cinematic</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">1 · Letterbox open</span><span>Video frame opens from a 16:3 slit to full height as the section pins (1.4s, ease-in-out). Slow 1.04 Ken Burns on loop.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">2 · No sparkle</span><span>Brands stays quiet: star only in logo and navigator.</span></div>
+    <div><b>Reduced motion:</b> frame shown open, poster image instead of loop.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 07 HOW IT WORKS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">07 — How it works · 1440 × 720</div>
+    <div data-screen-label="07 How it works" style="width:1440px;height:720px;position:relative;overflow:hidden;background:#FAF7F1;box-sizing:border-box;padding:140px 120px 0;display:flex;flex-direction:column;gap:96px;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <h2 style="margin:0;font:700 64px/1 'DM Sans';letter-spacing:-0.03em">Cómo funciona</h2>
+        <span style="font:500 16px Inter;border-bottom:1.5px solid #4C4039;padding-bottom:3px">Ver precios y paquetes</span>
+      </div>
+      <div style="position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:64px">
+        <div style="position:absolute;left:36px;right:36px;top:35px;height:1.5px;background:#9C91CE"></div>
+        <svg viewBox="0 0 100 100" style="position:absolute;left:40%;top:24px;width:24px;height:24px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+        <div style="position:relative;display:flex;flex-direction:column;gap:22px">
+          <span style="width:72px;height:72px;border-radius:50%;background:#9C91CE;display:flex;align-items:center;justify-content:center;font:700 20px 'DM Sans'">01</span>
+          <div style="font:700 48px/1 'DM Sans';letter-spacing:-0.03em">Choose</div>
+          <p style="margin:0;font:400 18px/1.55 Inter;max-width:320px">Elegí tu mundo, la fecha y la pieza que querés crear.</p>
+        </div>
+        <div style="position:relative;display:flex;flex-direction:column;gap:22px">
+          <span style="width:72px;height:72px;border-radius:50%;background:#FAF7F1;border:1.5px solid #9C91CE;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 20px 'DM Sans'">02</span>
+          <div style="font:700 48px/1 'DM Sans';letter-spacing:-0.03em">Make</div>
+          <p style="margin:0;font:400 18px/1.55 Inter;max-width:320px">Creá con materiales premium y guía en cada mesa.</p>
+        </div>
+        <div style="position:relative;display:flex;flex-direction:column;gap:22px">
+          <span style="width:72px;height:72px;border-radius:50%;background:#FAF7F1;border:1.5px solid #9C91CE;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 20px 'DM Sans'">03</span>
+          <div style="font:700 48px/1 'DM Sans';letter-spacing:-0.03em">Remember</div>
+          <p style="margin:0;font:400 18px/1.55 Inter;max-width:320px">Llevate tu pieza terminada ese mismo día.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Pinned · scrubbed</span><span>A small star travels along the lavender line as you scroll; each step circle fills lavender as the star reaches it.</span></div>
+    <div><b>Reduced motion:</b> all three steps shown filled.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 08 THE MAKING -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">08 — The Making · editorial grid · 1440 × 1180</div>
+    <div data-screen-label="08 The Making" style="width:1440px;position:relative;overflow:hidden;background:#FAF7F1;box-sizing:border-box;padding:140px 120px;display:flex;flex-direction:column;gap:72px;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <h2 style="margin:0;font:700 72px/1 'DM Sans';letter-spacing:-0.035em;display:flex;align-items:flex-start;gap:12px">Little details. Big magic.<svg viewBox="0 0 100 100" style="width:26px;height:26px;margin-top:6px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></h2>
+        <span style="font:500 16px Inter;border-bottom:1.5px solid #4C4039;padding-bottom:3px">@magic.creativestudio</span>
+      </div>
+      <div style="display:grid;grid-template-columns:7fr 5fr;grid-template-rows:380px 380px 300px;gap:20px">
+        <div style="grid-row:span 2;display:flex;flex-direction:column;gap:12px"><div style="flex:1;border-radius:20px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#EFE8DC;display:flex;align-items:flex-end;padding:24px"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">01 · The Making — manos trabajando, primer plano</span></div></div>
+        <div style="border-radius:20px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#E7DCC8;display:flex;align-items:flex-end;padding:24px"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">02 · The Details — texturas, charms, materiales</span></div>
+        <div style="border-radius:20px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#EFE8DC;display:flex;align-items:flex-end;padding:24px"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">04 · The Result — pieza terminada, color real</span></div>
+        <div style="grid-column:span 2;border-radius:20px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#E7DCC8;display:flex;align-items:flex-end;padding:24px"><span style="font:500 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">03 · The Experience — interacción real en la mesa · video</span></div>
+      </div>
+      <p style="margin:0;font:400 18px/1.55 Inter;max-width:520px">Luz natural, mesas limpias y color real. Así se ve un día en el estudio.</p>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Parallax grid</span><span>Left column scrolls at 0.92×, right at 1.08×. Images unmask with a rounded clip (radius 200→20) as they enter.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1.5px solid #4C4039">Video</span><span>Experience tile autoplays muted when 50% visible.</span></div>
+    <div><b>Shot order</b> follows the brand: Making → Details → Experience → Result. Photos keep true color, no filters.</div>
+    <div><b>Reduced motion:</b> static grid, video shows poster.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 09 TESTIMONIALS -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">09 — Social proof · 1440 × 620</div>
+    <div data-screen-label="09 Testimonials" style="width:1440px;height:620px;background:#FAF7F1;box-sizing:border-box;padding:130px 120px;display:flex;flex-direction:column;gap:64px;border-top:1px solid #D9C7A6;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="font:600 13px Inter;letter-spacing:.24em;text-transform:uppercase">Lo que dicen</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:64px">
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <span style="font:700 64px/0.6 'DM Sans';color:#E78F96">“</span>
+          <p style="margin:0;font:500 25px/1.35 'DM Sans';letter-spacing:-0.01em;text-wrap:pretty">Fue el cumple más lindo que organizamos. Cada nena se fue con su charm y una sonrisa.</p>
+          <span style="font:500 14px Inter">Carolina · mamá de Emma, 8 años</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <span style="font:700 64px/0.6 'DM Sans';color:#E78F96">“</span>
+          <p style="margin:0;font:500 25px/1.35 'DM Sans';letter-spacing:-0.01em;text-wrap:pretty">Hicimos el bridal shower acá. Todo listo, todo precioso, cero estrés.</p>
+          <span style="font:500 14px Inter">Mili · bridal shower</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <span style="font:700 64px/0.6 'DM Sans';color:#E78F96">“</span>
+          <p style="margin:0;font:500 25px/1.35 'DM Sans';letter-spacing:-0.01em;text-wrap:pretty">La estación de charms fue lo más fotografiado del lanzamiento.</p>
+          <span style="font:500 14px Inter">Equipo de marketing · marca retail</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Smooth scroll</span><span>Quotes fade up with 120ms stagger. No carousel.</span></div>
+    <div>Testimonials are placeholder copy — replace with real quotes.</div>
+  </aside>
+  </sc-if>
+</div>
+
+<!-- 10 FINAL CTA + FOOTER -->
+<div style="display:flex;gap:48px;align-items:flex-start">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">10 — Final CTA + footer · 1440 × 1100</div>
+    <div data-screen-label="10 Final CTA" style="width:1440px;background:#FAF7F1;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+      <div style="height:760px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px">
+        <svg viewBox="0 0 100 100" style="width:110px;height:110px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+        <p style="margin:0;font:italic 400 92px/1.02 Fraunces,serif;letter-spacing:-0.02em;text-align:center;max-width:1000px">Made by you.<br>Made to remember.</p>
+        <p style="margin:0;font:400 20px/1.5 Inter">Reservá tu fecha y hacé tu propia pieza.</p>
+        <div style="display:flex;gap:14px;margin-top:8px">
+          <span style="padding:20px 34px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter">Reservar por WhatsApp</span>
+          <span style="padding:18.5px 32px;border-radius:999px;border:1.5px solid #4C4039;font:600 16px Inter">Formulario de contacto</span>
+        </div>
+      </div>
+      <footer style="background:#4C4039;color:#FAF7F1;padding:72px 120px 40px;display:flex;flex-direction:column;gap:64px">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <img src="assets/magic-logo.png" alt="MAgic!" style="height:55px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+            <div style="font:500 12px Inter;letter-spacing:.48em;text-transform:uppercase">Creative Studio</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;font:400 15px/1.5 Inter"><span style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#91A18D">Instagram</span><span>@magic.creativestudio</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px;font:400 15px/1.5 Inter"><span style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#91A18D">Ubicación</span><span>Asunción, Paraguay<br>Dirección a confirmar</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px;font:400 15px/1.5 Inter"><span style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#91A18D">Horarios</span><span>Mar a sáb · 10:00 – 20:00<br>Dom · 14:00 – 19:00</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font:400 13px Inter;border-top:1px solid rgba(250,247,241,.2);padding-top:24px"><span>© 2026 MAgic! Creative Studio</span><span>Hecho en Paraguay</span></div>
+      </footer>
+    </div>
+  </div>
+  <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:340px;padding-top:30px;display:flex;flex-direction:column;gap:18px;font-size:14px;line-height:1.55">
+    <div style="font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase">Motion notes</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#ECAF42">Star sparkle + ting</span><span>Star rises from below and gives the final sparkle as the line lands. Ting plays only if sound is on.</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="align-self:flex-start;font:600 10px/1 Inter;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:#4C4039;color:#FAF7F1">Buttons</span><span>Hover: fill shifts 4% lighter, arrow nudges 4px. WhatsApp opens wa.me with a prefilled Spanish message.</span></div>
+    <div>Fraunces appears only here (closing phrase).</div>
+  </aside>
+  </sc-if>
+</div>
+</div>
+
+<!-- MOBILE -->
+<div style="display:flex;flex-direction:column;gap:56px">
+<div style="font:700 48px 'DM Sans';letter-spacing:-0.02em">Mobile · 390</div>
+<div style="display:flex;gap:64px;align-items:flex-start">
+
+  <div style="display:flex;flex-direction:column;gap:18px;width:390px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">M1 — Hero</div>
+    <div data-screen-label="M1 Hero" style="width:390px;height:844px;border-radius:44px;position:relative;overflow:hidden;background:#FAF7F1;box-shadow:0 30px 80px -40px rgba(76,64,57,.45)">
+      <svg viewBox="0 0 100 100" style="position:absolute;width:520px;height:520px;right:-250px;top:-90px;transform:rotate(14deg)"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+      <div style="position:absolute;left:24px;right:24px;top:58px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font:500 10px Inter;letter-spacing:.36em;text-transform:uppercase">Creative Studio</div>
+        <div style="width:44px;height:44px;border-radius:50%;background:#FAF7F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><span style="width:18px;height:1.5px;background:#4C4039"></span><span style="width:18px;height:1.5px;background:#4C4039"></span></div>
+      </div>
+      <div style="position:absolute;left:24px;right:24px;top:300px;display:flex;flex-direction:column">
+        <div style="width:300px;height:96px">{{ mobileLogo }}</div>
+        <div style="margin-top:10px;font:500 11px Inter;letter-spacing:.46em;text-transform:uppercase">Creative Studio</div>
+        <h1 style="margin:52px 0 0;font:700 46px/0.95 'DM Sans';letter-spacing:-0.035em">MAKE SOME MAGIC.</h1>
+        <p style="margin:16px 0 0;font:400 16px/1.5 Inter;text-wrap:pretty">Un estudio creativo donde hacés tus propios charms, llaveros y accesorios.</p>
+      </div>
+      <div style="position:absolute;left:24px;right:24px;bottom:34px;display:flex;flex-direction:column;gap:12px">
+        <span style="height:56px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter;display:flex;align-items:center;justify-content:center">Reservá tu experiencia</span>
+        <span style="height:44px;font:500 15px Inter;display:flex;align-items:center;justify-content:center">Conocé los mundos ↓</span>
+      </div>
+    </div>
+    <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+    <div style="font-size:14px;line-height:1.55">Same 2s logo build. Star is cropped hard top-right and drifts on scroll (native scroll, no pin on touch). Gyroscope tilt nudges the star ±6px where permitted.</div>
+    </sc-if>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px;width:390px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">M2 — World chapter · Teens</div>
+    <div data-screen-label="M2 Teens" style="width:390px;height:844px;border-radius:44px;position:relative;overflow:hidden;background:#9C91CE;box-shadow:0 30px 80px -40px rgba(76,64,57,.45)">
+      <div style="position:absolute;left:12px;right:12px;top:56px;display:flex;gap:2px;padding:4px;border-radius:999px;background:#FAF7F1;font:600 10px Inter;letter-spacing:.1em;text-transform:uppercase;justify-content:space-between">
+        <span style="padding:12px 10px">Kids</span>
+        <span style="display:flex;align-items:center;gap:6px;padding:12px 12px;border-radius:999px;background:#4C4039;color:#FAF7F1"><svg viewBox="0 0 100 100" style="width:9px;height:9px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Teens</span>
+        <span style="padding:12px 10px">Grown ups</span><span style="padding:12px 10px">Brands</span>
+      </div>
+      <div style="position:absolute;left:250px;top:0;width:2px;height:150px;background:#4C4039"></div>
+      <div style="position:absolute;left:196px;top:146px;width:110px;height:150px;transform:rotate(-5deg);display:flex;flex-direction:column;align-items:center">
+        <div style="width:18px;height:18px;border-radius:50%;border:2.5px solid #4C4039;box-sizing:border-box"></div>
+        <div style="flex:1;width:100%;margin-top:-3px;border-radius:24px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.08) 0 1px,transparent 1px 9px),#E3DFF2;display:flex;align-items:flex-end;padding:10px;box-sizing:border-box"><span style="font:500 9px ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase">Bag charm</span></div>
+      </div>
+      <div style="position:absolute;left:340px;top:0;width:2px;height:210px;background:#4C4039"></div>
+      <div style="position:absolute;left:296px;top:206px;width:90px;height:130px;transform:rotate(4deg);display:flex;flex-direction:column;align-items:center">
+        <div style="width:18px;height:18px;border-radius:50%;border:2.5px solid #4C4039;box-sizing:border-box"></div>
+        <div style="flex:1;width:100%;margin-top:-3px;border-radius:999px 999px 22px 22px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.08) 0 1px,transparent 1px 9px),#E3DFF2;display:flex;align-items:flex-end;padding:10px;box-sizing:border-box"><span style="font:500 9px ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase">Llavero</span></div>
+      </div>
+      <div style="position:absolute;left:24px;right:24px;top:330px;display:flex;flex-direction:column">
+        <div style="font:600 11px Inter;letter-spacing:.24em;text-transform:uppercase">Mundo 02</div>
+        <h2 style="margin:6px 0 0;font:800 96px/0.85 'DM Sans';letter-spacing:-0.06em">Teens</h2>
+        <div style="margin-top:18px;font:800 34px/0.98 'DM Sans';letter-spacing:-0.035em;color:#FAF7F1">Make it.<br>Wear it.<br>Post it.</div>
+        <p style="margin:16px 0 0;font:400 16px/1.5 Inter">Diseñá tu charm, colgalo en tu mochila y mostralo esa misma noche.</p>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px">
+          <span style="padding:9px 14px;border-radius:999px;background:#FAF7F1;font:500 13px Inter">Bag charms</span>
+          <span style="padding:9px 14px;border-radius:999px;background:#FAF7F1;font:500 13px Inter">Llaveros</span>
+          <span style="padding:9px 14px;border-radius:999px;background:#FAF7F1;font:500 13px Inter">Gorras</span>
+        </div>
+      </div>
+      <span style="position:absolute;left:24px;right:24px;bottom:34px;height:56px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter;display:flex;align-items:center;justify-content:center">Reservá con tus amigas</span>
+    </div>
+    <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+    <div style="font-size:14px;line-height:1.55">Navigator moves to the top on mobile and stays sticky; swipe it to jump worlds. Charms swing on scroll velocity. Star warp plays as a 350ms full-screen wipe.</div>
+    </sc-if>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px;width:390px">
+    <div style="font:500 12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase">M3 — Final CTA + footer</div>
+    <div data-screen-label="M3 Final CTA" style="width:390px;height:844px;border-radius:44px;position:relative;overflow:hidden;background:#FAF7F1;display:flex;flex-direction:column;box-shadow:0 30px 80px -40px rgba(76,64,57,.45)">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:60px 24px 24px;text-align:center">
+        <svg viewBox="0 0 100 100" style="width:64px;height:64px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>
+        <p style="margin:0;font:italic 400 48px/1.04 Fraunces,serif;letter-spacing:-0.02em">Made by you.<br>Made to remember.</p>
+        <p style="margin:0;font:400 16px/1.5 Inter">Reservá tu fecha y hacé tu propia pieza.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:6px">
+          <span style="height:56px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 16px Inter;display:flex;align-items:center;justify-content:center">Reservar por WhatsApp</span>
+          <span style="height:56px;border-radius:999px;border:1.5px solid #4C4039;box-sizing:border-box;font:600 16px Inter;display:flex;align-items:center;justify-content:center">Formulario de contacto</span>
+        </div>
+      </div>
+      <footer style="background:#4C4039;color:#FAF7F1;padding:28px 24px 36px;display:flex;flex-direction:column;gap:18px;font:400 14px/1.5 Inter">
+        <img src="assets/magic-logo.png" alt="MAgic!" style="height:35px;width:auto;display:block;align-self:flex-start;object-fit:contain">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><div style="font:600 11px Inter;letter-spacing:.14em;text-transform:uppercase;color:#91A18D">Instagram</div>@magic.creativestudio</div>
+          <div><div style="font:600 11px Inter;letter-spacing:.14em;text-transform:uppercase;color:#91A18D">Horarios</div>Mar a sáb · 10–20</div>
+          <div><div style="font:600 11px Inter;letter-spacing:.14em;text-transform:uppercase;color:#91A18D">Ubicación</div>Asunción, Paraguay</div>
+        </div>
+      </footer>
+    </div>
+    <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+    <div style="font-size:14px;line-height:1.55">Star sparkles once when the line enters. Sticky “Reservar” bar from earlier sections hides here to avoid a duplicate CTA.</div>
+    </sc-if>
+  </div>
+</div>
+</div>
+
+<!-- STYLE TILE -->
+<div style="display:flex;flex-direction:column;gap:56px">
+<div style="font:700 48px 'DM Sans';letter-spacing:-0.02em">Style tile</div>
+<div data-screen-label="Style tile" style="width:1440px;box-sizing:border-box;padding:80px;background:#FAF7F1;display:grid;grid-template-columns:1fr 1fr;gap:72px 80px;box-shadow:0 30px 80px -40px rgba(76,64,57,.35)">
+
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <div style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase">Palette</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:110px;border-radius:16px;background:#9C91CE"></div><span style="font:600 13px Inter">Lavanda</span><span style="font:400 12px ui-monospace,monospace">#9C91CE</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:110px;border-radius:16px;background:#E78F96"></div><span style="font:600 13px Inter">Rosa</span><span style="font:400 12px ui-monospace,monospace">#E78F96</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:110px;border-radius:16px;background:#91A18D"></div><span style="font:600 13px Inter">Sage</span><span style="font:400 12px ui-monospace,monospace">#91A18D</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:110px;border-radius:16px;background:#FAF7F1;border:1px solid #D9C7A6;box-sizing:border-box"></div><span style="font:600 13px Inter">Cream</span><span style="font:400 12px ui-monospace,monospace">#FAF7F1</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:110px;border-radius:16px;background:#4C4039"></div><span style="font:600 13px Inter">Chocolate</span><span style="font:400 12px ui-monospace,monospace">#4C4039</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#ECAF42"></div><span style="font:500 12px Inter">Gold · star only</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#88A5DA"></div><span style="font:500 12px Inter">Soft Blue</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#F3A172"></div><span style="font:500 12px Inter">Peach</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#F4E0E4"></div><span style="font:500 12px Inter">Blush</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#E7F0EA"></div><span style="font:500 12px Inter">Mint</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="height:52px;border-radius:12px;background:#D9C7A6"></div><span style="font:500 12px Inter">Arena</span></div>
+    </div>
+    <div style="font-size:14px;line-height:1.55">Max 2–3 colors per section. Kids is the only world with the full palette. Products are never recolored.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase">Type scale</div>
+    <div style="display:flex;align-items:baseline;gap:20px;border-bottom:1px solid #D9C7A6;padding-bottom:14px"><span style="width:120px;flex-shrink:0;font:400 12px ui-monospace,monospace">DM Sans 700 · 76</span><span style="font:700 60px/1 'DM Sans';letter-spacing:-0.035em">MAKE SOME MAGIC.</span></div>
+    <div style="display:flex;align-items:baseline;gap:20px;border-bottom:1px solid #D9C7A6;padding-bottom:14px"><span style="width:120px;flex-shrink:0;font:400 12px ui-monospace,monospace">DM Sans 500 · 52</span><span style="font:500 40px/1.1 'DM Sans';letter-spacing:-0.025em">Little details. Big magic.</span></div>
+    <div style="display:flex;align-items:baseline;gap:20px;border-bottom:1px solid #D9C7A6;padding-bottom:14px"><span style="width:120px;flex-shrink:0;font:400 12px ui-monospace,monospace">Inter 400 · 20</span><span style="font:400 20px/1.5 Inter">Pequeños detalles, grandes momentos.</span></div>
+    <div style="display:flex;align-items:baseline;gap:20px;border-bottom:1px solid #D9C7A6;padding-bottom:14px"><span style="width:120px;flex-shrink:0;font:400 12px ui-monospace,monospace">Inter 500 · 13 · .5em</span><span style="font:500 13px Inter;letter-spacing:.5em;text-transform:uppercase">Creative Studio</span></div>
+    <div style="display:flex;align-items:baseline;gap:20px"><span style="width:120px;flex-shrink:0;font:400 12px ui-monospace,monospace">Fraunces italic · closing only</span><span style="font:italic 400 40px/1.1 Fraunces,serif">Made to remember.</span></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <div style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase">Star usage</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:140px;border-radius:16px;background:#fff;position:relative;overflow:hidden"><svg viewBox="0 0 100 100" style="position:absolute;width:200px;height:200px;right:-80px;top:-50px;transform:rotate(14deg)"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></div><span style="font:500 13px Inter">Giant, cropped</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:140px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;gap:6px;font:700 26px 'DM Sans';letter-spacing:-0.03em">Big magic<svg viewBox="0 0 100 100" style="width:14px;height:14px;align-self:flex-start;margin-top:52px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg></div><span style="font:500 13px Inter">Beside a headline</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:140px;border-radius:16px;background:#fff;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:0 22px;font:500 14px Inter">
+        <span style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 100 100" style="width:12px;height:12px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Charm bar</span>
+        <span style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 100 100" style="width:12px;height:12px"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#ECAF42" stroke-width="6" stroke-linejoin="round"></polygon></svg>Paint lab</span>
+      </div><span style="font:500 13px Inter">As bullet</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="height:140px;border-radius:16px;background:#9C91CE;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 100 100" style="width:70px;height:70px;transform:rotate(12deg)"><polygon points="50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2" fill="#ECAF42" stroke="#FAF7F1" stroke-width="8" stroke-linejoin="round"></polygon></svg></div><span style="font:500 13px Inter">As sticker</span></div>
+    </div>
+    <div style="font-size:14px;line-height:1.55">One star per view is ideal; never more than three. Never confetti, never recolored outside gold.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <div style="font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase">Button + card</div>
+    <div style="display:flex;gap:28px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="padding:18px 30px;border-radius:999px;background:#4C4039;color:#FAF7F1;font:600 15px Inter;text-align:center">Reservar</span>
+        <span style="padding:16.5px 28px;border-radius:999px;border:1.5px solid #4C4039;font:600 15px Inter;text-align:center">Más info</span>
+        <span style="font:500 15px Inter;border-bottom:1.5px solid #4C4039;padding-bottom:3px;align-self:center">Ver mundos ↓</span>
+      </div>
+      <div style="width:300px;border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 20px 40px -24px rgba(76,64,57,.35)">
+        <div style="height:200px;background:repeating-linear-gradient(135deg,rgba(76,64,57,.07) 0 1px,transparent 1px 11px),#EFE8DC;display:flex;align-items:flex-end;padding:16px;box-sizing:border-box;position:relative"><span style="font:500 11px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase">The Result — bag charm</span><span style="position:absolute;top:14px;left:14px;padding:6px 10px;border-radius:999px;background:#9C91CE;font:600 11px Inter;letter-spacing:.1em;text-transform:uppercase">Teens</span></div>
+        <div style="padding:20px 20px 22px;display:flex;flex-direction:column;gap:8px">
+          <span style="font:700 22px 'DM Sans';letter-spacing:-0.02em">Bag charm session</span>
+          <span style="font:400 14px/1.5 Inter">90 min · materiales incluidos</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span style="font:600 15px Inter">Desde Gs. 180.000</span><span style="width:40px;height:40px;border-radius:50%;background:#4C4039;color:#FAF7F1;display:flex;align-items:center;justify-content:center;font:500 16px Inter">→</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Mockup&quot;},&quot;logoLoop&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Mockup&quot;},&quot;soundCue&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  state = { k: 0, sound: false };
+  kidsRef = React.createRef();
+  P = '50,5 61.8,38.2 97,38.2 68.6,59.5 79.4,93 50,72.5 20.6,93 31.4,59.5 3,38.2 38.2,38.2';
+
+  componentDidMount() {
+    this.rm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this.state.sound = !!this.props.soundCue;
+    this.timer = setInterval(() => { if (this.props.logoLoop ?? true) this.replay(); }, 6000);
+    this.onMove = e => {
+      const el = this.kidsRef.current; if (!el || this.rm) return;
+      const r = el.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      el.querySelectorAll('[data-depth]').forEach(b => { const d = +b.dataset.depth; b.style.transform = `translate(${x * d}px,${y * d}px)`; });
+    };
+    document.addEventListener('mousemove', this.onMove);
+    this.queueTing();
+  }
+  componentWillUnmount() { clearInterval(this.timer); document.removeEventListener('mousemove', this.onMove); }
+
+  queueTing() { if (this.state.sound && !this.rm) setTimeout(() => this.ting(), 800); }
+  ting() {
+    try {
+      this.ac = this.ac || new (window.AudioContext || window.webkitAudioContext)();
+      const ac = this.ac, t = ac.currentTime;
+      [1760, 2637].forEach((f, i) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(i ? 0.02 : 0.05, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+        o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 1);
+      });
+    } catch (e) {}
+  }
+  replay = () => { this.setState(s => ({ k: s.k + 1 })); this.queueTing(); };
+  toggleSound = () => this.setState(s => ({ sound: !s.sound }), () => { if (this.state.sound) this.ting(); });
+
+  makeLogo(w) {
+    const e = React.createElement, rm = this.rm, W = 1035, H = 330;
+    const poly = pts => 'polygon(' + pts.map(([x, y]) => (x / W * 100).toFixed(2) + '% ' + (y / H * 100).toFixed(2) + '%').join(',') + ')';
+    const parts = [
+      { d: 0, n: 'mgUp', c: [[0,0],[305,0],[305,108],[352,108],[352,330],[0,330]] },
+      { d: 0.35, n: 'mgUp', c: [[440,0],[630,0],[630,330],[352,330],[352,165],[395,165],[395,100],[440,100]] },
+      { d: 0.75, n: 'mgSpark', c: [[305,0],[440,0],[440,100],[395,100],[395,165],[355,165],[355,100],[305,100]], o: '27% 22%', dur: 0.6 },
+      { d: 1.25, n: 'mgUp', c: [[630,0],[W,0],[W,H],[630,H]], dur: 0.6 }
+    ];
+    return e('div', { key: this.state.k, style: { position: 'relative', width: w, height: w * H / W } },
+      rm ? null : e('span', { style: { position: 'absolute', left: w * 0.31, top: w * 0.035, width: w * 0.09, height: w * 0.09, borderRadius: '50%', border: '1.5px solid #ECAF42', animation: 'mgRing .7s ease-out .9s both' } }),
+      parts.map((p, i) => e('img', { key: i, src: 'assets/magic-logo.png', alt: i ? '' : 'MAgic!', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', clipPath: poly(p.c), transformOrigin: p.o || '50% 100%', animation: rm ? 'mgFade .6s ease both' : `${p.n} ${p.dur || 0.5}s cubic-bezier(.2,.8,.2,1) ${p.d}s both` } })));
+  }
+
+  renderVals() {
+    return {
+      heroLogo: this.makeLogo(580),
+      mobileLogo: this.makeLogo(300),
+      kidsRef: this.kidsRef,
+      showNotes: this.props.showNotes ?? true,
+      replay: this.replay,
+      toggleSound: this.toggleSound,
+      soundLabel: this.state.sound ? 'on' : 'off'
+    };
+  }
+}
+</script>
+</body>
+</html>

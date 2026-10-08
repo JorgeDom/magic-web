@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAgic! Creative Studio — Make Some Magic</title>
+<meta name="description" content="MAgic! Creative Studio: experiencias creativas para kids, teens, grown ups y brands. Pequeños detalles, grandes momentos.">
+<link rel="icon" href="./assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --lavender:#9C91CE;
+    --pink:#E78F96;
+    --sage:#91A18D;
+    --gold:#ECAF42;
+    --blue:#88A5DA;
+    --peach:#F3A172;
+    --chocolate:#4C4039;
+    --cream:#FAF7F1;
+    --blush:#F4E0E4;
+    --mint:#E7F0EA;
+    --arena:#D9C7A6;
+
+    --ink:var(--chocolate);
+    --bg:var(--cream);
+    --font-display:'DM Sans', system-ui, sans-serif;
+    --font-body:'Inter', system-ui, sans-serif;
+    --font-serif:'Fraunces', serif;
+
+    --nav-h:64px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:auto}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
+  body{font-family:var(--font-body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0}
+  p{margin:0}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+  .eyebrow{
+    font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+
+  .wrap{max-width:1280px;margin:0 auto;padding-left:clamp(20px,5vw,64px);padding-right:clamp(20px,5vw,64px)}
+
+  .sparkle{display:inline-block;color:var(--gold)}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    height:56px;padding:0 32px;border-radius:30px;
+    font-family:var(--font-display);font-size:16px;font-weight:500;letter-spacing:.01em;
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{background:var(--lavender);color:var(--cream);box-shadow:0 10px 30px rgba(156,145,206,.35)}
+  .btn-primary:hover{background:#8b80c2;transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--chocolate);border:1.5px solid rgba(76,64,57,.25)}
+  .btn-ghost:hover{border-color:var(--chocolate)}
+  .btn-on-dark{background:var(--cream);color:var(--chocolate)}
+  .btn-on-dark:hover{background:#fff;transform:translateY(-2px)}
+
+  /* ============ NAV ============ */
+  #site-nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    height:var(--nav-h);display:flex;align-items:center;
+    background:rgba(250,247,241,0);
+    transition:background .35s ease, box-shadow .35s ease, border-color .35s ease;
+    border-bottom:1px solid transparent;
+  }
+  #site-nav.is-scrolled{background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-color:rgba(76,64,57,.08)}
+  #site-nav .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .nav-logo{display:flex;align-items:center;gap:8px}
+  .nav-logo img{height:26px;width:auto}
+  .nav-worlds{display:flex;align-items:center;gap:4px}
+  .nav-world-btn{
+    display:flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:20px;
+    font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--chocolate);
+    opacity:.5;transition:opacity .3s ease, background .3s ease;
+  }
+  .nav-world-btn .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+  .nav-world-btn.is-active{opacity:1;background:rgba(76,64,57,.06)}
+  .nav-cta{display:none}
+  @media (min-width:860px){ .nav-cta{display:inline-flex;height:42px;padding:0 22px;font-size:14px} }
+  @media (max-width:859px){ .nav-worlds{display:none} }
+
+  /* ============ HERO ============ */
+  #hero{
+    position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;padding:calc(var(--nav-h) + 40px) 24px 80px;
+    background:var(--cream);
+  }
+  .hero-star{
+    position:absolute;z-index:0;pointer-events:none;
+    color:var(--gold);
+    top:50%;left:50%;
+    width:min(1400px, 220vw);height:min(1400px, 220vw);
+    transform:translate(-50%,-50%);
+    opacity:.16;
+  }
+  .hero-star svg{width:100%;height:100%}
+  .hero-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;max-width:860px}
+  .hero-logo{width:min(560px,80vw);margin:0 auto 36px}
+  .hero-logo img{width:100%;height:auto}
+  .hero-logo-letters{position:relative;width:min(560px,80vw);height:auto;margin:0 auto 36px}
+  .hero-headline{
+    font-size:clamp(40px,8vw,88px);line-height:.98;letter-spacing:-.02em;color:var(--chocolate);
+    text-transform:uppercase;font-weight:500;
+  }
+  .hero-sub{
+    margin-top:22px;font-family:var(--font-body);font-size:clamp(15px,2.4vw,19px);
+    color:#6E6058;max-width:34em;line-height:1.6;
+  }
+  .hero-actions{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+  .hero-scroll-cue{
+    position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8F8379;
+  }
+  .hero-scroll-cue .line{width:1px;height:34px;background:linear-gradient(#8F8379,transparent);animation:scrollcue 2.2s ease-in-out infinite}
+  @keyframes scrollcue{0%{opacity:.2;transform:scaleY(.4);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}100%{opacity:.2;transform:scaleY(.4);transform-origin:top}}
+
+  /* ============ INTRO ============ */
+  #intro{padding:min(22vh,220px) 24px;background:var(--cream)}
+  .intro-inner{max-width:720px;margin:0 auto;text-align:center}
+  .intro-inner p{font-size:clamp(22px,4vw,34px);line-height:1.4;color:var(--chocolate);font-weight:400;font-family:var(--font-display)}
+  .intro-inner .serif-line{font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--lavender)}
+
+  /* ============ WORLD NAVIGATOR (sticky dots, desktop) ============ */
+  #world-nav{
+    position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:50;
+    display:none;flex-direction:column;gap:14px;
+    opacity:0;pointer-events:none;transition:opacity .4s ease;
+  }
+  #world-nav.is-visible{opacity:1;pointer-events:auto}
+  @media (min-width:980px){ #world-nav{display:flex} }
+  .world-dot{
+    width:11px;height:11px;border-radius:50%;background:rgba(76,64,57,.22);
+    transition:background .3s ease, transform .3s ease;cursor:pointer;
+  }
+  .world-dot.is-active{background:var(--chocolate);transform:scale(1.3)}
+
+  /* ============ WORLD SECTIONS ============ */
+  .world{
+    position:relative;min-height:100vh;display:flex;align-items:center;
+    padding:120px 24px;overflow:hidden;
+  }
+  .world-inner{
+    position:relative;z-index:2;max-width:1280px;margin:0 auto;width:100%;
+    display:grid;grid-template-columns:1fr;gap:48px;align-items:center;
+  }
+  @media (min-width:900px){
+    .world-inner{grid-template-columns:1fr 1fr;gap:64px}
+    .world.is-reverse .world-inner{direction:rtl}
+    .world.is-reverse .world-inner > *{direction:ltr}
+  }
+  .world-tag{
+    display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;margin-bottom:18px;
+  }
+  .world-title{font-size:clamp(34px,6vw,58px);line-height:1.02;letter-spacing:-.02em}
+  .world-claim{margin-top:18px;font-size:clamp(16px,2.2vw,19px);line-height:1.6;max-width:30em;opacity:.85}
+  .world-list{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px}
+  .world-chip{
+    font-size:13px;font-weight:600;padding:9px 18px;border-radius:20px;
+    background:rgba(255,255,255,.5);
+  }
+  .world-cta{margin-top:36px}
+
+  .world-visual{position:relative;aspect-ratio:4/5;border-radius:28px;overflow:hidden}
+  .ph{
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:10px;text-align:center;padding:24px;
+    border:1.5px dashed currentColor;opacity:.55;
+  }
+  .ph .ph-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .ph .ph-sub{font-size:12px;opacity:.7}
+
+  .world-float{position:absolute;border-radius:50%;pointer-events:none}
+
+  /* World color modes */
+  #world-kids{background:var(--blush)}
+  #world-kids .world-tag{color:var(--lavender)}
+  #world-kids .world-visual{background:var(--lavender)}
+  #world-kids .world-chip{color:var(--chocolate)}
+
+  #world-teens{background:var(--chocolate);color:var(--cream)}
+  #world-teens .world-tag{color:var(--peach)}
+  #world-teens .world-claim{opacity:.75}
+  #world-teens .world-visual{background:#3b322c}
+  #world-teens .world-chip{background:rgba(255,255,255,.08);color:var(--cream)}
+  #world-teens .ph{color:var(--peach)}
+
+  #world-grownups{background:var(--mint)}
+  #world-grownups .world-tag{color:var(--pink)}
+  #world-grownups .world-visual{background:var(--pink)}
+  #world-grownups .world-chip{color:var(--chocolate)}
+  #world-grownups .ph{color:var(--cream)}
+
+  #world-brands{background:var(--arena)}
+  #world-brands .world-tag{color:var(--chocolate)}
+  #world-brands .world-visual{background:var(--sage)}
+  #world-brands .world-chip{background:rgba(76,64,57,.08);color:var(--chocolate)}
+  #world-brands .ph{color:var(--cream)}
+
+  /* ============ HOW IT WORKS ============ */
+  #how{padding:140px 24px;background:var(--cream)}
+  .how-head{max-width:620px;margin:0 auto 72px;text-align:center}
+  .how-head h2{font-size:clamp(30px,5vw,46px)}
+  .how-steps{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:28px}
+  @media (min-width:760px){ .how-steps{grid-template-columns:repeat(3,1fr)} }
+  .how-step{text-align:center;padding:12px}
+  .how-step-num{
+    width:56px;height:56px;border-radius:50%;margin:0 auto 20px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:20px;color:var(--cream);background:var(--lavender);
+  }
+  .how-step:nth-child(2) .how-step-num{background:var(--pink)}
+  .how-step:nth-child(3) .how-step-num{background:var(--sage)}
+  .how-step h3{font-size:20px;margin-bottom:10px}
+  .how-step p{font-size:15px;line-height:1.6;color:#6E6058}
+
+  /* ============ THE MAKING (photo grid) ============ */
+  #making{padding:120px 24px;background:var(--cream)}
+  .making-head{max-width:620px;margin:0 auto 56px;text-align:center}
+  .making-head h2{font-size:clamp(28px,4.5vw,42px)}
+  .making-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media (min-width:760px){ .making-grid{grid-template-columns:repeat(4,1fr)} }
+  .making-item{aspect-ratio:3/4;border-radius:18px;overflow:hidden}
+  .making-item:nth-child(1) .ph{background:var(--lavender);color:var(--cream);border:none;opacity:1}
+  .making-item:nth-child(2) .ph{background:var(--pink);color:var(--cream);border:none;opacity:1}
+  .making-item:nth-child(3) .ph{background:var(--sage);color:var(--cream);border:none;opacity:1}
+  .making-item:nth-child(4) .ph{background:var(--gold);color:var(--chocolate);border:none;opacity:1}
+  .making-item .ph{border-radius:18px}
+
+  /* ============ TESTIMONIALS ============ */
+  #proof{padding:120px 24px;background:var(--blush)}
+  .proof-head{max-width:560px;margin:0 auto 56px;text-align:center}
+  .proof-head h2{font-size:clamp(28px,4.5vw,42px)}
+  .proof-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:20px}
+  @media (min-width:760px){ .proof-grid{grid-template-columns:repeat(3,1fr)} }
+  .proof-card{background:var(--cream);border-radius:22px;padding:30px 26px;display:flex;flex-direction:column;gap:18px}
+  .proof-stars{color:var(--gold);font-size:14px;letter-spacing:2px}
+  .proof-quote{font-size:15px;line-height:1.65;color:var(--chocolate)}
+  .proof-who{font-size:13px;font-weight:600;color:#6E6058}
+
+  /* ============ FINAL CTA ============ */
+  #final-cta{
+    position:relative;padding:160px 24px;background:var(--chocolate);color:var(--cream);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center;
+  }
+  .final-star{position:absolute;color:var(--gold);opacity:.9}
+  .final-star--1{top:8%;left:8%;width:70px}
+  .final-star--2{bottom:12%;right:10%;width:46px}
+  .final-inner{position:relative;z-index:2;max-width:640px;margin:0 auto}
+  .final-inner h2{font-size:clamp(32px,6vw,56px);line-height:1.08}
+  .final-inner .serif{font-family:var(--font-serif);font-style:italic;color:var(--peach)}
+  .final-actions{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--chocolate);color:rgba(250,247,241,.75);padding:48px 24px 32px;border-top:1px solid rgba(250,247,241,.08)}
+  .footer-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:28px}
+  .footer-brand{display:flex;flex-direction:column;gap:10px}
+  .footer-brand img{height:22px;filter:brightness(0) invert(1);opacity:.9}
+  .footer-links{display:flex;flex-wrap:wrap;gap:32px;font-size:13px}
+  .footer-col h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);margin-bottom:12px;font-family:var(--font-body);font-weight:600}
+  .footer-col a,.footer-col p{display:block;color:rgba(250,247,241,.7);font-size:13px;line-height:2;text-decoration:none}
+  .footer-col a:hover{color:var(--cream)}
+  .footer-bottom{max-width:1280px;margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(250,247,241,.08);font-size:12px;color:rgba(250,247,241,.5)}
+
+  /* reduced motion */
+  @media (prefers-reduced-motion:reduce){
+    .hero-scroll-cue .line{animation:none}
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+
+<nav id="site-nav" aria-label="Navegación principal">
+  <div class="wrap">
+    <a href="#hero" class="nav-logo" aria-label="MAgic! inicio">
+      <img src="./assets/magic-logo-primary.png" alt="MAgic! Creative Studio">
+    </a>
+    <div class="nav-worlds" id="nav-worlds" role="tablist" aria-label="Mundos MAgic!">
+      <a href="#world-kids" class="nav-world-btn" data-world="kids"><span class="dot" style="color:var(--lavender)"></span>Kids</a>
+      <a href="#world-teens" class="nav-world-btn" data-world="teens"><span class="dot" style="color:var(--peach)"></span>Teens</a>
+      <a href="#world-grownups" class="nav-world-btn" data-world="grownups"><span class="dot" style="color:var(--pink)"></span>Grown Ups</a>
+      <a href="#world-brands" class="nav-world-btn" data-world="brands"><span class="dot" style="color:var(--sage)"></span>Brands</a>
+    </div>
+    <a href="#final-cta" class="btn btn-primary nav-cta">Reservá</a>
+  </div>
+</nav>
+
+<div id="world-nav" aria-hidden="true">
+  <span class="world-dot" data-world="kids" style="background:var(--lavender)"></span>
+  <span class="world-dot" data-world="teens" style="background:var(--peach)"></span>
+  <span class="world-dot" data-world="grownups" style="background:var(--pink)"></span>
+  <span class="world-dot" data-world="brands" style="background:var(--sage)"></span>
+</div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="hero-star" aria-hidden="true">
+    <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 C53 35 65 47 100 50 C65 53 53 65 50 100 C47 65 35 53 0 50 C35 47 47 35 50 0 Z"/></svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-logo" id="hero-logo">
+      <img src="./assets/magic-logo-primary.png" alt="MAgic! Creative Studio">
+    </div>
+    <h1 class="hero-headline">Make Some Magic.</h1>
+    <p class="hero-sub">Un estudio creativo donde se hace, no solo se mira. Charm bars, talleres y momentos a medida para kids, teens, grown ups y brands.</p>
+    <div class="hero-actions">
+      <a href="#final-cta" class="btn btn-primary">Reservá tu experiencia</a>
+      <a href="#worlds-start" class="btn btn-ghost">Explorá los mundos</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll-cue"><span>Scroll</span><span class="line"></span></div>
+</section>
+
+<!-- ============ INTRO ============ -->
+<section id="intro">
+  <div class="intro-inner">
+    <p>MAgic! es un estudio creativo donde las personas <strong>hacen</strong>, no solo observan.<br><br>
+    <span class="serif-line">Pequeños detalles, grandes momentos.</span></p>
+  </div>
+</section>
+
+<div id="worlds-start"></div>
+
+<!-- ============ WORLD: KIDS ============ -->
+<section class="world" id="world-kids" data-world="kids">
+  <div class="world-inner">
+    <div class="world-copy">
+      <div class="world-tag"><span class="sparkle">✦</span> Kids</div>
+      <h2 class="world-title">Birthdays & workshops.</h2>
+      <p class="world-claim">Charm bar, bead bar, paint lab y playdates. El único mundo que desbloquea la paleta completa — redondo, flotante, a su ritmo.</p>
+      <div class="world-list">
+        <span class="world-chip">Charm Bar</span>
+        <span class="world-chip">Bead Bar</span>
+        <span class="world-chip">Paint Lab</span>
+        <span class="world-chip">Playdates</span>
+      </div>
+      <div class="world-cta"><a href="#final-cta" class="btn btn-primary">Armá tu cumple</a></div>
+    </div>
+    <div class="world-visual">
+      <div class="ph" style="color:#fff"><span class="ph-label">The Experience</span><span class="ph-sub">Foto: charm bar en acción</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD: TEENS ============ -->
+<section class="world is-reverse" id="world-teens" data-world="teens">
+  <div class="world-inner">
+    <div class="world-copy">
+      <div class="world-tag"><span class="sparkle">✦</span> Teens</div>
+      <h2 class="world-title">Make it. Wear it. Post it.</h2>
+      <p class="world-claim">Bag charms, llaveros, gorras y phone charms. Más rápido, más directo — colgantes que se apilan y se balancean.</p>
+      <div class="world-list">
+        <span class="world-chip">Bag Charms</span>
+        <span class="world-chip">Llaveros</span>
+        <span class="world-chip">Gorras</span>
+        <span class="world-chip">Phone Charms</span>
+      </div>
+      <div class="world-cta"><a href="#final-cta" class="btn btn-on-dark">Sumate a un taller</a></div>
+    </div>
+    <div class="world-visual">
+      <div class="ph"><span class="ph-label">The Details</span><span class="ph-sub">Foto: charms colgando, close-up</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD: GROWN UPS ============ -->
+<section class="world" id="world-grownups" data-world="grownups">
+  <div class="world-inner">
+    <div class="world-copy">
+      <div class="world-tag"><span class="sparkle">✦</span> Grown Ups</div>
+      <h2 class="world-title">Momentos para celebrar.</h2>
+      <p class="world-claim">Girls night, bridal shower, baby shower y talleres privados. Editorial, cálido, elegante — para quienes quieren un momento con estilo.</p>
+      <div class="world-list">
+        <span class="world-chip">Girls Night</span>
+        <span class="world-chip">Bridal Shower</span>
+        <span class="world-chip">Baby Shower</span>
+        <span class="world-chip">Talleres Privados</span>
+      </div>
+      <div class="world-cta"><a href="#final-cta" class="btn btn-primary">Consultá fechas</a></div>
+    </div>
+    <div class="world-visual">
+      <div class="ph" style="color:#fff"><span class="ph-label">The Result</span><span class="ph-sub">Foto: mesa editorial, luz cálida</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD: BRANDS ============ -->
+<section class="world is-reverse" id="world-brands" data-world="brands">
+  <div class="world-inner">
+    <div class="world-copy">
+      <div class="world-tag"><span class="sparkle">✦</span> Brands</div>
+      <h2 class="world-title">Activaciones participativas.</h2>
+      <p class="world-claim">Eventos corporativos, pop-ups, PR gifting, retail y co-branding. Calmo, cinematográfico — MAgic! acompaña a la marca anfitriona.</p>
+      <div class="world-list">
+        <span class="world-chip">Corporate Events</span>
+        <span class="world-chip">Pop-ups</span>
+        <span class="world-chip">PR Gifting</span>
+        <span class="world-chip">Co-branding</span>
+      </div>
+      <div class="world-cta"><a href="#final-cta" class="btn btn-on-dark">Coordiná una activación</a></div>
+    </div>
+    <div class="world-visual">
+      <div class="ph"><span class="ph-label">The Making</span><span class="ph-sub">Foto: manos trabajando, mesa limpia</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="how-head">
+    <div class="eyebrow" style="color:var(--lavender)">Cómo funciona</div>
+    <h2 style="margin-top:12px">Tres pasos. Cero complicaciones.</h2>
+  </div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">1</div>
+      <h3>Elegí</h3>
+      <p>Tu mundo, tu formato: charm bar, taller o activación a medida.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">2</div>
+      <h3>Hacé</h3>
+      <p>Manos a la obra. Materiales premium, guía experta, cero presión.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">3</div>
+      <h3>Recordá</h3>
+      <p>Te llevás algo hecho por vos. Hecho para recordar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE MAKING (photo grid) ============ -->
+<section id="making">
+  <div class="making-head">
+    <div class="eyebrow" style="color:var(--sage)">La experiencia</div>
+    <h2 style="margin-top:12px">Cuatro miradas, una magia.</h2>
+  </div>
+  <div class="making-grid">
+    <div class="making-item"><div class="ph"><span class="ph-label">The Making</span></div></div>
+    <div class="making-item"><div class="ph"><span class="ph-label">The Details</span></div></div>
+    <div class="making-item"><div class="ph"><span class="ph-label">The Experience</span></div></div>
+    <div class="making-item"><div class="ph"><span class="ph-label">The Result</span></div></div>
+  </div>
+</section>
+
+<!-- ============ SOCIAL PROOF ============ -->
+<section id="proof">
+  <div class="proof-head">
+    <div class="eyebrow" style="color:var(--pink)">Lo que dicen</div>
+    <h2 style="margin-top:12px">Momentos que quedan.</h2>
+  </div>
+  <div class="proof-grid">
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"El cumple de mi hija fue el mejor de todos. Las nenas no paraban de hacer charms."</p>
+      <p class="proof-who">— Mamá, charm bar de cumpleaños</p>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"Organizamos un pop-up con MAgic! para nuestro lanzamiento. Nivel premium, cero estrés."</p>
+      <p class="proof-who">— Brand manager, activación corporativa</p>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"Mi despedida de soltera fue distinta a todas. Elegante, divertida, inolvidable."</p>
+      <p class="proof-who">— Novia, bridal shower</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section id="final-cta">
+  <svg class="final-star final-star--1" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path d="M50 0 C53 35 65 47 100 50 C65 53 53 65 50 100 C47 65 35 53 0 50 C35 47 47 35 50 0 Z"/></svg>
+  <svg class="final-star final-star--2" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path d="M50 0 C53 35 65 47 100 50 C65 53 53 65 50 100 C47 65 35 53 0 50 C35 47 47 35 50 0 Z"/></svg>
+  <div class="final-inner">
+    <h2>Made by you. <span class="serif">Made to remember.</span></h2>
+    <div class="final-actions">
+      <a href="https://wa.me/595993600505" class="btn btn-primary" target="_blank" rel="noopener">Reservá por WhatsApp</a>
+      <a href="#hero" class="btn btn-ghost" style="border-color:rgba(250,247,241,.3);color:var(--cream)">Volver arriba</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="./assets/magic-logo-primary.png" alt="MAgic! Creative Studio">
+      <p style="font-size:13px;opacity:.7;max-width:26em">Pequeños detalles, grandes momentos.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Seguinos</h4>
+        <a href="https://instagram.com/magic.creativestudiopy" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://wa.me/595993600505" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+      <div class="footer-col">
+        <h4>Ubicación</h4>
+        <p>Asunción, Paraguay</p>
+      </div>
+      <div class="footer-col">
+        <h4>Horarios</h4>
+        <p>Lun – Sáb, 9:00 – 18:00</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom wrap">© 2026 MAgic! Creative Studio. Make Some Magic.</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  /* ---------- Nav background on scroll ---------- */
+  var nav = document.getElementById('site-nav');
+  function updateNav(){
+    if (window.scrollY > 40) nav.classList.add('is-scrolled');
+    else nav.classList.remove('is-scrolled');
+  }
+  updateNav();
+  window.addEventListener('scroll', updateNav, { passive: true });
+
+  /* ---------- Hero entrance ---------- */
+  if (window.gsap && !reduceMotion) {
+    gsap.set('#hero-logo', { opacity: 0, y: 18, scale: .96 });
+    gsap.set('.hero-headline', { opacity: 0, y: 14 });
+    gsap.set('.hero-sub', { opacity: 0, y: 14 });
+    gsap.set('.hero-actions', { opacity: 0, y: 14 });
+
+    var tl = gsap.timeline({ delay: .15 });
+    tl.to('#hero-logo', { opacity: 1, y: 0, scale: 1, duration: .9, ease: 'power3.out' })
+      .to('.hero-headline', { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, '-=.45')
+      .to('.hero-sub', { opacity: 1, y: 0, duration: .6, ease: 'power3.out' }, '-=.35')
+      .to('.hero-actions', { opacity: 1, y: 0, duration: .6, ease: 'power3.out' }, '-=.3');
+
+    gsap.to('.hero-star', {
+      rotation: 12, duration: 1, ease: 'elastic.out(1,.5)',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .6 }
+    });
+  }
+
+  /* ---------- World sections: reveal + active-state tracking ---------- */
+  var worldOrder = ['kids','teens','grownups','brands'];
+  var worldEls = {};
+  worldOrder.forEach(function(w){ worldEls[w] = document.getElementById('world-' + w); });
+
+  var navWorldBtns = document.querySelectorAll('.nav-world-btn');
+  var dotEls = document.querySelectorAll('.world-dot');
+  var worldNavWrap = document.getElementById('world-nav');
+
+  function setActiveWorld(name){
+    navWorldBtns.forEach(function(b){ b.classList.toggle('is-active', b.dataset.world === name); });
+    dotEls.forEach(function(d){ d.classList.toggle('is-active', d.dataset.world === name); });
+  }
+
+  if (window.gsap && window.ScrollTrigger) {
+    worldOrder.forEach(function(name){
+      var el = worldEls[name];
+      if (!el) return;
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top center',
+        end: 'bottom center',
+        onEnter: function(){ setActiveWorld(name); worldNavWrap.classList.add('is-visible'); },
+        onEnterBack: function(){ setActiveWorld(name); worldNavWrap.classList.add('is-visible'); }
+      });
+
+      if (!reduceMotion) {
+        var copy = el.querySelector('.world-copy');
+        var visual = el.querySelector('.world-visual');
+        gsap.fromTo(copy, { opacity: 0, y: 40 }, {
+          opacity: 1, y: 0, duration: .9, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 70%' }
+        });
+        gsap.fromTo(visual, { opacity: 0, y: 60, scale: .96 }, {
+          opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 70%' }
+        });
+      }
+    });
+
+    ScrollTrigger.create({
+      trigger: '#world-kids', start: 'top bottom',
+      onLeaveBack: function(){ worldNavWrap.classList.remove('is-visible'); }
+    });
+  }
+
+  /* ---------- Generic fade-up for remaining sections ---------- */
+  if (window.gsap && window.ScrollTrigger && !reduceMotion) {
+    gsap.utils.toArray('.how-step, .making-item, .proof-card').forEach(function(el, i){
+      gsap.fromTo(el, { opacity: 0, y: 30 }, {
+        opacity: 1, y: 0, duration: .7, ease: 'power3.out', delay: (i % 4) * .06,
+        scrollTrigger: { trigger: el, start: 'top 85%' }
+      });
+    });
+    gsap.fromTo('.intro-inner p', { opacity: 0, y: 24 }, {
+      opacity: 1, y: 0, duration: .9, ease: 'power3.out',
+      scrollTrigger: { trigger: '#intro', start: 'top 70%' }
+    });
+    gsap.fromTo('.final-inner', { opacity: 0, y: 24 }, {
+      opacity: 1, y: 0, duration: .9, ease: 'power3.out',
+      scrollTrigger: { trigger: '#final-cta', start: 'top 75%' }
+    });
+  }
+
+  /* ---------- Smooth anchor scrolling ---------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      var y = target.getBoundingClientRect().top + window.scrollY - (window.innerWidth >= 860 ? 0 : 0);
+      window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

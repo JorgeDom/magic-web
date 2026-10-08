@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAgic! Creative Studio</title>
+<meta name="description" content="MAgic! Creative Studio: cuatro mundos creativos para kids, teens, grown ups y brands. Pequeños detalles, grandes momentos.">
+<link rel="icon" href="./assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Inter:wght@400;500&family=Fraunces:ital,opsz,wght@1,9..144,450&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lavender:#9C91CE; --pink:#E78F96; --sage:#91A18D; --gold:#ECAF42;
+    --blue:#88A5DA; --peach:#F3A172; --chocolate:#4C4039; --cream:#FAF7F1;
+    --blush:#F4E0E4; --mint:#E7F0EA; --arena:#D9C7A6;
+    --font-display:'DM Sans', system-ui, sans-serif;
+    --font-body:'Inter', system-ui, sans-serif;
+    --font-serif:'Fraunces', serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream);color:var(--chocolate)}
+  body{font-family:var(--font-body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--font-display);font-weight:500;margin:0}
+  p{margin:0}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  .sparkle{display:inline-block;color:var(--gold)}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    height:58px;padding:0 34px;border-radius:30px;
+    font-family:var(--font-display);font-size:17px;font-weight:500;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), background .3s ease;
+    white-space:nowrap;
+  }
+  .btn-lav{background:var(--lavender);color:var(--cream)}
+  .btn-lav:hover{background:#8b80c2;transform:translateY(-2px)}
+  .btn-line{border:1.5px solid currentColor}
+  .btn-line:hover{transform:translateY(-2px)}
+
+  /* ============ NAV ============ */
+  #nav{position:fixed;top:0;left:0;right:0;z-index:200;height:88px;display:flex;align-items:center;padding:0 clamp(20px,4vw,56px);mix-blend-mode:difference}
+  #nav img{height:30px;filter:brightness(0) invert(1)}
+  #nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:28px}
+  #nav a.wa{font-size:14px;font-weight:600;color:#fff}
+
+  /* ============ HERO ============ */
+  #hero{
+    position:relative;height:100vh;min-height:680px;display:flex;flex-direction:column;
+    justify-content:flex-end;overflow:hidden;background:var(--cream);padding:0 clamp(20px,4vw,56px) 64px;
+  }
+  .hero-star-wrap{position:absolute;top:-18%;right:-14%;width:min(1100px,90vw);color:var(--gold);pointer-events:none}
+  .hero-star-wrap svg{width:100%;height:auto}
+  .hero-logo-mark{position:relative;z-index:2;width:min(220px,30vw);margin-bottom:28px}
+  .hero-headline{
+    position:relative;z-index:2;font-size:clamp(52px,11vw,160px);line-height:.86;letter-spacing:-.035em;
+    color:var(--chocolate);max-width:16em;
+  }
+  .hero-row{position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-top:40px}
+  .hero-sub{font-size:clamp(16px,2vw,20px);line-height:1.5;color:#6E6058;max-width:28em}
+  .hero-cue{display:flex;align-items:center;gap:10px;font-size:13px;color:#8F8379}
+  .hero-cue .arrow{display:inline-block;animation:bob 1.8s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* ============ INTRO STATEMENT ============ */
+  #intro{padding:min(18vh,180px) clamp(20px,4vw,56px);background:var(--cream)}
+  .intro-text{max-width:1000px;margin:0 auto;font-size:clamp(26px,4.4vw,48px);line-height:1.28;letter-spacing:-.01em;font-family:var(--font-display);font-weight:400}
+  .intro-text .dim{color:#A99C8E}
+
+  /* ============ WORLDS: horizontal doors (desktop) ============ */
+  #worlds-desktop{display:none}
+  @media (min-width:860px){
+    #worlds-desktop{
+      display:flex;height:100vh;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+      scrollbar-width:none;
+    }
+    #worlds-desktop::-webkit-scrollbar{display:none}
+  }
+  .door{
+    position:relative;flex:0 0 100vw;height:100vh;scroll-snap-align:start;
+    display:flex;align-items:flex-end;overflow:hidden;
+  }
+  .door-inner{position:relative;z-index:2;width:100%;padding:0 clamp(28px,5vw,80px) 90px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+  .door-head h2{font-size:clamp(44px,7vw,108px);line-height:.92;letter-spacing:-.03em}
+  .door-claim{margin-top:20px;font-size:clamp(15px,1.6vw,19px);line-height:1.55;max-width:26em;opacity:.88}
+  .door-list{margin-top:26px;font-size:14px;line-height:2;opacity:.8}
+  .door-cta{flex:0 0 auto}
+  .door-index{position:absolute;top:48px;left:clamp(28px,5vw,80px);z-index:2;font-size:14px;font-weight:600;opacity:.6}
+  .door-visual{position:absolute;inset:0;z-index:1}
+  .door-ph{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:10px;text-align:center;opacity:.28;
+  }
+  .door-ph span{font-size:13px;font-weight:600;letter-spacing:.04em}
+
+  #door-kids{background:var(--lavender);color:var(--cream)}
+  #door-teens{background:var(--chocolate);color:var(--cream)}
+  #door-grownups{background:var(--pink);color:var(--cream)}
+  #door-brands{background:var(--sage);color:var(--cream)}
+
+  /* progress rail */
+  #door-rail{position:fixed;left:clamp(20px,4vw,56px);top:50%;transform:translateY(-50%);z-index:150;display:none;flex-direction:column;gap:16px}
+  @media (min-width:860px){ #door-rail{display:flex} }
+  .rail-dot{width:8px;height:34px;border-radius:4px;background:rgba(76,64,57,.18);transition:background .35s ease, height .35s ease}
+  .rail-dot.is-active{background:var(--chocolate);height:50px}
+  #door-rail.on-dark .rail-dot{background:rgba(250,247,241,.3)}
+  #door-rail.on-dark .rail-dot.is-active{background:var(--cream)}
+
+  /* ============ WORLDS: vertical stack (mobile) ============ */
+  #worlds-mobile{display:block}
+  @media (min-width:860px){ #worlds-mobile{display:none} }
+  .room{position:relative;min-height:88vh;display:flex;align-items:flex-end;padding:90px 22px 56px;overflow:hidden}
+  .room-inner{position:relative;z-index:2}
+  .room-index{font-size:13px;font-weight:600;opacity:.65;margin-bottom:14px}
+  .room h2{font-size:clamp(38px,11vw,56px);line-height:.95;letter-spacing:-.02em}
+  .room-claim{margin-top:16px;font-size:15px;line-height:1.55;opacity:.88;max-width:26em}
+  .room-list{margin-top:20px;font-size:13px;line-height:1.9;opacity:.8}
+  .room-cta{margin-top:28px}
+  #room-kids{background:var(--lavender);color:var(--cream)}
+  #room-teens{background:var(--chocolate);color:var(--cream)}
+  #room-grownups{background:var(--pink);color:var(--cream)}
+  #room-brands{background:var(--sage);color:var(--cream)}
+
+  /* ============ HOW IT WORKS ============ */
+  #how{padding:140px clamp(20px,4vw,56px);background:var(--cream)}
+  .how-inner{max-width:1100px;margin:0 auto}
+  .how-inner h2{font-size:clamp(32px,5vw,54px);max-width:12em;letter-spacing:-.02em}
+  .how-rows{margin-top:64px;border-top:1px solid rgba(76,64,57,.14)}
+  .how-row{
+    display:grid;grid-template-columns:60px 1fr;gap:28px;padding:30px 0;
+    border-bottom:1px solid rgba(76,64,57,.14);align-items:baseline;
+  }
+  @media (min-width:700px){ .how-row{grid-template-columns:80px 240px 1fr} }
+  .how-num{font-family:var(--font-display);font-size:22px;color:var(--lavender)}
+  .how-row:nth-child(2) .how-num{color:var(--pink)}
+  .how-row:nth-child(3) .how-num{color:var(--sage)}
+  .how-row h3{font-size:22px}
+  .how-row p{font-size:15px;line-height:1.6;color:#6E6058;max-width:34em}
+
+  /* ============ THE MAKING ============ */
+  #making{padding:0 0 140px;background:var(--cream)}
+  .making-head{max-width:1100px;margin:0 auto 48px;padding:0 clamp(20px,4vw,56px)}
+  .making-head h2{font-size:clamp(30px,4.6vw,46px);letter-spacing:-.02em}
+  .making-strip{display:flex;gap:4px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 clamp(20px,4vw,56px);scrollbar-width:none}
+  .making-strip::-webkit-scrollbar{display:none}
+  .making-tile{flex:0 0 min(78vw,420px);aspect-ratio:3/4;scroll-snap-align:start;position:relative;overflow:hidden}
+  .making-tile .ph{
+    position:absolute;inset:0;display:flex;align-items:flex-end;padding:20px;
+    color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;
+  }
+  .making-tile:nth-child(1){background:var(--lavender)}
+  .making-tile:nth-child(2){background:var(--pink)}
+  .making-tile:nth-child(3){background:var(--sage)}
+  .making-tile:nth-child(4){background:var(--chocolate)}
+
+  /* ============ PROOF ============ */
+  #proof{padding:120px clamp(20px,4vw,56px);background:var(--mint)}
+  .proof-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:64px}
+  .proof-item{max-width:720px}
+  .proof-item blockquote{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(22px,3.4vw,34px);line-height:1.3;letter-spacing:-.01em}
+  .proof-item cite{display:block;margin-top:18px;font-style:normal;font-size:14px;color:#5a6b58}
+
+  /* ============ FINAL ============ */
+  #final{
+    position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:var(--chocolate);color:var(--cream);padding:120px 24px;overflow:hidden;text-align:center;
+  }
+  .final-star{position:absolute;color:var(--gold)}
+  .final-star--a{width:min(900px,160vw);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.1}
+  .final-inner{position:relative;z-index:2;max-width:760px}
+  .final-inner h2{font-size:clamp(38px,7vw,88px);line-height:.98;letter-spacing:-.03em}
+  .final-line{margin-top:28px;font-family:var(--font-serif);font-style:italic;font-weight:450;font-size:clamp(20px,2.6vw,28px);color:var(--peach)}
+  .final-actions{margin-top:48px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+
+  footer{background:var(--chocolate);color:rgba(250,247,241,.6);padding:40px 24px;border-top:1px solid rgba(250,247,241,.1)}
+  .footer-row{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;font-size:13px}
+  .footer-row a{color:rgba(250,247,241,.8)}
+  .footer-row a:hover{color:var(--cream)}
+
+  @media (prefers-reduced-motion:reduce){
+    .hero-cue .arrow{animation:none}
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#hero"><img src="./assets/magic-isotype.png" alt="MAgic!"></a>
+  <div class="nav-right">
+    <a href="https://wa.me/595993600505" class="wa" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</nav>
+
+<div id="door-rail" aria-hidden="true">
+  <span class="rail-dot" data-door="kids"></span>
+  <span class="rail-dot" data-door="teens"></span>
+  <span class="rail-dot" data-door="grownups"></span>
+  <span class="rail-dot" data-door="brands"></span>
+</div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="hero-star-wrap" aria-hidden="true">
+    <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 C53 35 65 47 100 50 C65 53 53 65 50 100 C47 65 35 53 0 50 C35 47 47 35 50 0 Z"/></svg>
+  </div>
+  <div class="hero-logo-mark" id="hero-mark">
+    <img src="./assets/magic-isotype.png" alt="">
+  </div>
+  <h1 class="hero-headline" id="hero-headline">Make some<br>magic.</h1>
+  <div class="hero-row">
+    <p class="hero-sub">Charm bars, talleres y momentos a medida — para kids, teens, grown ups y brands. Un estudio donde se hace, no solo se mira.</p>
+    <div class="hero-cue"><span>Seguí bajando</span><span class="arrow">↓</span></div>
+  </div>
+</section>
+
+<!-- ============ INTRO ============ -->
+<section id="intro">
+  <p class="intro-text">MAgic! no es un lugar para <span class="dim">mirar</span>.<br>Es un lugar para <strong>hacer</strong> — con las manos, con quien quieras, hasta que quede algo que valga la pena llevarse a casa.</p>
+</section>
+
+<!-- ============ WORLDS — DESKTOP: horizontal doors ============ -->
+<div id="worlds-desktop">
+  <section class="door" id="door-kids" data-door="kids">
+    <span class="door-index">01 / Kids</span>
+    <div class="door-visual"><div class="door-ph"><span>Foto — charm bar en acción</span></div></div>
+    <div class="door-inner">
+      <div class="door-head">
+        <h2>Birthdays &amp;<br>workshops.</h2>
+        <p class="door-claim">Charm bar, bead bar, paint lab y playdates. El único mundo que desbloquea la paleta completa.</p>
+        <p class="door-list">Charm Bar · Bead Bar · Paint Lab · Playdates</p>
+      </div>
+      <div class="door-cta"><a href="#final" class="btn btn-line">Armá tu cumple</a></div>
+    </div>
+  </section>
+
+  <section class="door" id="door-teens" data-door="teens">
+    <span class="door-index">02 / Teens</span>
+    <div class="door-visual"><div class="door-ph"><span>Foto — charms colgando, close-up</span></div></div>
+    <div class="door-inner">
+      <div class="door-head">
+        <h2>Make it.<br>Wear it. Post it.</h2>
+        <p class="door-claim">Bag charms, llaveros, gorras y phone charms. Más rápido, más directo.</p>
+        <p class="door-list">Bag Charms · Llaveros · Gorras · Phone Charms</p>
+      </div>
+      <div class="door-cta"><a href="#final" class="btn btn-line">Sumate a un taller</a></div>
+    </div>
+  </section>
+
+  <section class="door" id="door-grownups" data-door="grownups">
+    <span class="door-index">03 / Grown Ups</span>
+    <div class="door-visual"><div class="door-ph"><span>Foto — mesa editorial, luz cálida</span></div></div>
+    <div class="door-inner">
+      <div class="door-head">
+        <h2>Momentos<br>para celebrar.</h2>
+        <p class="door-claim">Girls night, bridal shower, baby shower y talleres privados.</p>
+        <p class="door-list">Girls Night · Bridal Shower · Baby Shower · Privados</p>
+      </div>
+      <div class="door-cta"><a href="#final" class="btn btn-line">Consultá fechas</a></div>
+    </div>
+  </section>
+
+  <section class="door" id="door-brands" data-door="brands">
+    <span class="door-index">04 / Brands</span>
+    <div class="door-visual"><div class="door-ph"><span>Foto — manos trabajando, mesa limpia</span></div></div>
+    <div class="door-inner">
+      <div class="door-head">
+        <h2>Activaciones<br>participativas.</h2>
+        <p class="door-claim">Eventos corporativos, pop-ups, PR gifting, retail y co-branding.</p>
+        <p class="door-list">Corporate · Pop-ups · PR Gifting · Co-branding</p>
+      </div>
+      <div class="door-cta"><a href="#final" class="btn btn-line">Coordiná una activación</a></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ WORLDS — MOBILE: vertical rooms ============ -->
+<div id="worlds-mobile">
+  <section class="room" id="room-kids">
+    <div class="room-inner">
+      <div class="room-index">01 / Kids</div>
+      <h2>Birthdays &amp; workshops.</h2>
+      <p class="room-claim">Charm bar, bead bar, paint lab y playdates.</p>
+      <p class="room-list">Charm Bar · Bead Bar · Paint Lab · Playdates</p>
+      <div class="room-cta"><a href="#final" class="btn btn-line">Armá tu cumple</a></div>
+    </div>
+  </section>
+  <section class="room" id="room-teens">
+    <div class="room-inner">
+      <div class="room-index">02 / Teens</div>
+      <h2>Make it. Wear it. Post it.</h2>
+      <p class="room-claim">Bag charms, llaveros, gorras y phone charms.</p>
+      <p class="room-list">Bag Charms · Llaveros · Gorras · Phone Charms</p>
+      <div class="room-cta"><a href="#final" class="btn btn-line">Sumate a un taller</a></div>
+    </div>
+  </section>
+  <section class="room" id="room-grownups">
+    <div class="room-inner">
+      <div class="room-index">03 / Grown Ups</div>
+      <h2>Momentos para celebrar.</h2>
+      <p class="room-claim">Girls night, bridal shower, baby shower y talleres privados.</p>
+      <p class="room-list">Girls Night · Bridal Shower · Baby Shower · Privados</p>
+      <div class="room-cta"><a href="#final" class="btn btn-line">Consultá fechas</a></div>
+    </div>
+  </section>
+  <section class="room" id="room-brands">
+    <div class="room-inner">
+      <div class="room-index">04 / Brands</div>
+      <h2>Activaciones participativas.</h2>
+      <p class="room-claim">Eventos corporativos, pop-ups, PR gifting, retail y co-branding.</p>
+      <p class="room-list">Corporate · Pop-ups · PR Gifting · Co-branding</p>
+      <div class="room-cta"><a href="#final" class="btn btn-line">Coordiná una activación</a></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="how-inner">
+    <h2>Tres pasos, cero complicaciones.</h2>
+    <div class="how-rows">
+      <div class="how-row">
+        <div class="how-num">01</div>
+        <h3>Elegí</h3>
+        <p>Tu mundo, tu formato: charm bar, taller o activación a medida para la ocasión que sea.</p>
+      </div>
+      <div class="how-row">
+        <div class="how-num">02</div>
+        <h3>Hacé</h3>
+        <p>Manos a la obra, con materiales premium y guía experta — sin presión, a tu ritmo.</p>
+      </div>
+      <div class="how-row">
+        <div class="how-num">03</div>
+        <h3>Recordá</h3>
+        <p>Te llevás algo hecho por vos. Pequeños detalles, grandes momentos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE MAKING ============ -->
+<section id="making">
+  <div class="making-head"><h2>Cuatro miradas, una magia.</h2></div>
+  <div class="making-strip">
+    <div class="making-tile"><div class="ph">The Making</div></div>
+    <div class="making-tile"><div class="ph">The Details</div></div>
+    <div class="making-tile"><div class="ph">The Experience</div></div>
+    <div class="making-tile"><div class="ph">The Result</div></div>
+  </div>
+</section>
+
+<!-- ============ PROOF ============ -->
+<section id="proof">
+  <div class="proof-inner">
+    <div class="proof-item">
+      <blockquote>"El cumple de mi hija fue el mejor de todos. Las nenas no paraban de hacer charms."</blockquote>
+      <cite>Mamá, charm bar de cumpleaños</cite>
+    </div>
+    <div class="proof-item">
+      <blockquote>"Organizamos un pop-up con MAgic! para nuestro lanzamiento. Nivel premium, cero estrés."</blockquote>
+      <cite>Brand manager, activación corporativa</cite>
+    </div>
+    <div class="proof-item">
+      <blockquote>"Mi despedida de soltera fue distinta a todas las demás. Elegante y divertida a la vez."</blockquote>
+      <cite>Novia, bridal shower</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section id="final">
+  <svg class="final-star final-star--a" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path d="M50 0 C53 35 65 47 100 50 C65 53 53 65 50 100 C47 65 35 53 0 50 C35 47 47 35 50 0 Z"/></svg>
+  <div class="final-inner">
+    <h2>Make some magic.</h2>
+    <p class="final-line">Made by you. Made to remember.</p>
+    <div class="final-actions">
+      <a href="https://wa.me/595993600505" class="btn btn-lav" target="_blank" rel="noopener">Reservá por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-row">
+    <span>MAgic! Creative Studio, Asunción</span>
+    <a href="https://instagram.com/magic.creativestudiopy" target="_blank" rel="noopener">Instagram</a>
+    <span>Lun – Sáb, 9:00 – 18:00</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Hero entrance — one orchestrated sequence, no per-section fade-ups */
+  if (!reduceMotion) {
+    var mark = document.getElementById('hero-mark');
+    var headline = document.getElementById('hero-headline');
+    mark.style.opacity = 0; mark.style.transform = 'scale(.85)';
+    headline.style.opacity = 0; headline.style.transform = 'translateY(24px)';
+    mark.style.transition = 'opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1)';
+    headline.style.transition = 'opacity .9s cubic-bezier(.2,.8,.2,1) .25s, transform .9s cubic-bezier(.2,.8,.2,1) .25s';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        mark.style.opacity = 1; mark.style.transform = 'scale(1)';
+        headline.style.opacity = 1; headline.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  /* Door rail: track active door via horizontal scroll position */
+  var doorsWrap = document.getElementById('worlds-desktop');
+  var rail = document.getElementById('door-rail');
+  var dots = rail ? rail.querySelectorAll('.rail-dot') : [];
+  var doors = doorsWrap ? Array.prototype.slice.call(doorsWrap.querySelectorAll('.door')) : [];
+  var darkDoors = { teens:1, brands:1 };
+
+  function setActiveDoor(name){
+    dots.forEach(function(d){ d.classList.toggle('is-active', d.dataset.door === name); });
+    rail.classList.toggle('on-dark', !!darkDoors[name]);
+  }
+
+  if (doorsWrap && doors.length) {
+    doorsWrap.addEventListener('scroll', function(){
+      var i = Math.round(doorsWrap.scrollLeft / doorsWrap.clientWidth);
+      i = Math.max(0, Math.min(doors.length - 1, i));
+      setActiveDoor(doors[i].dataset.door);
+    }, { passive: true });
+    setActiveDoor(doors[0].dataset.door);
+
+    /* Let vertical wheel scroll drive the horizontal door strip while hovered */
+    doorsWrap.addEventListener('wheel', function(e){
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        doorsWrap.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
