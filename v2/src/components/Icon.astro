@@ -1,0 +1,39 @@
+---
+// The two channel icons, drawn as line icons in currentColor so they take each surface's ink.
+interface Props {
+  name: "whatsapp" | "instagram";
+  size?: number;
+}
+
+const { name, size = 20 } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  class="shrink-0"
+>
+  {name === "whatsapp" ? (
+    <>
+      <path d="M3.6 20.4l1.2-4.2a8.4 8.4 0 1 1 3.2 3.1l-4.4 1.1z" />
+      <path
+        d="M9.3 8.4c-.4 1.1.3 2.7 1.7 4.1s3 2.1 4.1 1.7l.7-1.5-1.8-1-.8.7c-.7-.3-1.6-1.2-1.9-1.9l.7-.8-1-1.8-1.7.5z"
+        fill="currentColor"
+        stroke="none"
+      />
+    </>
+  ) : (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="3.8" />
+      <circle cx="17" cy="7" r="0.9" fill="currentColor" stroke="none" />
+    </>
+  )}
+</svg>

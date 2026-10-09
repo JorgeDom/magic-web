@@ -34,7 +34,16 @@ const pool = (
 ): Pool => ({ colour, x, y, size, strength, drift });
 
 type WashSet =
-  "hero" | "intro" | "how-card" | "how" | "making" | "final" | WorldId | `${WorldId}-card`;
+  | "hero"
+  | "intro"
+  | "how-card"
+  | "how"
+  | "making"
+  | "final"
+  | "lost"
+  | "legal"
+  | WorldId
+  | `${WorldId}-card`;
 
 // On cream, muted text needs the wash beneath it to stay under about 0.28, so stronger pools
 // are centred in a corner or off the edge, where only their faint outer part can reach copy.
@@ -83,6 +92,12 @@ const SETS: Record<WashSet, Pool[]> = {
     pool("lavender", 98, 16, 56, 0.33, 60),
     pool("peach", 64, 106, 48, 0.38, 80),
   ],
+  lost: [
+    pool("lavender", 100, 8, 54, 0.42, 0),
+    pool("peach", 88, 100, 44, 0.34, 0),
+    pool("rosa", -4, 96, 46, 0.3, 0),
+  ],
+  legal: [pool("lavender", 102, 4, 46, 0.32, 0), pool("sage", -4, 60, 40, 0.24, 0)],
 };
 
 interface Props {

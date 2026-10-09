@@ -1,21 +1,242 @@
 ---
+// The page that is not there, told in the bead language of Cómo funciona and the closing
+// necklace: the thread has come undone, and its beads have slid off the cut end and rolled
+// across the table. They fall once, as the page opens; with reduced motion they are already
+// lying where they stopped.
 import Base from "../components/Base.astro";
 import Button from "../components/Button.astro";
+import Footer from "../components/Footer.astro";
+import Nav from "../components/Nav.astro";
 import Star from "../components/Star.astro";
+import Wash from "../components/Wash.astro";
 import { COPY } from "../lib/content";
 import { SITE } from "../lib/site";
+
+// Seen from the side, in units of --u: length along the thread, thickness across it.
+const SHAPES = {
+  round: { along: 0.9, across: 0.9, radius: "9999px" },
+  cube: { along: 0.7, across: 0.7, radius: "24%" },
+  tube: { along: 1.05, across: 0.56, radius: "0.28em" },
+  seed: { along: 0.26, across: 0.26, radius: "9999px" },
+  spacer: { along: 0.12, across: 0.78, radius: "9999px" },
+} as const;
+type Shape = keyof typeof SHAPES;
+
+// Still on the thread, up to the cut.
+const STRUNG: [Shape, string][] = [
+  ["seed", "bg-chocolate"],
+  ["round", "bg-rosa"],
+  ["tube", "bg-sage"],
+  ["round", "bg-lavender"],
+];
+
+// Fallen: how far past the cut each came to rest (in --u) and how it lies. A flat one lies on
+// its side.
+const SPILLED: {
+  shape: Shape | "star";
+  colour?: string;
+  dx: number;
+  tilt: number;
+  flat?: boolean;
+}[] = [
+  { shape: "round", colour: "bg-peach", dx: 0.8, tilt: 0 },
+  { shape: "seed", colour: "bg-chocolate", dx: 1.85, tilt: 0 },
+  { shape: "cube", colour: "bg-blue", dx: 2.4, tilt: 16 },
+  { shape: "spacer", colour: "bg-gold", dx: 3.25, tilt: 0, flat: true },
+  { shape: "round", colour: "bg-lavender", dx: 4.15, tilt: 0 },
+  { shape: "star", dx: 5.5, tilt: -22 },
+];
+
+const bead = (shape: Shape, flat = false) => {
+  const { along, across, radius } = SHAPES[shape];
+  return `--along:${flat ? across : along};--across:${flat ? along : across};border-radius:${radius}`;
+};
 ---
 
 <Base title={`${COPY.notFound.title} | ${SITE.name}`} noindex>
+  <Nav solid />
   <main
     id="contenido"
-    class="shell flex min-h-svh flex-col items-start justify-center py-(--section)"
+    class="relative isolate flex min-h-svh flex-col justify-center overflow-x-clip pt-(--nav-height)"
   >
-    <Star class="h-12" />
-    <h1 class="mt-8 text-headline">{COPY.notFound.title}</h1>
-    <p class="mt-4 max-w-measure text-lead text-ink-muted">{COPY.notFound.text}</p>
-    <Button href="/" class="mt-8">
-      {COPY.notFound.cta}
-    </Button>
+    <Wash set="lost" fade="bottom" />
+    <div class="shell py-(--section)">
+      <div aria-hidden="true" class="spill">
+        <div class="thread bg-ink"></div>
+        <div class="strung">
+          {STRUNG.map(([shape, colour]) => (
+            <span class:list={["bead", shape, colour]} style={bead(shape)} />
+          ))}
+        </div>
+        {SPILLED.map(({ shape, colour, dx, tilt, flat }, index) => (
+          <span class="roll" style={`--dx:${dx};--tilt:${tilt}deg;--i:${index}`}>
+            {shape === "star" ? (
+              <span class="bead charm">
+                <Star class="h-full" />
+              </span>
+            ) : (
+              <span class:list={["bead", shape, colour]} style={bead(shape, flat)} />
+            )}
+          </span>
+        ))}
+      </div>
+
+      <p class="mt-12 text-label text-ink-muted lg:mt-16">Error 404</p>
+      <h1 class="mt-3 max-w-[16ch] text-headline">{COPY.notFound.title}</h1>
+      <p class="mt-4 max-w-measure text-lead text-ink-muted">{COPY.notFound.text}</p>
+      <div class="mt-9 flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
+        <Button href="/">{COPY.notFound.cta}</Button>
+        <Button whatsapp={COPY.hero.message} variant="quiet">
+          {COPY.hero.cta}
+        </Button>
+      </div>
+    </div>
   </main>
+  <Footer />
 </Base>
+
+<style>
+  .spill {
+    --u: clamp(34px, 4.6vw, 68px);
+    /* Where the thread was cut, and how high it runs above the table. */
+    --cut: 34%;
+    --height: calc(var(--u) * 0.6);
+    --fall: calc(var(--u) * 2.1);
+    position: relative;
+    height: calc(var(--height) + var(--fall) + var(--u) * 0.2);
+    /* A soft contact shadow, as under anything on the page that could be picked up. */
+    filter: drop-shadow(0 6px 8px rgb(76 64 57 / 0.16));
+  }
+
+  @media (width >= 64rem) {
+    .spill {
+      --cut: 40%;
+    }
+  }
+
+  .thread {
+    position: absolute;
+    top: var(--height);
+    left: calc(var(--bleed) * -1);
+    width: calc(var(--bleed) + var(--cut));
+    height: 1.5px;
+  }
+
+  /* The cut end: two fibres fraying apart. */
+  .thread::before,
+  .thread::after {
+    position: absolute;
+    top: 0;
+    left: calc(100% - 1px);
+    width: 6px;
+    height: 1px;
+    background: inherit;
+    content: "";
+    transform-origin: left center;
+  }
+
+  .thread::before {
+    rotate: -14deg;
+  }
+
+  .thread::after {
+    rotate: 9deg;
+  }
+
+  .strung {
+    position: absolute;
+    top: var(--height);
+    right: calc(100% - var(--cut) + var(--u) * 0.5);
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    translate: 0 -50%;
+  }
+
+  .bead {
+    position: relative;
+    display: block;
+    flex: none;
+    width: calc(var(--u) * var(--along));
+    height: calc(var(--u) * var(--across));
+    /* Radii given in em scale with the bead. */
+    font-size: var(--u);
+  }
+
+  /* The same small highlight as the necklace's beads, lit from the top left. */
+  .bead:not(.seed, .charm)::after {
+    position: absolute;
+    top: 16%;
+    left: 18%;
+    width: max(3px, 22%);
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.38);
+    content: "";
+  }
+
+  .spacer::after {
+    background: rgb(255 255 255 / 0.5);
+  }
+
+  .charm {
+    width: auto;
+    height: calc(var(--u) * 1.3);
+  }
+
+  /* A fallen bead: the outer span rolls it along the table, the bead itself drops and turns. */
+  .roll {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--cut) + var(--dx) * var(--u));
+    display: grid;
+    place-items: end center;
+    width: 0;
+  }
+
+  .roll .bead {
+    rotate: var(--tilt);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .roll {
+      animation: roll 1100ms var(--ease-editorial) both;
+      animation-delay: calc(240ms + var(--i) * 110ms);
+    }
+
+    .roll .bead {
+      animation: drop 1100ms both;
+      animation-delay: inherit;
+    }
+  }
+
+  @keyframes roll {
+    from {
+      translate: calc(var(--dx) * var(--u) * -1) 0;
+    }
+  }
+
+  /* Gravity: it accelerates down, bounces once, settles. */
+  @keyframes drop {
+    0% {
+      translate: 0 calc(var(--fall) * -1);
+      rotate: 0deg;
+      animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+    }
+    38% {
+      translate: 0 0;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+    }
+    56% {
+      translate: 0 calc(var(--u) * -0.22);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+    }
+    72% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 0;
+      rotate: var(--tilt);
+    }
+  }
+</style>

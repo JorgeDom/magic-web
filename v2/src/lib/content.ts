@@ -63,8 +63,9 @@ export const COPY = {
     write: "Escribinos",
     follow: "Seguinos",
     where: "Dónde estamos",
-    hours: "Horarios",
+    message: "Hola MAgic! Vengo de su página web y quiero hacerles una consulta.",
     rights: "Todos los derechos reservados.",
+    legal: "Aviso legal y privacidad",
   },
   film: { play: "Reproducir video", pause: "Pausar video" },
   notFound: {

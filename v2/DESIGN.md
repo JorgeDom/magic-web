@@ -531,7 +531,9 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`sound-toggle`**: a pill button with a pressed state ("Sonido: apagado / encendido"). Lives in the hero corner.
 
-**`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp, Instagram, location, hours in four hairline-separated columns.
+**`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp and Instagram (each a line icon in a ring that fills on hover, with the number or handle beside it) and "Asunción, Paraguay" in hairline-separated columns. The city only, never a street address, and no hours. Below: the copyright and the link to the legal notice.
+
+**Inner pages** (`/legal`, the 404): the nav already solid, one cream ground with a light wash, the footer. The 404 tells its message in the bead language: a cut thread with its beads spilled across the table, falling once as the page opens.
 
 ## Do's and Don'ts
 
@@ -591,7 +593,8 @@ Designed at 390px first. Most visitors arrive on phones over mobile data.
 - **Service menu.** Not in the repository. World service lists stay `[TODO]` until it arrives. The brand book supplies only experience names: Charm Bar by MAgic!, MAgic! Workshop, MAgic! Station, MAgic! Corner.
 - **Photography and film.** None available yet. Every media frame is an Arena placeholder labelled with its required shot type.
 - **Testimonials.** The "Lo que cuentan" section was removed on 2026-10-08 at the studio's request. If it returns, it needs real quotes: none were ever confirmed.
-- **Location and hours.** Only "Asunción, Paraguay" is known; street address and hours are unconfirmed.
+- **Location and hours.** By the studio's decision (2026-10-09) the site shows "Asunción, Paraguay" only: no street address, no hours.
+- **Legal identity.** The legal notice needs the registered name and RUC (`SITE.legal` in `src/lib/site.ts`); both show as `[TODO]`.
 - **Rive artwork.** No `.riv` files exist, so world signatures are CSS shapes with physics-driven motion and Rive is not installed. Add it when there is artwork to play.
 - **The "ting".** No approved sound exists. The site synthesises a short bell tone as a stand-in.
 - **Logo gold versus token gold.** The star in the raster logo measures about #E8B463; the palette's Magic Gold is #ECAF42. Standalone stars use the token. A vector logo would settle which is right.

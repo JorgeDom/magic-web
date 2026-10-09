@@ -14,6 +14,7 @@
 import { CLAIMS, COPY, sentences } from "../lib/content";
 import { FORM_ENDPOINT, SITE } from "../lib/site";
 import Button from "./Button.astro";
+import Icon from "./Icon.astro";
 import Star from "./Star.astro";
 import Wash from "./Wash.astro";
 
@@ -49,19 +50,7 @@ const field =
     <div class="rise mt-9 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
       <Button whatsapp={COPY.final.message}>{COPY.final.cta}</Button>
       <Button href={SITE.instagram.url} variant="quiet">
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          aria-hidden="true"
-        >
-          <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
-          <circle cx="12" cy="12" r="3.8"></circle>
-          <circle cx="17" cy="7" r="0.9" fill="currentColor" stroke="none"></circle>
-        </svg>
+        <Icon name="instagram" />
         {COPY.final.instagram}
       </Button>
     </div>

@@ -1,0 +1,162 @@
+---
+// Legal notice and privacy, on one page that every footer links to. It covers what applies to
+// this site under Paraguayan law: who the provider is and how to reach them (Law 4868/2013 on
+// electronic commerce, art. 7), how prices and conditions are given before a booking (Law
+// 1334/1998 on consumer protection), what personal data is handled, image rights and the
+// consumer authority. Law 7593/2025 on personal data enters into force in 2027; this notice
+// already follows its spirit. Have a Paraguayan lawyer review it, and keep it true: if the site
+// gains analytics, cookies or a form, rewrite "Privacidad" first.
+//
+// The wording lives here rather than in lib/content.ts because it is one document, read whole.
+import Base from "../components/Base.astro";
+import Footer from "../components/Footer.astro";
+import Nav from "../components/Nav.astro";
+import Wash from "../components/Wash.astro";
+import { COPY } from "../lib/content";
+import { FORM_ENDPOINT, SITE, todo, whatsappUrl } from "../lib/site";
+
+const UPDATED = "9 de octubre de 2026";
+const message = "Hola MAgic! Quiero hacer una consulta sobre mis datos personales.";
+const external = { target: "_blank", rel: "noopener noreferrer" };
+const link = "underline underline-offset-4 hover:decoration-2";
+// Links inside sentences open in the same tab. These sentences are strings so the formatter
+// cannot put a space between a link and the full stop after it.
+const a = (href: string, text: string) => `<a href="${href}" class="${link}">${text}</a>`;
+const HOSTED = [
+  `El sitio está alojado en Cloudflare, que procesa datos técnicos de cada visita, como la dirección IP y el tipo de navegador, para entregar las páginas y protegerlas de ataques. Lo hace según su ${a("https://www.cloudflare.com/privacypolicy/", "política de privacidad")}.`,
+  `Cuando nos escribís por WhatsApp o nos seguís en Instagram, usás servicios de Meta, con sus propias condiciones y su ${a("https://www.facebook.com/privacy/policy/", "política de privacidad")}. Lo que nos contás (tu nombre, tu número, la fecha y el tipo de experiencia) lo usamos solo para responderte y organizar tu reserva. No lo vendemos ni lo compartimos con nadie para publicidad.`,
+];
+const RIGHTS = `Podés pedirnos en cualquier momento qué datos tuyos tenemos, que los corrijamos o que los borremos: ${a(whatsappUrl(message), "escribinos por WhatsApp")}. Si sos menor de edad, pedile a tu mamá, papá o a quien te cuide que nos escriba.`;
+
+const identity: [string, string][] = [
+  ["Nombre comercial", SITE.name],
+  ["Razón social", SITE.legal.entity ?? todo("Razón social")],
+  ["RUC", SITE.legal.ruc ?? todo("RUC")],
+  ["Domicilio", `${SITE.location.city}, ${SITE.location.country}`],
+];
+---
+
+<Base
+  title={`${COPY.footer.legal} | ${SITE.name}`}
+  description={`Quién está detrás de ${SITE.name}, cómo contactarnos y qué hacemos con tus datos.`}
+>
+  <Nav solid />
+  <main id="contenido" class="relative isolate overflow-x-clip pt-(--nav-height)">
+    <Wash set="legal" fade="bottom" />
+    <div class="shell py-(--section)">
+      <article class="legal max-w-[44rem]">
+        <h1 class="text-headline">{COPY.footer.legal}</h1>
+        <p class="mt-5 text-lead text-ink-muted">
+          Quién está detrás de este sitio, cómo reservar y qué hacemos con tus datos.
+        </p>
+        <p class="mt-3 text-label font-normal text-ink-muted">Última actualización: {UPDATED}</p>
+
+        <h2>Quiénes somos</h2>
+        <dl>
+          {identity.map(([term, value]) => (
+            <div>
+              <dt>{term}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+          <div>
+            <dt>WhatsApp</dt>
+            <dd>
+              <a href={whatsappUrl(COPY.footer.message)} {...external} class={link}>
+                {SITE.whatsapp.display}
+                <span class="sr-only">&nbsp;{COPY.newTab}</span>
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Instagram</dt>
+            <dd>
+              <a href={SITE.instagram.url} {...external} class={link}>
+                @{SITE.instagram.handle}
+                <span class="sr-only">&nbsp;{COPY.newTab}</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <h2>Reservas y precios</h2>
+        <p>
+          Este sitio presenta lo que hacemos: no vende ni cobra en línea. Las reservas se coordinan
+          por WhatsApp. Antes de que confirmes, te pasamos por escrito qué incluye la experiencia,
+          el precio final con impuestos incluidos, cómo se paga y qué pasa si necesitás cambiar la
+          fecha o cancelar.
+        </p>
+
+        <h2>Privacidad</h2>
+        <p>
+          Este sitio no usa cookies, no tiene herramientas de analítica ni píxeles de publicidad y
+          no guarda nada en tu navegador. Las tipografías, las fotos y el resto de los archivos se
+          sirven desde nuestro propio sitio.
+        </p>
+        {HOSTED.map((paragraph) => (
+          <p set:html={paragraph} />
+        ))}
+        {FORM_ENDPOINT && (
+          <p>
+            Si usás el formulario de contacto, lo que escribís nos llega a través de un servicio
+            externo de formularios, que lo guarda solo para entregárnoslo.
+          </p>
+        )}
+        <p set:html={RIGHTS} />
+
+        <h2>Fotos</h2>
+        <p>
+          Si aparecés en una foto de este sitio, o aparece tu hijo o tu hija, y preferís que no
+          esté, escribinos y la quitamos.
+        </p>
+
+        <h2>Marca y contenidos</h2>
+        <p>
+          La marca {SITE.name}, el logo, las fotos y los textos de este sitio son nuestros o se usan
+          con permiso. Si querés usarlos, pedinos autorización antes.
+        </p>
+
+        <h2>Reclamos</h2>
+        <p>
+          Si algo no salió como esperabas, escribinos primero: lo queremos resolver. También podés
+          acudir a la Secretaría de Defensa del Consumidor y el Usuario (SEDECO). Este aviso se rige
+          por las leyes de la República del Paraguay.
+        </p>
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .legal h2 {
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-hairline);
+    font-size: var(--text-title);
+    font-weight: var(--text-title--font-weight);
+    line-height: var(--text-title--line-height);
+    letter-spacing: var(--text-title--letter-spacing);
+  }
+
+  .legal h2 + *,
+  .legal p + p {
+    margin-top: 1rem;
+  }
+
+  .legal p:not(.text-lead, .text-label) {
+    color: var(--color-ink-muted);
+  }
+
+  .legal dl > div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr;
+    gap: 1rem;
+    padding-block: 0.625rem;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .legal dt {
+    color: var(--color-ink-muted);
+  }
+</style>

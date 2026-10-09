@@ -29,10 +29,12 @@ minifies CSS, and the scroll animations depend on how it does that (see `astro.c
 
 ```
 src/pages/index.astro     The page: one component per section, in reading order
+src/pages/legal.astro     Legal notice and privacy (linked from every footer)
+src/pages/404.astro       Not found
 src/components/           One file per section; each holds its own markup, styles and script
 src/global.css            Design tokens (colours, type, radii, world modes) and scroll primitives
 src/lib/content.ts        Every word on the page, and the four worlds
-src/lib/site.ts           Business facts (WhatsApp, Instagram, address, hours) and env switches
+src/lib/site.ts           Business facts (WhatsApp, Instagram, city, legal identity) and env switches
 src/lib/client.ts         Browser helpers shared by the components' scripts
 src/lib/star.ts           The star's outline, traced from the logo
 src/lib/star3d.ts         The WebGL star (loaded on capable desktops only)
@@ -44,7 +46,7 @@ public/                   Files served as they are: icons, Open Graph image, rob
 ## Editing content
 
 - **Copy and worlds:** `src/lib/content.ts`.
-- **WhatsApp, Instagram, address, hours:** `src/lib/site.ts`.
+- **WhatsApp, Instagram, registered name and RUC:** `src/lib/site.ts`.
 
 Anything not yet confirmed shows on the page as `[TODO]`. Search the built page for `[TODO]`
 before launch.
@@ -67,6 +69,21 @@ placeholder. To add a photo, use the next number:
 "Así se hace" uses `making`, `details`, `experience` and `result`.
 
 For each new photo, add a line to `PHOTO_ALT` in `src/lib/content.ts` saying what it shows.
+
+## Before launch: legal
+
+`/legal` covers what applies to this site in Paraguay (Law 4868/2013 on e-commerce, Law
+1334/1998 on consumer protection; Law 7593/2025 on personal data from 2027). It is a starting
+point, not legal advice: have a Paraguayan lawyer read it once. Then keep it true:
+
+- Fill in the registered name and RUC in `src/lib/site.ts` (`SITE.legal`).
+- Before every booking, send in writing what is included, the final price with taxes, how to
+  pay, and the change and cancellation terms. The legal page promises this.
+- Keep written permission for every photo with people in it, from a parent or guardian for
+  every child. Remove a photo whenever someone asks.
+- The page says the site has no cookies, analytics or ad pixels. If you add any (including
+  Cloudflare Web Analytics), rewrite its "Privacidad" section first; trackers that set
+  cookies also need a consent banner.
 
 ## Video
 

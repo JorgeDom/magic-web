@@ -1,32 +1,46 @@
 ---
 // Fixed top bar. Over the hero it is transparent and shows only the booking button, because
 // the hero already carries the logo. Once the hero has scrolled away it gains a cream ground,
-// a hairline and the compact logo.
+// a hairline and the compact logo. Pages without a hero (`solid`) show it that way from the start.
 import { Image } from "astro:assets";
 import compactLogo from "../assets/logo/compact.png";
 import { COPY } from "../lib/content";
 import Button from "./Button.astro";
+
+interface Props {
+  solid?: boolean;
+}
+
+const { solid = false } = Astro.props;
 ---
 
-<div
-  data-nav-sentinel
-  aria-hidden="true"
-  class="pointer-events-none absolute top-0 left-0 h-[70svh] w-px"
-></div>
+{!solid && (
+  <div
+    data-nav-sentinel
+    aria-hidden="true"
+    class="pointer-events-none absolute top-0 left-0 h-[70svh] w-px"
+  />
+)}
 <header
   data-nav
-  data-past-hero="false"
+  data-past-hero={String(solid)}
   class="group/nav fixed inset-x-0 top-0 z-50 border-b border-transparent text-chocolate transition-[background-color,border-color] duration-(--duration-ui) data-[past-hero=true]:border-[rgb(76_64_57/0.14)] data-[past-hero=true]:bg-cream"
 >
   <div class="shell flex h-(--nav-height) items-center justify-between">
     <a
-      href="#inicio"
+      href={solid ? "/" : "#inicio"}
       aria-label={COPY.nav.home}
-      aria-hidden="true"
-      tabindex="-1"
+      aria-hidden={solid ? undefined : "true"}
+      tabindex={solid ? undefined : -1}
       class="invisible -ml-2 flex min-h-11 items-center px-2 opacity-0 transition-[opacity,visibility] duration-(--duration-ui) group-data-[past-hero=true]/nav:visible group-data-[past-hero=true]/nav:opacity-100"
     >
-      <Image src={compactLogo} alt="" width={160} loading="lazy" class="h-7 w-auto lg:h-8" />
+      <Image
+        src={compactLogo}
+        alt=""
+        width={160}
+        loading={solid ? "eager" : "lazy"}
+        class="h-7 w-auto lg:h-8"
+      />
     </a>
     <Button
       whatsapp={COPY.hero.message}

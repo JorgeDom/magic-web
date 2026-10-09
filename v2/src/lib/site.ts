@@ -12,15 +12,15 @@ export const SITE = {
     handle: "magic.creativestudiopy",
     url: "https://instagram.com/magic.creativestudiopy",
   },
-  location: {
-    city: "Asunción",
-    country: "Paraguay",
-    countryCode: "PY",
-    /** Street address. TODO: confirm with the studio. */
-    address: null as string | null,
+  location: { city: "Asunción", country: "Paraguay", countryCode: "PY" },
+  /**
+   * Who stands behind the site, for the legal page (Law 4868/2013, art. 7, asks covered
+   * providers to identify themselves). TODO: the registered name and RUC, from the studio.
+   */
+  legal: {
+    entity: null as string | null,
+    ruc: null as string | null,
   },
-  /** Opening hours as shown to visitors. TODO: confirm with the studio. */
-  hours: null as string | null,
 } as const;
 
 const env = import.meta.env;
@@ -40,7 +40,7 @@ export function todo(what: string): string {
   return `[TODO] ${what}`;
 }
 
-/** schema.org LocalBusiness. Unconfirmed facts (street address, hours) are simply left out. */
+/** schema.org LocalBusiness. The site publishes the city only, never a street address. */
 export function localBusinessJsonLd(origin: string): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
@@ -53,7 +53,6 @@ export function localBusinessJsonLd(origin: string): Record<string, unknown> {
     telephone: `+${SITE.whatsapp.number}`,
     address: {
       "@type": "PostalAddress",
-      ...(SITE.location.address ? { streetAddress: SITE.location.address } : {}),
       addressLocality: SITE.location.city,
       addressCountry: SITE.location.countryCode,
     },
