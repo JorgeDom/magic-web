@@ -4,6 +4,7 @@
   "private": true,
   "description": "MAgic! Creative Studio website, second iteration (Astro static build for Cloudflare)",
   "type": "module",
+  "packageManager": "pnpm@12.9.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node check-limits.mjs",

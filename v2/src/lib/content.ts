@@ -146,13 +146,29 @@ export const WORLDS: readonly World[] = [
 export const PHOTO_ALT: Record<string, string> = {
   kids: "Dos chicos con delantales de MAgic! armando osos de peluche en una mesa al aire libre",
   "kids-2": "Una nena elige cuentas de colores de una caja organizadora",
+  "kids-3":
+    "Una nena con delantal de MAgic! pinta de rosa una alcancía de cerámica en forma de chanchito",
+  "kids-4":
+    "Nenas pintando figuras de cerámica en mesas bajas, sentadas en almohadones, en un estudio luminoso de MAgic!",
   teens: "Chicas eligiendo charms en una mesa con luces cálidas y arcos lilas",
+  "teens-2":
+    "Cinco chicas arman pulseras alrededor de una mesa lila con cajas de cuentas y bolsas de MAgic!",
+  "teens-3": "Manos enganchan un bag charm de cuentas de colores a una cartera crema",
+  "teens-4":
+    "Fundas transparentes de celular, correas trenzadas, phone charms de cuentas y stickers sobre fondo lila",
+  "grown-ups-3": "Bodies de bebé pintados con flores y un sol, colgados de una cuerda con broches",
+  "grown-ups-4":
+    "Caja de regalo de MAgic! con papel rosa, aros y anillos dorados, abanico, tarjetas y cintas",
   "grown-ups":
     "Un grupo armando piezas en una mesa larga junto a la ventana, con una instructora de MAgic!",
   "grown-ups-2":
     "Mesa preparada para un taller privado, con kits de cuentas y bolsas de MAgic! en cada lugar",
   brands:
     "Dos anfitrionas de MAgic! atienden a clientas en una estación de charms en un evento de marca",
+  "brands-2": "Una clienta engancha un charm de flor al cierre de un neceser de MAgic!",
+  "brands-3":
+    "En el mostrador de una tienda, una anfitriona de MAgic! le pone un charm con la letra A y un moño a la cartera de una clienta",
+  "brands-4": "Manos atan un moño verde sobre cajas de regalo de MAgic! listas para entregar",
   making:
     "Manos enhebrando un collar de perlas sobre una mesa rosa con cuentas y bolsitas de MAgic!",
   details: "Mesa con mantel rosa, perlas, cadenas doradas, pinzas y bolsitas de tela de MAgic!",

@@ -1,6 +1,6 @@
 ---
-// Chocolate ground: the monochrome logo from the brand book, then how to reach the studio, and
-// the legal notice that every page links to. The city only, never a street address.
+// Chocolate ground: the monochrome logo from the brand book, then how to reach the studio.
+// The city only, never a street address.
 import { Image } from "astro:assets";
 import monoLogo from "../assets/logo/mono.png";
 import { COPY } from "../lib/content";
@@ -62,17 +62,10 @@ const ring =
         </p>
       </div>
     </div>
-    <div class="mt-16 flex flex-col gap-2 text-label font-normal text-ink-muted sm:flex-row sm:items-center sm:justify-between">
-      <p>
-        © {new Date().getFullYear()}
-        {SITE.name}. {COPY.footer.rights}
-      </p>
-      <a
-        href="/legal"
-        class="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-ink"
-      >
-        {COPY.footer.legal}
-      </a>
-    </div>
+    {/* The legal notice (pages/_legal.astro) is not published yet; link it here when it is. */}
+    <p class="mt-16 text-label font-normal text-ink-muted">
+      © {new Date().getFullYear()}
+      {SITE.name}. {COPY.footer.rights}
+    </p>
   </div>
 </footer>

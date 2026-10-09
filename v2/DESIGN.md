@@ -531,9 +531,9 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`sound-toggle`**: a pill button with a pressed state ("Sonido: apagado / encendido"). Lives in the hero corner.
 
-**`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp and Instagram (each a line icon in a ring that fills on hover, with the number or handle beside it) and "Asunción, Paraguay" in hairline-separated columns. The city only, never a street address, and no hours. Below: the copyright and the link to the legal notice.
+**`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp and Instagram (each a line icon in a ring that fills on hover, with the number or handle beside it) and "Asunción, Paraguay" in hairline-separated columns. The city only, never a street address, and no hours. Below: the copyright.
 
-**Inner pages** (`/legal`, the 404): the nav already solid, one cream ground with a light wash, the footer. The 404 tells its message in the bead language: a cut thread with its beads spilled across the table, falling once as the page opens.
+**Inner pages** (the 404; later `/legal`, drafted in `src/pages/_legal.astro`): the nav already solid, one cream ground with a light wash, the footer. The 404 tells its message in the bead language: a cut thread with its beads spilled across the table, falling once as the page opens.
 
 ## Do's and Don'ts
 

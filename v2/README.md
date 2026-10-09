@@ -29,7 +29,7 @@ minifies CSS, and the scroll animations depend on how it does that (see `astro.c
 
 ```
 src/pages/index.astro     The page: one component per section, in reading order
-src/pages/legal.astro     Legal notice and privacy (linked from every footer)
+src/pages/_legal.astro    Legal notice and privacy: a draft, not built (the _ keeps it off the site)
 src/pages/404.astro       Not found
 src/components/           One file per section; each holds its own markup, styles and script
 src/global.css            Design tokens (colours, type, radii, world modes) and scroll primitives
@@ -72,7 +72,8 @@ For each new photo, add a line to `PHOTO_ALT` in `src/lib/content.ts` saying wha
 
 ## Before launch: legal
 
-`/legal` covers what applies to this site in Paraguay (Law 4868/2013 on e-commerce, Law
+The draft legal notice (`src/pages/_legal.astro`; rename it to `legal.astro` and link it from
+the footer to publish it at `/legal`) covers what applies to this site in Paraguay (Law 4868/2013 on e-commerce, Law
 1334/1998 on consumer protection; Law 7593/2025 on personal data from 2027). It is a starting
 point, not legal advice: have a Paraguayan lawyer read it once. Then keep it true:
 
