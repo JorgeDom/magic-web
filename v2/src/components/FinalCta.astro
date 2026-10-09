@@ -186,15 +186,60 @@ const field =
   const GRAVITY = 0.42; // px per step, per step
   const DAMPING = 0.975;
   const STIFFNESS = 6; // length-restoring sweeps (there and back) per step
-  const LOWERING_STEPS = 54; // the entrance: 0.9s to lower the string into place
+  // The entrance lowers the string into place over 0.9 to 1.8s, longer for a longer drop, so
+  // it arrives with little momentum left whatever the screen size.
+  const LOWERING_STEPS = { min: 54, max: 110 };
   const STEP_MS = 1000 / 60;
   const REACH = 84; // how close the pointer gets before beads give way, px
+  const NODE_SPACING = 20; // physics resolution along the string, px
+  const BEAD_GAP = 1.2; // between neighbouring beads, px
+
+  // The pattern of the string, read outward from the star on both sides and repeated. Colours
+  // are indices into BEAD_COLOURS and shift with each repeat, so no two stretches match.
+  // Spacers are gold near the star (a premium detail, used sparingly) and dark seed beads
+  // further out.
+  type Kind = "round" | "seed" | "spacer" | "cube" | "tube";
+  const MOTIF: { kind: Kind; colour: number }[] = [
+    { kind: "spacer", colour: -1 },
+    { kind: "round", colour: 0 },
+    { kind: "seed", colour: -1 },
+    { kind: "cube", colour: 2 },
+    { kind: "seed", colour: -1 },
+    { kind: "round", colour: 1 },
+    { kind: "spacer", colour: -1 },
+    { kind: "tube", colour: 4 },
+    { kind: "round", colour: 3 },
+    { kind: "seed", colour: -1 },
+  ];
+  const GOLD_REACH = 0.32; // spacers within this fraction of the half-string are gold
+  // Two small drops hang either side of the star, this far out along the half-string.
+  const DROPS = [
+    { at: -0.42, colour: 1 },
+    { at: 0.42, colour: 0 },
+  ];
 
   interface Node {
     x: number;
     y: number;
     px: number;
     py: number;
+  }
+
+  /** A bead laid along the string: where it sits (signed distance from the star) and its shape. */
+  interface Bead {
+    offset: number;
+    kind: Kind;
+    along: number;
+    across: number;
+    fill: string;
+  }
+
+  /** A drop charm hanging from one of the string's nodes. */
+  interface Drop {
+    index: number;
+    node: Node;
+    link: number;
+    fill: string;
   }
 
   const section = document.querySelector<HTMLElement>("[data-closing]");
@@ -223,9 +268,14 @@ const field =
     let fade = 0;
     let anchorY = 0;
     let lowerFrom = 0; // how far above its place the string starts its entrance
-    let lowered = LOWERING_STEPS;
+    let loweringSteps = LOWERING_STEPS.min;
+    let lowered = loweringSteps;
+    let beads: Bead[] = [];
+    let drops: Drop[] = [];
 
     const middle = () => nodes[(nodes.length - 1) / 2]!;
+    /** Everything that swings: the free nodes, the star and the drops. */
+    const movers = () => [...nodes.slice(1, -1), pendant, ...drops.map((drop) => drop.node)];
 
     function constrain(a: Node, b: Node, rest: number, aFixed: boolean, bFixed: boolean) {
       const dx = b.x - a.x;
@@ -255,9 +305,10 @@ const field =
       };
       for (let index = 1; index < last; index++) move(nodes[index]!);
       move(pendant);
-      if (lowered < LOWERING_STEPS) {
+      for (const drop of drops) move(drop.node);
+      if (lowered < loweringSteps) {
         lowered++;
-        const lift = lowerFrom * (1 - lowered / LOWERING_STEPS) ** 3;
+        const lift = lowerFrom * (1 - lowered / loweringSteps) ** 3;
         nodes[0]!.y = nodes[last]!.y = anchorY - lift;
       }
       // Lengths are restored by reaching along the string from one pinned end, then back from
@@ -270,8 +321,9 @@ const field =
           constrain(nodes[index - 1]!, nodes[index]!, segment, false, true);
         }
       }
-      // The star follows the string; it is too light to pull it out of shape.
+      // The star and the drops follow the string; they are too light to pull it out of shape.
       constrain(middle(), pendant, link, true, false);
+      for (const drop of drops) constrain(nodes[drop.index]!, drop.node, drop.link, true, false);
       return movement;
     }
 
@@ -287,6 +339,18 @@ const field =
       });
       const hub = middle();
       pendant = { x: hub.x, y: hub.y + link, px: hub.x, py: hub.y + link };
+      const half = (count - 1) / 2;
+      drops = DROPS.map(({ at, colour }) => {
+        const index = half + Math.round(at * half);
+        const from = nodes[index]!;
+        const dropLink = beadMax * 1.2;
+        return {
+          index,
+          link: dropLink,
+          fill: colours[colour]!,
+          node: { x: from.x, y: from.y + dropLink, px: from.x, py: from.y + dropLink },
+        };
+      });
       for (let settle = 0; settle < 3000; settle++) {
         if (step(0.9) < count * 0.0002 && settle > 120) break;
       }
@@ -300,7 +364,8 @@ const field =
     function build() {
       const box = section!.getBoundingClientRect();
       const home = slot!.getBoundingClientRect();
-      const ratio = Math.min(devicePixelRatio || 1, 2);
+      // The canvas is tall (two screens), so its resolution is capped to keep memory modest.
+      const ratio = Math.min(devicePixelRatio || 1, 1.5);
       width = box.width;
       starHeight = home.height;
       const targetX = home.left - box.left + home.width / 2;
@@ -313,8 +378,10 @@ const field =
       const span = right - left;
       const sag = Math.max(24, targetY - link - top);
 
-      // The canvas reaches above the section, so the string can fall in from over its edge.
-      rise = Math.round(sag + beadMax);
+      // The canvas reaches a full screen above the section. The string is lowered in from above
+      // the top of the screen, across the section above, and when it swings high it carries on
+      // over that section instead of being cut off at the boundary.
+      rise = Math.round(Math.max(sag + beadMax + 120, innerHeight));
       height = Math.min(box.height, targetY + starHeight / 2 + 160);
       canvas!.style.top = `${-rise}px`;
       canvas!.style.height = `${height + rise}px`;
@@ -324,7 +391,7 @@ const field =
 
       // First guess: the arc length of a parabola with this sag.
       let length = span * (1 + (8 / 3) * (sag / span) ** 2);
-      const count = 2 * Math.round(length / (beadMax * 2 + 2) / 2) + 1;
+      const count = 2 * Math.round(length / NODE_SPACING / 2) + 1;
       let previousLength = length;
       let previousY = hang(length, count, left, right, top);
       length += (targetY - previousY) * 0.9;
@@ -338,13 +405,71 @@ const field =
       }
       // Centre the whole string on the slot (the slot is centred, but be exact).
       const shift = targetX - pendant.x;
-      for (const node of [...nodes, pendant]) {
+      for (const node of [...nodes, pendant, ...drops.map((drop) => drop.node)]) {
         node.x += shift;
         node.px += shift;
       }
       anchorY = top;
+      layOut();
       built = true;
       return targetY + starHeight;
+    }
+
+    /** Distance along the string from its first node to each node. */
+    function arcLengths(): number[] {
+      const lengths = [0];
+      for (let index = 1; index < nodes.length; index++) {
+        const a = nodes[index - 1]!;
+        const b = nodes[index]!;
+        lengths.push(lengths[index - 1]! + Math.hypot(b.x - a.x, b.y - a.y));
+      }
+      return lengths;
+    }
+
+    /**
+     * Threads the beads: the motif is laid outward from the star along each half of the string,
+     * bead against bead, graduating smaller toward the ends. Positions are distances along the
+     * string, so the layout holds however the string moves (its length never changes).
+     */
+    function layOut() {
+      const lengths = arcLengths();
+      const halfLength = lengths.at(-1)! / 2;
+      const R = beadMax;
+      beads = [];
+      for (const side of [-1, 1]) {
+        let along = R * 0.75; // clearance for the star's ring
+        for (let index = 0; along < halfLength; index++) {
+          const { kind, colour } = MOTIF[index % MOTIF.length]!;
+          const repeat = Math.floor(index / MOTIF.length);
+          const reach = along / halfLength;
+          const taper = 1 - 0.5 * reach ** 0.9;
+          let size: [number, number];
+          let fill: string;
+          if (kind === "spacer" && reach < GOLD_REACH) {
+            size = [Math.max(2.2, R * 0.28), R * 1.7 * taper];
+            fill = gold;
+          } else if (kind === "spacer" || kind === "seed") {
+            const seed = Math.max(3.2, R * 0.42);
+            size = [seed, seed];
+            fill = ink;
+          } else {
+            // Proportions as multiples of R: length along the string, then thickness.
+            const [length, thickness] = { round: [2, 2], cube: [1.55, 1.55], tube: [2.3, 1.25] }[
+              kind
+            ] as [number, number];
+            size = [R * length * taper, R * thickness * taper];
+            fill = colours[(colour + repeat * 2) % colours.length]!;
+          }
+          beads.push({
+            offset: side * (along + size[0] / 2),
+            kind,
+            along: size[0],
+            across: size[1],
+            fill,
+          });
+          along += size[0] + BEAD_GAP;
+        }
+      }
     }
 
     /**
@@ -353,13 +478,86 @@ const field =
      */
     function drop(depth: number) {
       lowerFrom = depth + rise;
+      loweringSteps = Math.round(
+        Math.min(LOWERING_STEPS.max, Math.max(LOWERING_STEPS.min, 40 + lowerFrom / 18)),
+      );
       lowered = 0;
-      for (const node of [...nodes, pendant]) {
+      for (const node of [...nodes, pendant, ...drops.map((drop) => drop.node)]) {
         node.y -= lowerFrom;
         node.py = node.y;
         node.px = node.x;
       }
       fade = 0;
+    }
+
+    /** A small highlight, lit from the top left, so each bead reads as a solid object. */
+    function shine(x: number, y: number, size: number, strength: number) {
+      context!.fillStyle = `rgb(255 255 255 / ${strength})`;
+      context!.beginPath();
+      context!.arc(x - size * 0.2, y - size * 0.24, size * 0.18, 0, Math.PI * 2);
+      context!.fill();
+    }
+
+    function drawBead(bead: Bead, x: number, y: number, angle: number) {
+      context!.fillStyle = bead.fill;
+      context!.beginPath();
+      if (bead.kind === "round" || bead.kind === "seed") {
+        context!.arc(x, y, bead.along / 2, 0, Math.PI * 2);
+        context!.fill();
+      } else {
+        // Spacers, cubes and tubes lie along the string, so they turn with it.
+        const corner = {
+          spacer: bead.along / 2,
+          cube: bead.across * 0.24,
+          tube: bead.across * 0.45,
+        }[bead.kind];
+        context!.save();
+        context!.translate(x, y);
+        context!.rotate(angle);
+        context!.roundRect(-bead.along / 2, -bead.across / 2, bead.along, bead.across, corner);
+        context!.fill();
+        context!.restore();
+      }
+      if (bead.kind !== "seed") shine(x, y, bead.across, bead.kind === "spacer" ? 0.5 : 0.36);
+    }
+
+    /** A drop charm: a gold cap and a teardrop, hanging and turning with its swing. */
+    function drawDrop(drop: Drop) {
+      const from = nodes[drop.index]!;
+      const { x, y } = drop.node;
+      const width = beadMax * 1.9;
+      const capHeight = beadMax * 0.4;
+      const bodyHeight = beadMax * 2.6;
+      context!.save();
+      context!.translate(x, y);
+      context!.rotate(Math.atan2(y - from.y, x - from.x) - Math.PI / 2);
+      context!.fillStyle = gold;
+      context!.beginPath();
+      context!.roundRect(-width * 0.22, 0, width * 0.44, capHeight, capHeight * 0.35);
+      context!.fill();
+      const top = capHeight * 0.7;
+      context!.fillStyle = drop.fill;
+      context!.beginPath();
+      context!.moveTo(0, top);
+      context!.bezierCurveTo(
+        width * 0.62,
+        top + bodyHeight * 0.45,
+        width * 0.62,
+        top + bodyHeight,
+        0,
+        top + bodyHeight,
+      );
+      context!.bezierCurveTo(
+        -width * 0.62,
+        top + bodyHeight,
+        -width * 0.62,
+        top + bodyHeight * 0.45,
+        0,
+        top,
+      );
+      context!.fill();
+      shine(0, top + bodyHeight * 0.66, width, 0.36);
+      context!.restore();
     }
 
     function draw() {
@@ -379,22 +577,48 @@ const field =
       context!.lineTo(nodes[last]!.x, nodes[last]!.y);
       context!.moveTo(hub.x, hub.y);
       context!.lineTo(pendant.x, pendant.y);
+      for (const drop of drops) {
+        const from = nodes[drop.index]!;
+        context!.moveTo(from.x, from.y);
+        context!.lineTo(drop.node.x, drop.node.y);
+      }
       context!.strokeStyle = ink;
       context!.lineWidth = 1.5;
       context!.stroke();
 
-      // Beads, graduated: largest beside the star, smallest at the ends.
-      const half = last / 2;
-      for (let index = 1; index < last; index++) {
-        const fromCentre = Math.abs(index - half);
-        if (fromCentre === 0) continue;
-        const node = nodes[index]!;
-        const radius = beadMax - (beadMax - 3.5) * (fromCentre / half) ** 0.8;
-        context!.fillStyle = colours[(fromCentre - 1) % colours.length]!;
-        context!.beginPath();
-        context!.arc(node.x, node.y, radius, 0, Math.PI * 2);
-        context!.fill();
+      // Beads, threaded along the string and turned to follow it.
+      const lengths = arcLengths();
+      const centre = lengths[last / 2]!;
+      for (const bead of beads) {
+        const at = centre + bead.offset;
+        if (at < 0 || at > lengths[last]!) continue;
+        // The segment this bead sits on (binary search over the running lengths).
+        let low = 0;
+        let high = last;
+        while (high - low > 1) {
+          const mid = (low + high) >> 1;
+          if (lengths[mid]! <= at) low = mid;
+          else high = mid;
+        }
+        const a = nodes[low]!;
+        const b = nodes[high]!;
+        const t = (at - lengths[low]!) / (lengths[high]! - lengths[low]! || 1);
+        drawBead(
+          bead,
+          a.x + (b.x - a.x) * t,
+          a.y + (b.y - a.y) * t,
+          Math.atan2(b.y - a.y, b.x - a.x),
+        );
       }
+
+      for (const drop of drops) drawDrop(drop);
+
+      // The star's ring, where it hangs from the string.
+      context!.beginPath();
+      context!.arc(hub.x, hub.y + beadMax * 0.5, Math.max(3, beadMax * 0.38), 0, Math.PI * 2);
+      context!.strokeStyle = gold;
+      context!.lineWidth = 1.8;
+      context!.stroke();
 
       // The star hangs from the middle and turns with the swing.
       const angle = Math.atan2(pendant.y - hub.y, pendant.x - hub.x) - Math.PI / 2;
@@ -467,7 +691,7 @@ const field =
         const delta = Math.max(-40, Math.min(40, scrollY - lastScroll));
         lastScroll = scrollY;
         if (!built || !visible) return;
-        for (const node of [...nodes.slice(1, -1), pendant]) node.py -= delta * 0.05;
+        for (const node of movers()) node.py -= delta * 0.05;
         wake();
       },
       { passive: true },
@@ -483,7 +707,7 @@ const field =
         const y = event.clientY - box.top - rise;
         if (y > height + REACH) return;
         let touched = false;
-        for (const node of [...nodes.slice(1, -1), pendant]) {
+        for (const node of movers()) {
           const dx = node.x - x;
           const dy = node.y - y;
           const distance = Math.hypot(dx, dy);

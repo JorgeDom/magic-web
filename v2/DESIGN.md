@@ -461,11 +461,13 @@ The star is proprietary artwork. Its shape is taken from the approved logo and n
 
 ### Little details, big magic (intro)
 
-The claim, acted out. The section pins for about one and a half viewports of scrolling. "Little details." sits at title size among loose beads scattered across the screen; as the visitor scrolls, the beads spiral together, turn gold and fuse into the star, and "Big magic." arrives at claim size with the Spanish line after it. Scroll drives every frame, in both directions; nothing plays on a timer. Drawn on one canvas, in brand colours read from the tokens. Reduced motion, or no JavaScript: the small line, the star and the big line, in place.
+The claim, acted out. The section pins for about one and a half viewports of scrolling. "Little details." sits at title size among loose beads scattered across the screen, always wholly inside the section (they never slide out from under the hero); as the visitor scrolls, the beads spiral together, turn gold and fuse into the star, and "Big magic." arrives at claim size with the Spanish line after it. Scroll drives every frame, in both directions; nothing plays on a timer. Drawn on one canvas, in brand colours read from the tokens. Reduced motion, or no JavaScript: the small line, the star and the big line, in place.
 
 ### The closing string (final CTA)
 
-The finished piece. When the section arrives, a string of graduated beads is lowered in across the top and settles with the gold star hanging over the closing phrase, which rises from behind a clip as the string lands; the line and buttons follow. The string is simulated rope: it sways when the page scrolls, gives way to the pointer, and comes to rest by itself within about three seconds, after which nothing runs. Reduced motion, or no JavaScript: star, phrase and buttons, in place.
+The finished piece. When the section arrives, a string of beads is lowered in from above the top of the screen, across the section above, and settles with the gold star hanging over the closing phrase, which rises from behind a clip as the string lands; the line and buttons follow. The string is simulated rope: it sways when the page scrolls, gives way to the pointer, and comes to rest by itself within about three seconds, after which nothing runs. It belongs to both sections: its canvas reaches a full screen above its own, so a high swing carries on over the section above instead of being cut at the boundary. Reduced motion, or no JavaScript: star, phrase and buttons, in place.
+
+The string is threaded like a real piece, outward from the star and graduating smaller toward the ends: round beads, cubes and tubes in the bead colours, turned to follow the string, each with a small highlight; dark seed beads between them; gold rondelle spacers only near the star (a premium detail, used sparingly); a gold ring where the star hangs; and two small teardrop drops with gold caps, rosa and lavender, swinging on their own either side.
 
 ### Star-warp (between worlds)
 

@@ -193,8 +193,9 @@ const [little, big] = sentences(CLAIMS.intro);
     const beads: Bead[] = homes.map(([tx, ty]) => ({
       tx,
       ty,
-      sx: -0.04 + random() * 1.08,
-      sy: -0.04 + random() * 1.08,
+      // Loose position as a fraction of the room inside the stage (see `render`).
+      sx: random(),
+      sy: random(),
       size: 0.45 + random() ** 2 * 0.85,
       colour: Math.floor(random() * colours.length),
       delay: random(),
@@ -237,6 +238,10 @@ const [little, big] = sentences(CLAIMS.intro);
     function render(p: number, approach: number) {
       context!.clearRect(0, 0, width, height);
       const loose = Math.max(9, Math.min(15, width * 0.011));
+      // How far the depth drift (below) can carry a bead. Loose beads are laid out at least
+      // this far inside the stage, so none of them is ever cut by the section's edge: the scene
+      // starts inside its own section instead of appearing from under the hero.
+      const drift = Math.min(110, height * 0.12);
       const fuse = beat(p, FUSE);
       const landed = beat(p, STAR);
       const hole = 0.17;
@@ -245,9 +250,11 @@ const [little, big] = sentences(CLAIMS.intro);
         context!.globalAlpha = 1 - landed;
         for (const bead of beads) {
           const e = easeInOut(clamp((p - GATHER.from - bead.delay * GATHER.stagger) / GATHER.span));
-          const x0 = bead.sx * width;
-          let y0 = bead.sy * height;
           const radius0 = loose * bead.size;
+          const padX = radius0 + 6;
+          const padY = drift + radius0 + 6;
+          const x0 = padX + bead.sx * (width - 2 * padX);
+          let y0 = padY + bead.sy * (height - 2 * padY);
           if (
             x0 > keepOut.left - radius0 &&
             x0 < keepOut.right + radius0 &&
@@ -257,18 +264,20 @@ const [little, big] = sentences(CLAIMS.intro);
             y0 = bead.sy < 0.5 ? keepOut.top - radius0 : keepOut.bottom + radius0;
           }
           // Loose beads drift at their own depth as the page moves.
-          y0 += (bead.depth - 0.5) * (220 * (1 - approach) - 140 * p);
+          y0 += (bead.depth - 0.5) * (220 * (1 - approach) - 140 * p) * (drift / 110);
           const x1 = centreX + bead.tx * unit;
           const y1 = centreY + bead.ty * unit;
-          // Each bead spirals home instead of flying straight.
-          const turn = (1 - e) * bead.spin;
+          // Each bead spirals home instead of flying straight. The turn is zero at both ends of
+          // the flight, so a bead starts exactly where it lies and lands exactly at home.
+          const turn = 4 * e * (1 - e) * bead.spin;
           const cos = Math.cos(turn);
           const sin = Math.sin(turn);
           const dx = (x0 - x1) * (1 - e);
           const dy = (y0 - y1) * (1 - e);
-          const x = x1 + dx * cos - dy * sin;
-          const y = y1 + dx * sin + dy * cos;
           const radius = radius0 + (homeRadius * unit - radius0) * e;
+          const x = x1 + dx * cos - dy * sin;
+          // A last guard: in flight, a bead never crosses the top or bottom of its section.
+          const y = Math.min(height - radius, Math.max(radius, y1 + dx * sin + dy * cos));
 
           const from = colours[bead.colour]!;
           const mix = (channel: 0 | 1 | 2) =>
