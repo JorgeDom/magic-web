@@ -1,0 +1,77 @@
+---
+// A world's photographs. Every photo named after the world (`kids`, `kids-2`, `kids-3`...) is
+// shown, at least four frames, with labelled placeholders for any not yet supplied. On phones it
+// is a row you swipe through, one photo and the edge of the next in view; where the world has
+// room (a wide container) it becomes a staggered two-column spread.
+import { photoSeries } from "../lib/photos";
+import Media from "./Media.astro";
+
+interface Props {
+  /** File-name base of the series, e.g. "kids". */
+  base: string;
+  /** What these photos should show: the brief on placeholders and the fallback alt text. */
+  shot: string;
+  /** Names the row for assistive technology, e.g. "Fotos de Kids". */
+  label: string;
+  min?: number;
+  scroll?: "unveil";
+}
+
+const { base, shot, label, min = 4, scroll } = Astro.props;
+const photos = photoSeries(base, min);
+---
+
+<div role="region" aria-label={label} tabindex="0" class="gallery">
+  {photos.map((photo) => (
+    <Media
+      photo={photo}
+      shot={shot}
+      sizes="(min-width: 64rem) 23vw, 76vw"
+      scroll={scroll}
+      class="item"
+    />
+  ))}
+</div>
+
+<style>
+  /* Phones: a swipe row that bleeds to the screen edges and snaps to each photo. */
+  .gallery {
+    display: flex;
+    gap: 12px;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .gallery::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery > :global(.item) {
+    flex: 0 0 76%;
+    scroll-snap-align: start;
+  }
+
+  /*
+   * Wide containers: two columns, the second set lower, so the spread reads as photos laid on
+   * a table rather than a grid. The padding makes room for the lowered column.
+   */
+  @container (width >= 56rem) {
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-inline: 0;
+      padding: 0 0 8%;
+      overflow: visible;
+    }
+
+    .gallery > :global(.item:nth-child(even)) {
+      translate: 0 14%;
+    }
+  }
+</style>

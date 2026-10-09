@@ -4,7 +4,7 @@
 // is the one world that unlocks the full palette, and it does so through these objects. Gold
 // is absent on purpose: gold belongs to the star.
 import type { World } from "../lib/content";
-import Media from "./Media.astro";
+import Gallery from "./Gallery.astro";
 
 interface Props {
   world: World;
@@ -25,7 +25,7 @@ const BEADS = [
 ---
 
 <div class="relative">
-  <Media photo={world.media.key} shot={world.media.shot} sizes="(min-width: 64rem) 46vw, 90vw" />
+  <Gallery base={world.media.key} shot={world.media.shot} label={`Fotos de ${world.name}`} />
   <div data-beads aria-hidden="true" class="beads paused pointer-events-none absolute inset-0">
     {BEADS.map((bead) => (
       <span

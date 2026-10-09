@@ -4,13 +4,13 @@
 // already open and the frame is still.
 //
 // The film is public/media/brands.webm and brands.mp4, with brands-poster.webp as its poster
-// (see README: video). Until those exist, the frame shows the `brands` photograph or its
-// placeholder. Files over Cloudflare's 25 MiB limit are served from PUBLIC_MEDIA_BASE_URL.
+// (see README: video). Until those exist, the world shows its photographs (`brands`,
+// `brands-2`...) in the shared gallery instead. Files over Cloudflare's 25 MiB limit are served from PUBLIC_MEDIA_BASE_URL.
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { COPY, type World } from "../lib/content";
 import { MEDIA_BASE_URL } from "../lib/site";
-import Media from "./Media.astro";
+import Gallery from "./Gallery.astro";
 
 interface Props {
   world: World;
@@ -27,68 +27,66 @@ const sources = [
 const poster = local("brands-poster.webp") ? "/media/brands-poster.webp" : undefined;
 ---
 
-<div
-  data-brands
-  class="relative mr-[calc(var(--bleed)*-1)] overflow-clip @max-4xl:ml-[calc(var(--bleed)*-1)]"
->
-  <div data-push>
-    {sources.length ? (
-      <div class="relative aspect-[4/5] max-h-[76svh] w-full bg-arena">
-        {/* The sources are attached by the script below, only when the film is about to be seen. */}
-        <video
-          muted
-          loop
-          playsinline
-          preload="none"
-          poster={poster}
-          aria-label={world.media.shot}
-          data-sources={JSON.stringify(sources)}
-          class="size-full object-cover"
-        />
-        <button
-          type="button"
-          data-film-toggle
-          data-play={COPY.film.play}
-          data-pause={COPY.film.pause}
-          aria-label={COPY.film.play}
-          class="group absolute right-4 bottom-4 grid size-11 place-items-center rounded-pill bg-cream text-chocolate transition-transform duration-(--duration-micro) active:scale-[0.94]"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path
-              class="group-data-playing:hidden"
-              d="M8 5.5v13l10.5-6.5L8 5.5z"
-              fill="currentColor"
-            />
-            <path
-              class="hidden group-data-playing:block"
-              d="M8.5 5.5v13M15.5 5.5v13"
-              stroke="currentColor"
-              stroke-width="2.6"
-              stroke-linecap="round"
-            />
-          </svg>
-        </button>
-      </div>
-    ) : (
-      <Media
-        photo={world.media.key}
-        shot={world.media.shot}
-        sizes="(min-width: 64rem) 55vw, 100vw"
-        class="max-h-[76svh] w-full"
-      />
-    )}
+{!sources.length && (
+  <Gallery base={world.media.key} shot={world.media.shot} label={`Fotos de ${world.name}`} />
+)}
+{sources.length > 0 && (
+  <div
+    data-brands
+    class="relative mr-[calc(var(--bleed)*-1)] overflow-clip @max-4xl:ml-[calc(var(--bleed)*-1)]"
+  >
+    <div data-push>
+      {
+        <div class="relative aspect-[4/5] max-h-[76svh] w-full bg-arena">
+          {/* The sources are attached by the script below, only when the film is about to be seen. */}
+          <video
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={poster}
+            aria-label={world.media.shot}
+            data-sources={JSON.stringify(sources)}
+            class="size-full object-cover"
+          />
+          <button
+            type="button"
+            data-film-toggle
+            data-play={COPY.film.play}
+            data-pause={COPY.film.pause}
+            aria-label={COPY.film.play}
+            class="group absolute right-4 bottom-4 grid size-11 place-items-center rounded-pill bg-cream text-chocolate transition-transform duration-(--duration-micro) active:scale-[0.94]"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path
+                class="group-data-playing:hidden"
+                d="M8 5.5v13l10.5-6.5L8 5.5z"
+                fill="currentColor"
+              />
+              <path
+                class="hidden group-data-playing:block"
+                d="M8.5 5.5v13M15.5 5.5v13"
+                stroke="currentColor"
+                stroke-width="2.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
+    <span
+      data-bar
+      aria-hidden="true"
+      class="absolute inset-x-0 top-0 h-[18%] origin-top scale-y-0 bg-accent"
+    ></span>
+    <span
+      data-bar
+      aria-hidden="true"
+      class="absolute inset-x-0 bottom-0 h-[18%] origin-bottom scale-y-0 bg-accent"
+    ></span>
   </div>
-  <span
-    data-bar
-    aria-hidden="true"
-    class="absolute inset-x-0 top-0 h-[18%] origin-top scale-y-0 bg-accent"
-  ></span>
-  <span
-    data-bar
-    aria-hidden="true"
-    class="absolute inset-x-0 bottom-0 h-[18%] origin-bottom scale-y-0 bg-accent"
-  ></span>
-</div>
+)}
 
 <script>
   import { canAutoplay, scrollScene, watchVisibility, whenNear } from "../lib/client";

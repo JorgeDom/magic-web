@@ -4,7 +4,7 @@
 // touch a tap sets one swinging (dragging would fight the page scroll). Peach ground,
 // lavender accent and chocolate: three colours, as the Teens mode allows.
 import type { World } from "../lib/content";
-import Media from "./Media.astro";
+import Gallery from "./Gallery.astro";
 
 interface Props {
   world: World;
@@ -22,12 +22,12 @@ const CHARMS = [
 ---
 
 <div class="relative">
-  <Media photo={world.media.key} shot={world.media.shot} sizes="(min-width: 64rem) 46vw, 90vw" />
+  <Gallery base={world.media.key} shot={world.media.shot} label={`Fotos de ${world.name}`} />
   <div data-charms aria-hidden="true" class="@container pointer-events-none absolute inset-0">
     {CHARMS.map((charm) => (
       <div
         data-pull
-        class="pointer-events-auto absolute -top-[3%] -translate-x-1/2 touch-pan-y"
+        class="pointer-events-auto absolute -top-[3%] -translate-x-1/2 touch-manipulation"
         style={`left:${charm.left}%;height:${charm.drop}%`}
       >
         <div

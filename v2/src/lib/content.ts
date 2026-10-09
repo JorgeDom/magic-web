@@ -138,5 +138,26 @@ export const WORLDS: readonly World[] = [
   },
 ];
 
+/**
+ * Alt text for each photo in src/assets/photos, by file name: what the photo shows, in Spanish.
+ * Add a line when you add a photo; without one, the frame's brief is used instead.
+ */
+export const PHOTO_ALT: Record<string, string> = {
+  kids: "Dos chicos con delantales de MAgic! armando osos de peluche en una mesa al aire libre",
+  "kids-2": "Una nena elige cuentas de colores de una caja organizadora",
+  teens: "Chicas eligiendo charms en una mesa con luces cálidas y arcos lilas",
+  "grown-ups":
+    "Un grupo armando piezas en una mesa larga junto a la ventana, con una instructora de MAgic!",
+  "grown-ups-2":
+    "Mesa preparada para un taller privado, con kits de cuentas y bolsas de MAgic! en cada lugar",
+  brands:
+    "Dos anfitrionas de MAgic! atienden a clientas en una estación de charms en un evento de marca",
+  making:
+    "Manos enhebrando un collar de perlas sobre una mesa rosa con cuentas y bolsitas de MAgic!",
+  details: "Mesa con mantel rosa, perlas, cadenas doradas, pinzas y bolsitas de tela de MAgic!",
+  experience: "Amigas armando charms alrededor de una mesa lila con bolsas de MAgic!",
+  result: "Una muñeca con pulseras doradas y charms de colores",
+};
+
 /** The in-page anchor of a world's opening card. */
 export const worldAnchor = (id: WorldId) => `mundo-${id}`;

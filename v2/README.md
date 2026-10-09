@@ -51,18 +51,22 @@ before launch.
 
 ## Photos
 
-Drop the original files (JPG or PNG, at least 1800px on the long side, true colours) into
-`src/assets/photos/` with exactly these names. Astro makes the AVIF and WebP sizes at build
-time. Until a file exists, the page shows a labelled placeholder in its place.
+Drop the original files (JPG, PNG or WebP, portrait 4:5, true colours) into
+`src/assets/photos/`. Astro makes the AVIF and WebP sizes at build time.
 
-| File name                                   | Where it appears                     | Shot                                                |
-| ------------------------------------------- | ------------------------------------ | --------------------------------------------------- |
-| `kids`                                      | Kids world                           | The Experience: children making charms at the table |
-| `teens`                                     | Teens world                          | The Details: bag charms hanging, close-up           |
-| `grown-ups`                                 | Grown Ups world, main frame          | The Experience: a set table, warm light             |
-| `grown-ups-detail`                          | Grown Ups world, small frame         | The Details: close-up of the table                  |
-| `brands`                                    | Brands world (when there is no film) | The Making: hands at work, clean table              |
-| `making`, `details`, `experience`, `result` | The Making grid                      | One per shot type                                   |
+Each world shows every photo in its series, at least four frames; missing ones show a labelled
+placeholder. To add a photo, use the next number:
+
+| World     | File names                                       |
+| --------- | ------------------------------------------------ |
+| Kids      | `kids`, `kids-2`, `kids-3`, `kids-4`, ...        |
+| Teens     | `teens`, `teens-2`, `teens-3`, ...               |
+| Grown Ups | `grown-ups`, `grown-ups-2`, `grown-ups-3`, ...   |
+| Brands    | `brands`, `brands-2`, `brands-3`, ...            |
+
+"Así se hace" uses `making`, `details`, `experience` and `result`.
+
+For each new photo, add a line to `PHOTO_ALT` in `src/lib/content.ts` saying what it shows.
 
 ## Video
 
