@@ -181,13 +181,13 @@ const placing = (step: number, bead: number) =>
     background: rgb(255 255 255 / 0.5);
   }
 
-  /* Step one: not strung yet. The beads lie beside the thread, a little turned, to be chosen. */
+  /* Step one: not strung yet. The beads sit on the thread, spaced out and a little turned. */
   .loose {
     gap: 10px;
   }
 
   .loose .bead {
-    transform: translateX(calc(var(--u) * 0.32)) rotate(var(--tilt));
+    transform: rotate(var(--tilt));
   }
 
   .charm {
@@ -234,11 +234,6 @@ const placing = (step: number, bead: number) =>
     .bead {
       width: calc(var(--u) * var(--along));
       height: calc(var(--u) * var(--across));
-    }
-
-    /* Below the thread rather than beside it. */
-    .loose .bead {
-      transform: translateY(calc(var(--u) * 0.62)) rotate(var(--tilt));
     }
 
     .charm {
