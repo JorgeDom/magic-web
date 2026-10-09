@@ -63,7 +63,7 @@ const placing = (step: number, bead: number) =>
   `--i:${order(step, bead)};--at:${(0.06 + step * 0.31 + bead * 0.03).toFixed(3)}`;
 ---
 
-<section aria-labelledby="como-funciona-titulo" class="relative">
+<section aria-labelledby="como-funciona-titulo" class="pointer-events-none relative">
   <OpeningCard from={WORLDS.at(-1)?.id} anchor="como-funciona" overNavigator>
     <Wash set="how-card" fade="both" />
     <div class="shell flex flex-col justify-end pt-(--section) pb-[clamp(72px,12svh,144px)]">
@@ -73,7 +73,7 @@ const placing = (step: number, bead: number) =>
     </div>
   </OpeningCard>
 
-  <div class="relative isolate overflow-x-clip bg-ground text-ink">
+  <div class="pointer-events-auto relative isolate overflow-x-clip bg-ground text-ink">
     <Wash set="how" fade="both" />
     <div class="shell pb-(--section)">
       <div class="strand">

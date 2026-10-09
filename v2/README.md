@@ -59,12 +59,12 @@ Drop the original files (JPG, PNG or WebP, portrait 4:5, true colours) into
 Each world shows every photo in its series, at least four frames; missing ones show a labelled
 placeholder. To add a photo, use the next number:
 
-| World     | File names                                       |
-| --------- | ------------------------------------------------ |
-| Kids      | `kids`, `kids-2`, `kids-3`, `kids-4`, ...        |
-| Teens     | `teens`, `teens-2`, `teens-3`, ...               |
-| Grown Ups | `grown-ups`, `grown-ups-2`, `grown-ups-3`, ...   |
-| Brands    | `brands`, `brands-2`, `brands-3`, ...            |
+| World     | File names                                     |
+| --------- | ---------------------------------------------- |
+| Kids      | `kids`, `kids-2`, `kids-3`, `kids-4`, ...      |
+| Teens     | `teens`, `teens-2`, `teens-3`, ...             |
+| Grown Ups | `grown-ups`, `grown-ups-2`, `grown-ups-3`, ... |
+| Brands    | `brands`, `brands-2`, `brands-3`, ...          |
 
 "Así se hace" uses `making`, `details`, `experience` and `result`.
 
@@ -121,12 +121,17 @@ Copy `.env.example` to `.env`. Every value is optional.
 
 ## Deploying to Cloudflare
 
-The site has no server code. `wrangler.jsonc` tells Cloudflare to serve `out/` as static assets.
+The site has no server code. It is the Cloudflare Pages project `magic-web`, connected to this
+GitHub repository and serving magic.com.py:
 
-1. `pnpm exec wrangler login` (once per machine).
-2. `pnpm deploy`.
-3. In the Cloudflare dashboard, open the `magic-web` Worker, then Settings, then Domains and
-   Routes, and add `magic.com.py` as a custom domain.
+- **Every push to `main` goes live** in about two minutes.
+- Every other branch gets its own preview link. Check it before merging:
+  `pnpm exec wrangler pages deployment list --project-name magic-web`.
+- Build settings (in the Pages project): root directory `v2`, build command `pnpm build`,
+  output directory `out`. Node comes from `.node-version`, pnpm from `packageManager`.
+
+`wrangler.jsonc` and `pnpm deploy` describe the same site as a Worker with static assets, an
+alternative that is not in use.
 
 Free-tier limits are checked at build time by `check-limits.mjs`: at most 20,000 files and
 25 MiB per file.

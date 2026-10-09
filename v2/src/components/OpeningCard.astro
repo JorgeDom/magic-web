@@ -40,6 +40,9 @@ const { from, anchor, overNavigator } = Astro.props;
   .stage {
     --pin-scroll: 70svh;
     position: relative;
+    /* Its section turns pointer events off (it overlaps the section before); the card at rest
+       takes them back. While the star opens, .warp below turns them off again. */
+    pointer-events: auto;
   }
 
   /* Isolated, so a wash placed in the card stays above its ground and below its copy. */
