@@ -34,16 +34,7 @@ const pool = (
 ): Pool => ({ colour, x, y, size, strength, drift });
 
 type WashSet =
-  | "hero"
-  | "intro"
-  | "how-card"
-  | "how"
-  | "making"
-  | "final"
-  | "lost"
-  | "legal"
-  | WorldId
-  | `${WorldId}-card`;
+  "hero" | "intro" | "how-card" | "how" | "making" | "final" | "lost" | "legal" | WorldId;
 
 // On cream, muted text needs the wash beneath it to stay under about 0.28, so stronger pools
 // are centred in a corner or off the edge, where only their faint outer part can reach copy.
@@ -56,26 +47,33 @@ const SETS: Record<WashSet, Pool[]> = {
     pool("blue", 46, 0, 36, 0.3, -30),
   ],
   intro: [pool("blue", -2, 38, 54, 0.36, 60), pool("rosa", 103, 70, 58, 0.36, -80)],
-  "kids-card": [
-    pool("lavender", 88, 16, 50, 0.44, 60),
-    pool("peach", 26, 2, 36, 0.32, -40),
-    pool("blue", 102, 84, 42, 0.36, 90),
+  // A world is one tall section: pools near the top sit beside its name, the rest beside its
+  // photographs and services.
+  kids: [
+    pool("lavender", 96, 5, 46, 0.4, 60),
+    pool("peach", 30, -1, 34, 0.28, -40),
+    pool("blue", 103, 50, 40, 0.34, 90),
+    pool("rosa", -2, 60, 46, 0.3, -70),
+    pool("sage", 100, 90, 42, 0.28, 60),
   ],
-  kids: [pool("rosa", 0, 62, 46, 0.3, -70), pool("sage", 100, 24, 42, 0.28, 60)],
-  "teens-card": [
-    pool("cream", 12, 8, 60, 0.6, -50),
-    pool("lavender", 102, 18, 48, 0.4, 70),
-    pool("rosa", 72, 108, 52, 0.42, -60),
+  teens: [
+    pool("cream", 10, 4, 60, 0.6, -50),
+    pool("lavender", 104, 32, 44, 0.34, 70),
+    pool("cream", -2, 56, 62, 0.6, 60),
+    pool("rosa", 102, 88, 54, 0.42, -80),
   ],
-  teens: [pool("cream", -2, 26, 62, 0.6, 60), pool("rosa", 102, 84, 54, 0.42, -80)],
-  "grown-ups-card": [
-    pool("rosa", 96, 6, 56, 0.56, 60),
-    pool("lavender", 44, -4, 38, 0.3, -40),
-    pool("cream", 8, 62, 60, 0.7, 50),
+  "grown-ups": [
+    pool("cream", 8, 5, 60, 0.7, 50),
+    pool("lavender", 50, -3, 36, 0.26, -40),
+    pool("rosa", 104, 34, 54, 0.5, 60),
+    pool("cream", 94, 62, 60, 0.7, -60),
+    pool("rosa", -2, 92, 54, 0.48, 70),
   ],
-  "grown-ups": [pool("cream", 94, 8, 60, 0.7, -60), pool("rosa", -2, 88, 54, 0.48, 70)],
-  "brands-card": [pool("sage", 92, 12, 66, 0.5, 60), pool("sage", 8, 104, 46, 0.2, -50)],
-  brands: [pool("sage", -4, 42, 62, 0.34, 70)],
+  brands: [
+    pool("sage", 96, 5, 60, 0.46, 60),
+    pool("sage", -4, 48, 62, 0.34, 70),
+    pool("sage", 60, 102, 46, 0.2, -50),
+  ],
   "how-card": [
     pool("sage", 86, 24, 50, 0.42, 60),
     pool("lavender", 18, -2, 42, 0.36, -40),

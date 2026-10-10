@@ -18,10 +18,15 @@ const STAR_INRADIUS = 18.16;
  */
 export const STAR_K_OPEN = `${Math.ceil((70.72 / STAR_INRADIUS) * 105) / 100}vmax`;
 
-/** The outline as a CSS polygon, centred in its element and sized by `--k`. */
+/**
+ * The outline as a CSS polygon, sized by `--k`. It is centred across its element; down it, it
+ * sits at `--star-y` (the middle by default), so an element taller than the screen can keep
+ * the star in the middle of the screen instead of the middle of itself.
+ */
 export function starClipPolygon(): string {
-  const at = (value: number) => `calc(50% + var(--k) * ${value})`;
-  return `polygon(${STAR_POINTS.map(([x, y]) => `${at(x)} ${at(y)}`).join(",")})`;
+  const across = (value: number) => `calc(50% + var(--k) * ${value})`;
+  const down = (value: number) => `calc(var(--star-y, 50%) + var(--k) * ${value})`;
+  return `polygon(${STAR_POINTS.map(([x, y]) => `${across(x)} ${down(y)}`).join(",")})`;
 }
 
 /** The same outline as 84 points (y down), for the CSS clip-path and the 3D star. */

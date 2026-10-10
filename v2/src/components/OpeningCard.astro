@@ -1,11 +1,14 @@
 ---
-// A full-height opening card, optionally revealed by the signature star-warp.
+// A card at least one screen tall, optionally revealed by the signature star-warp. It may be
+// much taller than the screen: each world is one such card, holding its name, services and
+// photographs together.
 //
-// At rest this is a plain card in its section's ground. When `from` is set, and motion is
+// At rest this is a plain block in its section's ground. When `from` is set, and motion is
 // welcome, and scroll timelines exist (or the GSAP fallback has switched itself on), the card
 // overlaps the last viewport of the section before it, pins for --pin-scroll, and is clipped
-// to a star that opens from the centre: a star-shaped window onto what comes next. Outside
-// the star, the outgoing section stays visible and usable.
+// to a star that opens from the centre of the screen: a star-shaped window onto what comes
+// next. Outside the star, the outgoing section stays visible and usable. Once the star has
+// cleared the screen the card lets go and scrolls like any other content.
 import type { WorldId } from "../lib/content";
 import { STAR_K_OPEN } from "../lib/star";
 
@@ -30,10 +33,11 @@ const { from, anchor, overNavigator } = Astro.props;
   style={`--k-open:${STAR_K_OPEN};--warp-z:${overNavigator ? 40 : 20}`}
 >
   {anchor && <div id={anchor} class="anchor" />}
+  {from && <div aria-hidden="true" data-world={from} class="tail" />}
   <div data-warp-pin class:list={["pin", from && "star-clip"]}>
     <slot />
   </div>
-  {from && <div aria-hidden="true" data-world={from} class="tail" />}
+  {from && <div aria-hidden="true" data-warp-room class="room" />}
 </div>
 
 <style>
@@ -41,7 +45,7 @@ const { from, anchor, overNavigator } = Astro.props;
     --pin-scroll: 70svh;
     position: relative;
     /* Its section turns pointer events off (it overlaps the section before); the card at rest
-       takes them back. While the star opens, .warp below turns them off again. */
+       takes them back. */
     pointer-events: auto;
   }
 
@@ -57,27 +61,47 @@ const { from, anchor, overNavigator } = Astro.props;
 
   .anchor {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 1px;
-    height: 100svh;
+    height: 1px;
     pointer-events: none;
   }
 
-  /* Keeps the outgoing ground under the aperture while the card is pinned. */
+  /* The outgoing ground, laid under the aperture where the section before has scrolled away. */
   .tail {
+    position: absolute;
+    top: 100svh;
+    right: 0;
+    left: 0;
+    z-index: -1;
     display: none;
     height: var(--pin-scroll);
     background: var(--ground);
   }
 
-  /* Slow start, so the shape reads as a star before it floods the screen. */
+  /* The distance the card stays pinned. The card slides over it as it lets go. */
+  .room {
+    display: none;
+    height: var(--pin-scroll);
+  }
+
+  /*
+   * A slow start, so the shape reads as a star before it floods the screen. The last step
+   * throws the star far past the screen's edges: the card may be several screens tall, and
+   * once it lets go nothing below the first screen may still be cut by the star.
+   */
   @keyframes star-warp-open {
     from {
       --k: 0vmax;
+      animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    98% {
+      --k: var(--k-open);
+      animation-timing-function: linear;
     }
     to {
-      --k: var(--k-open);
+      --k: 240vmax;
     }
   }
 
@@ -85,8 +109,9 @@ const { from, anchor, overNavigator } = Astro.props;
     @supports ((animation-timeline: view()) and (animation-range: entry)) {
       .warp {
         z-index: var(--warp-z);
-        height: calc(100svh + var(--pin-scroll));
         margin-top: -100svh;
+        /* Only what shows through the star takes touches; the rest belongs to the section
+           underneath. */
         pointer-events: none;
         view-timeline: --warp block;
         /* The default inset follows scroll-padding (the nav height) and would start early. */
@@ -94,18 +119,25 @@ const { from, anchor, overNavigator } = Astro.props;
       }
 
       .warp > .pin {
+        --star-y: 50svh;
         position: sticky;
         top: 0;
-        height: 100svh;
-        min-height: 0;
+        pointer-events: auto;
         clip-path: var(--star-polygon);
-        animation: star-warp-open cubic-bezier(0.55, 0.055, 0.675, 0.19) both;
+        animation: star-warp-open linear both;
         animation-timeline: --warp;
-        animation-range: contain 0% contain 100%;
+        /* From the moment the card reaches the top of the screen, for as long as it pins. */
+        animation-range: cover 100svh cover calc(100svh + var(--pin-scroll));
       }
 
-      .warp > .tail {
+      .warp > .tail,
+      .warp > .room {
         display: block;
+      }
+
+      .warp > .anchor {
+        /* Jumps stop short by the nav height (scroll-padding); this lands them on the open star. */
+        top: calc(var(--pin-scroll) + var(--nav-height));
       }
     }
   }
@@ -113,20 +145,29 @@ const { from, anchor, overNavigator } = Astro.props;
   /* Same layout for the GSAP fallback, which tweens --k itself (see lib/client.ts). */
   :global(html.warp-fallback) .warp {
     z-index: var(--warp-z);
-    height: calc(100svh + var(--pin-scroll));
     margin-top: -100svh;
     pointer-events: none;
   }
 
   :global(html.warp-fallback) .warp > .pin {
+    --star-y: 50svh;
     position: sticky;
     top: 0;
-    height: 100svh;
-    min-height: 0;
+    pointer-events: auto;
     clip-path: var(--star-polygon);
   }
 
-  :global(html.warp-fallback) .warp > .tail {
+  :global(html.warp-fallback) .warp > .pin:global(.is-open) {
+    clip-path: none;
+  }
+
+  :global(html.warp-fallback) .warp > .tail,
+  :global(html.warp-fallback) .warp > .room {
     display: block;
+  }
+
+  :global(html.warp-fallback) .warp > .anchor {
+    /* Jumps stop short by the nav height (scroll-padding); this lands them on the open star. */
+    top: calc(var(--pin-scroll) + var(--nav-height));
   }
 </style>

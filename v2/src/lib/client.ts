@@ -124,8 +124,23 @@ const supportsScrollTimelines = () =>
  */
 export async function applyScrollFallback(): Promise<void> {
   if (supportsScrollTimelines() || reducedMotion()) return;
-  const { gsap } = await loadGsap();
+  const { gsap, ScrollTrigger } = await loadGsap();
   const each = (selector: string) => gsap.utils.toArray<HTMLElement>(selector);
+
+  // The star-warp's pinned layout moves everything below it, so it is switched on before
+  // anything is measured.
+  document.documentElement.classList.add("warp-fallback");
+
+  // A card opened by the star-warp is sticky: once it has let go, its content sits lower on
+  // the page than where it was measured, by the distance the card stayed pinned (its spacer).
+  // ScrollTrigger measures the resting place, so positions inside a card are moved down by it.
+  const settled = (element: Element) =>
+    element
+      .closest("[data-warp-pin]")
+      ?.parentElement?.querySelector<HTMLElement>(":scope > [data-warp-room]")?.offsetHeight ?? 0;
+  /** A ScrollTrigger position ("top 92%") for `element`, corrected for its card. */
+  const when = (element: Element, edge: "top" | "bottom", line: string) => () =>
+    `${edge}+=${settled(element)} ${line}`;
 
   for (const element of each('[data-scroll="parallax"]')) {
     const distance = parseFloat(getComputedStyle(element).getPropertyValue("--parallax")) || 48;
@@ -135,13 +150,23 @@ export async function applyScrollFallback(): Promise<void> {
       {
         y: -distance,
         ease: "none",
-        scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: true },
+        scrollTrigger: {
+          trigger: element,
+          start: when(element, "top", "bottom"),
+          end: when(element, "bottom", "top"),
+          scrub: true,
+        },
       },
     );
   }
 
   for (const element of each('[data-scroll="unveil"]')) {
-    const scrollTrigger = { trigger: element, start: "top 92%", end: "top 30%", scrub: true };
+    const scrollTrigger = {
+      trigger: element,
+      start: when(element, "top", "92%"),
+      end: when(element, "top", "30%"),
+      scrub: true,
+    };
     gsap.fromTo(
       element,
       { clipPath: "inset(0% 0% 100% 0%)" },
@@ -151,29 +176,51 @@ export async function applyScrollFallback(): Promise<void> {
   }
 
   for (const element of each('[data-scroll="draw"]')) {
+    // A rule draws from the left; one that stands upright (the thread on phones) draws downward.
+    const upright = element.offsetHeight > element.offsetWidth;
     gsap.fromTo(
       element,
-      { scaleX: 0, transformOrigin: "left center" },
+      upright
+        ? { scaleY: 0, transformOrigin: "center top" }
+        : { scaleX: 0, transformOrigin: "left center" },
       {
-        scaleX: 1,
+        ...(upright ? { scaleY: 1 } : { scaleX: 1 }),
         ease: "none",
-        scrollTrigger: { trigger: element, start: "top bottom", end: "top 55%", scrub: true },
+        scrollTrigger: {
+          trigger: element,
+          start: when(element, "top", "bottom"),
+          end: upright ? when(element, "bottom", "70%") : when(element, "top", "55%"),
+          scrub: true,
+        },
       },
     );
   }
 
-  // Star-warp: the stylesheet clips each opening card to a star sized by `--k`. The class
-  // switches on the pinned layout; the tween opens the star over the pinned distance.
-  document.documentElement.classList.add("warp-fallback");
+  // Star-warp: the stylesheet clips each opening card to a star sized by `--k`; the tween
+  // opens the star over the distance the card stays pinned.
   for (const stage of each("[data-warp]")) {
+    const pin = stage.querySelector<HTMLElement>("[data-warp-pin]");
     gsap.fromTo(
-      stage.querySelector("[data-warp-pin]"),
+      pin,
       { "--k": "0vmax" },
       {
         "--k": stage.dataset.warp ?? "4.1vmax",
         ease: "power2.in",
-        scrollTrigger: { trigger: stage, start: "top top", end: "bottom bottom", scrub: true },
+        scrollTrigger: {
+          trigger: stage,
+          start: "top top",
+          // The card pins for the height of its spacer, whatever the height of its content.
+          end: () => `+=${stage.querySelector<HTMLElement>("[data-warp-room]")?.offsetHeight ?? 0}`,
+          scrub: true,
+          // Once the star has cleared the screen the clip comes off, so content below the
+          // first screen is not cut by it.
+          onUpdate: (self) => pin?.classList.toggle("is-open", self.progress >= 1),
+        },
       },
     );
   }
+
+  // Everything above was created at different moments of the same layout; measure it once more
+  // together, now that the page is in its final shape.
+  ScrollTrigger.refresh();
 }

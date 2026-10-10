@@ -1,7 +1,9 @@
 ---
 // Grown Ups signature: an editorial spread. The photographs unveil behind a slow mask as they
-// arrive, over a rosa sheet that drifts a little slower than the page. All of it is CSS
-// scroll-driven (see global.css), so this scene ships no JavaScript.
+// arrive, and a strand of pearls lies across the corner of the spread, the way a finished
+// piece is left on the table: cream pearls, one rosa bead between gold spacers, a gold clasp.
+// It drifts a little slower than the page. All of it is CSS scroll-driven (see global.css),
+// so this scene ships no JavaScript.
 import type { World } from "../lib/content";
 import Gallery from "./Gallery.astro";
 
@@ -10,19 +12,145 @@ interface Props {
 }
 
 const { world } = Astro.props;
+
+// The strand follows two cubic curves, drawn in a 320 x 300 box: a loose S, as a strand falls
+// when it is put down.
+type Point = [number, number];
+const CURVES: [Point, Point, Point, Point][] = [
+  [
+    [26, 44],
+    [96, 22],
+    [150, 92],
+    [164, 170],
+  ],
+  [
+    [164, 170],
+    [176, 238],
+    [236, 276],
+    [296, 250],
+  ],
+];
+const PEARL = 6.2;
+const ACCENT = 9.4;
+const SPACER = 2.6;
+const GAP = 1.6;
+
+// The curve as a fine polyline, with the running length at each point.
+const line: { x: number; y: number; at: number }[] = [];
+for (const [a, b, c, d] of CURVES) {
+  for (let step = line.length ? 1 : 0; step <= 200; step++) {
+    const t = step / 200;
+    const u = 1 - t;
+    const x = u ** 3 * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t ** 3 * d[0];
+    const y = u ** 3 * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t ** 3 * d[1];
+    const last = line.at(-1);
+    line.push({ x, y, at: last ? last.at + Math.hypot(x - last.x, y - last.y) : 0 });
+  }
+}
+const total = line.at(-1)!.at;
+const pointAt = (distance: number) => {
+  const index = Math.max(
+    1,
+    line.findIndex((point) => point.at >= distance),
+  );
+  const [from, to] = [line[index - 1]!, line[index]!];
+  const t = (distance - from.at) / (to.at - from.at || 1);
+  return { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+};
+
+// Beads are laid end to end along the curve; the accent sits a little past the first third.
+const beads: { x: number; y: number; r: number; fill: string }[] = [];
+const accentAt = total * 0.4;
+const PEARLS = [{ r: PEARL, fill: "var(--color-cream)" }];
+const ACCENTS = [
+  { r: SPACER, fill: "var(--color-gold)" },
+  { r: ACCENT, fill: "var(--color-rosa)" },
+  { r: SPACER, fill: "var(--color-gold)" },
+];
+let along = 10;
+let accentPlaced = false;
+while (along + PEARL < total - 10) {
+  const accent = !accentPlaced && along >= accentAt;
+  if (accent) accentPlaced = true;
+  for (const { r, fill } of accent ? ACCENTS : PEARLS) {
+    beads.push({ ...pointAt(along + r), r, fill });
+    along += r * 2 + GAP;
+  }
+}
+const first = line[0]!;
+const end = pointAt(along + 4);
+const path = `M${line.map(({ x, y }) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}`;
 ---
 
-<div class="relative @4xl:pb-[6%] @4xl:pl-[6%]">
-  <div
-    aria-hidden="true"
-    data-scroll="parallax"
-    style="--parallax:32px"
-    class="absolute bottom-0 left-0 hidden h-[40%] w-[44%] rounded-(--media-radius) bg-accent @4xl:block"
-  ></div>
+<div class="relative">
   <Gallery
     base={world.media.key}
     shot={world.media.shot}
     label={`Fotos de ${world.name}`}
     scroll="unveil"
   />
+  <svg
+    viewBox="0 0 320 300"
+    aria-hidden="true"
+    focusable="false"
+    data-scroll="parallax"
+    style="--parallax:14px"
+    class="strand"
+  >
+    <path d={path} fill="none" stroke="var(--color-chocolate)" stroke-width="1"></path>
+    {/* The clasp: a ring at one end, a bar at the other. */}
+    <circle
+      cx={first.x - 3}
+      cy={first.y + 1}
+      r="4.2"
+      fill="none"
+      stroke="var(--color-gold)"
+      stroke-width="1.8"
+    ></circle>
+    <circle cx={end.x} cy={end.y} r="3.4" fill="var(--color-gold)"></circle>
+    {beads.map(({ x, y, r, fill }) => (
+      <>
+        <circle
+          cx={x.toFixed(1)}
+          cy={y.toFixed(1)}
+          r={r}
+          fill={fill}
+          stroke="var(--color-chocolate)"
+          stroke-opacity="0.12"
+          stroke-width="0.6"
+        />
+        {r > SPACER && (
+          <circle
+            cx={(x - r * 0.3).toFixed(1)}
+            cy={(y - r * 0.34).toFixed(1)}
+            r={(r * 0.2).toFixed(1)}
+            fill="rgb(255 255 255)"
+            fill-opacity="0.75"
+          />
+        )}
+      </>
+    ))}
+  </svg>
 </div>
+
+<style>
+  /* Laid over the bottom left corner of the spread, half on the photograph and half off it. */
+  .strand {
+    position: absolute;
+    bottom: -38px;
+    left: -14px;
+    width: 46%;
+    overflow: visible;
+    /* A soft contact shadow, as under anything on the page that could be picked up. */
+    filter: drop-shadow(0 5px 6px rgb(76 64 57 / 0.26));
+    pointer-events: none;
+  }
+
+  @container (width >= 56rem) {
+    .strand {
+      bottom: -3%;
+      left: -9%;
+      width: 50%;
+    }
+  }
+</style>

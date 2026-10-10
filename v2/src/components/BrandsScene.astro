@@ -6,11 +6,16 @@
 // The film is public/media/brands.webm and brands.mp4, with brands-poster.webp as its poster
 // (see README: video). Until those exist, the world shows its photographs (`brands`,
 // `brands-2`...) in the shared gallery instead. Files over Cloudflare's 25 MiB limit are served from PUBLIC_MEDIA_BASE_URL.
+//
+// Either way a gift tag is tied to the top corner, as on a piece made for a client: cream
+// card, a sage eyelet, the host brand's place written on it. It turns a few degrees as the
+// page moves and is otherwise still: Brands is the quietest world.
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { COPY, type World } from "../lib/content";
 import { MEDIA_BASE_URL } from "../lib/site";
 import Gallery from "./Gallery.astro";
+import Star from "./Star.astro";
 
 interface Props {
   world: World;
@@ -27,66 +32,189 @@ const sources = [
 const poster = local("brands-poster.webp") ? "/media/brands-poster.webp" : undefined;
 ---
 
-{!sources.length && (
-  <Gallery base={world.media.key} shot={world.media.shot} label={`Fotos de ${world.name}`} />
-)}
-{sources.length > 0 && (
-  <div
-    data-brands
-    class="relative mr-[calc(var(--bleed)*-1)] overflow-clip @max-4xl:ml-[calc(var(--bleed)*-1)]"
-  >
-    <div data-push>
-      {
-        <div class="relative aspect-[4/5] max-h-[76svh] w-full bg-arena">
-          {/* The sources are attached by the script below, only when the film is about to be seen. */}
-          <video
-            muted
-            loop
-            playsinline
-            preload="none"
-            poster={poster}
-            aria-label={world.media.shot}
-            data-sources={JSON.stringify(sources)}
-            class="size-full object-cover"
-          />
-          <button
-            type="button"
-            data-film-toggle
-            data-play={COPY.film.play}
-            data-pause={COPY.film.pause}
-            aria-label={COPY.film.play}
-            class="group absolute right-4 bottom-4 grid size-11 place-items-center rounded-pill bg-cream text-chocolate transition-transform duration-(--duration-micro) active:scale-[0.94]"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                class="group-data-playing:hidden"
-                d="M8 5.5v13l10.5-6.5L8 5.5z"
-                fill="currentColor"
-              />
-              <path
-                class="hidden group-data-playing:block"
-                d="M8.5 5.5v13M15.5 5.5v13"
-                stroke="currentColor"
-                stroke-width="2.6"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
-        </div>
-      }
+<div class="relative">
+  <div aria-hidden="true" class="tie">
+    <div class="swing">
+      <span class="string"></span>
+      <div class="tag">
+        <span class="eyelet"></span>
+        <span class="rule"></span>
+        <span class="name">{COPY.worlds.brandTag}</span>
+        <span class="mark">
+          <Star class="h-full" />
+        </span>
+      </div>
     </div>
-    <span
-      data-bar
-      aria-hidden="true"
-      class="absolute inset-x-0 top-0 h-[18%] origin-top scale-y-0 bg-accent"
-    ></span>
-    <span
-      data-bar
-      aria-hidden="true"
-      class="absolute inset-x-0 bottom-0 h-[18%] origin-bottom scale-y-0 bg-accent"
-    ></span>
   </div>
-)}
+  {!sources.length && (
+    <Gallery base={world.media.key} shot={world.media.shot} label={`Fotos de ${world.name}`} />
+  )}
+  {sources.length > 0 && (
+    <div
+      data-brands
+      class="relative mr-[calc(var(--bleed)*-1)] overflow-clip @max-4xl:ml-[calc(var(--bleed)*-1)]"
+    >
+      <div data-push>
+        {
+          <div class="relative aspect-[4/5] max-h-[76svh] w-full bg-arena">
+            {/* The sources are attached by the script below, only when the film is about to be seen. */}
+            <video
+              muted
+              loop
+              playsinline
+              preload="none"
+              poster={poster}
+              aria-label={world.media.shot}
+              data-sources={JSON.stringify(sources)}
+              class="size-full object-cover"
+            />
+            <button
+              type="button"
+              data-film-toggle
+              data-play={COPY.film.play}
+              data-pause={COPY.film.pause}
+              aria-label={COPY.film.play}
+              class="group absolute right-4 bottom-4 grid size-11 place-items-center rounded-pill bg-cream text-chocolate transition-transform duration-(--duration-micro) active:scale-[0.94]"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path
+                  class="group-data-playing:hidden"
+                  d="M8 5.5v13l10.5-6.5L8 5.5z"
+                  fill="currentColor"
+                />
+                <path
+                  class="hidden group-data-playing:block"
+                  d="M8.5 5.5v13M15.5 5.5v13"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+      <span
+        data-bar
+        aria-hidden="true"
+        class="absolute inset-x-0 top-0 h-[18%] origin-top scale-y-0 bg-accent"
+      ></span>
+      <span
+        data-bar
+        aria-hidden="true"
+        class="absolute inset-x-0 bottom-0 h-[18%] origin-bottom scale-y-0 bg-accent"
+      ></span>
+    </div>
+  )}
+</div>
+
+<style>
+  /* Tied to the top left corner of the photographs: the knot sits on the corner itself. */
+  .tie {
+    --u: 13px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .swing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Phones have a narrow margin, so most of the tag lies on the photograph's corner. */
+    translate: -16% 0;
+    rotate: 7deg;
+    transform-origin: center top;
+    /* A soft contact shadow, as under anything on the page that could be picked up. */
+    filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.28));
+  }
+
+  .string {
+    width: 1.5px;
+    height: calc(var(--u) * 1.5);
+    background: var(--color-cream);
+  }
+
+  /* A card tag with its top corners cut, as gift tags are. */
+  .tag {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 0.5);
+    align-items: center;
+    width: calc(var(--u) * 5);
+    margin-top: calc(var(--u) * -0.55);
+    padding: calc(var(--u) * 0.45) calc(var(--u) * 0.4) calc(var(--u) * 0.7);
+    background: var(--color-cream);
+    color: var(--color-chocolate);
+    clip-path: polygon(24% 0, 76% 0, 100% 15%, 100% 100%, 0 100%, 0 15%);
+  }
+
+  /* The eyelet shows the ground through the card, ringed in sage. */
+  .eyelet {
+    width: calc(var(--u) * 0.95);
+    aspect-ratio: 1;
+    border: calc(var(--u) * 0.2) solid var(--color-sage);
+    border-radius: 9999px;
+    background: var(--ground);
+  }
+
+  .rule {
+    width: 100%;
+    height: 1px;
+    margin-top: calc(var(--u) * 0.2);
+    background: var(--color-sage);
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-size: calc(var(--u) * 0.92);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .mark {
+    display: block;
+    height: calc(var(--u) * 1.15);
+    margin-top: calc(var(--u) * 0.9);
+  }
+
+  @keyframes tag-turn {
+    from {
+      rotate: 11deg;
+    }
+    to {
+      rotate: 3deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .swing {
+        animation: tag-turn linear both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+    }
+  }
+
+  @media (width >= 64rem) {
+    .tie {
+      --u: clamp(15px, 1.25vw, 18px);
+    }
+
+    /* With a free column beside the photographs, the tag hangs mostly in it. */
+    .swing {
+      translate: -62% 0;
+    }
+  }
+</style>
 
 <script>
   import { canAutoplay, scrollScene, watchVisibility, whenNear } from "../lib/client";

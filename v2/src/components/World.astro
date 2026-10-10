@@ -1,8 +1,12 @@
 ---
-// One world, in two beats: a full-screen opening card with its name, then its services beside
-// its media (the default slot). Every world uses this exact layout. Ground, ink, corner radius
-// and tempo come from the world's tokens through `data-world`; nothing here branches on which
-// world it is.
+// One world, in one section: its name and line, its services, and its photographs (the default
+// slot). The whole section is the card the star-warp opens: the star reveals the world's first
+// screen, name and all, and the section then scrolls on. Every world uses this exact layout.
+// Ground, ink, corner radius and tempo come from the world's tokens through `data-world`;
+// nothing here branches on which world it is.
+//
+// Phones read top to bottom: name, photographs, services. Where there is room the copy holds
+// the left and stays in view while the photographs scroll past on the right.
 import { worldAnchor, type World, type WorldId } from "../lib/content";
 import Button from "./Button.astro";
 import OpeningCard from "./OpeningCard.astro";
@@ -18,7 +22,7 @@ const { world, previous } = Astro.props;
 const anchor = worldAnchor(world.id);
 ---
 
-{/* The section reaches up over the previous one while its card opens (see OpeningCard), so
+{/* The section reaches up over the previous one while its star opens (see OpeningCard), so
      its own box must not catch touches meant for what lies underneath, like a photo row. */}
 <section
   data-world={world.id}
@@ -26,36 +30,101 @@ const anchor = worldAnchor(world.id);
   class="pointer-events-none relative"
 >
   <OpeningCard from={previous} anchor={anchor}>
-    <Wash set={`${world.id}-card`} fade="both" />
-    {/* Phones: the name sits mid-screen, clear of the world navigator at the bottom. */}
-    <div class="shell flex flex-col justify-center py-(--section) lg:justify-end lg:pb-[clamp(112px,18svh,176px)]">
-      <h2 id={`${anchor}-titulo`} lang="en" translate="no" tabindex="-1" class="text-display">
-        {world.name}
-      </h2>
-      <p class="mt-6 max-w-measure text-lead text-ink-muted">{world.line}</p>
-    </div>
-  </OpeningCard>
-
-  {/* The deep bottom padding lets the call to action clear the middle of the screen before
-       the next card's star opens there. */}
-  <div class="pointer-events-auto relative isolate overflow-x-clip bg-ground text-ink">
-    <Wash set={world.id} fade="both" />
-    <div class="@container shell pb-[max(var(--section),36svh)]">
-      <div class="grid items-center gap-y-12 @4xl:grid-cols-12 @4xl:gap-x-8">
-        <div class="order-2 @4xl:order-1 @4xl:col-span-5">
-          <ul role="list" class="max-w-measure border-t border-hairline">
-            {world.services.map((service) => (
-              <li class="border-b border-hairline py-4 font-display text-title">{service}</li>
-            ))}
-          </ul>
-          <Button whatsapp={world.cta.message} class="mt-9">
-            {world.cta.label}
-          </Button>
-        </div>
-        <div class="order-1 @4xl:order-2 @4xl:col-span-6 @4xl:col-start-7">
-          <slot />
+    {/* Only the first world follows a section on the same ground, so only it fades in. */}
+    <Wash set={world.id} fade={previous ? undefined : "top"} />
+    {/* The deep bottom padding lets the call to action clear the middle of the screen before
+         the next world's star opens there. */}
+    <div class="overflow-x-clip">
+      <div class="@container shell pt-[calc(var(--nav-height)+clamp(28px,6svh,64px))] pb-[max(var(--section),36svh)]">
+        <div class="chapter">
+          <div class="copy">
+            <header>
+              <h2 id={`${anchor}-titulo`} lang="en" translate="no" tabindex="-1" class="name">
+                {world.name}
+              </h2>
+              <p class="mt-5 max-w-measure text-lead text-ink-muted @4xl:mt-6">{world.line}</p>
+            </header>
+            <div class="services">
+              <ul role="list" class="max-w-measure border-t border-hairline">
+                {world.services.map((service) => (
+                  <li class="border-b border-hairline py-4 font-display text-title">{service}</li>
+                ))}
+              </ul>
+              <Button whatsapp={world.cta.message} class="mt-9">
+                {world.cta.label}
+              </Button>
+            </div>
+          </div>
+          <div class="media">
+            <slot />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </OpeningCard>
 </section>
+
+<style>
+  /* Phones: one column. The copy's two halves take their places around the photographs. */
+  .chapter {
+    display: grid;
+    row-gap: 40px;
+  }
+
+  .copy {
+    display: contents;
+  }
+
+  .media {
+    order: 1;
+  }
+
+  .services {
+    order: 2;
+  }
+
+  .name {
+    font-size: var(--text-display);
+    font-weight: var(--text-display--font-weight);
+    line-height: var(--text-display--line-height);
+    letter-spacing: var(--text-display--letter-spacing);
+  }
+
+  /* With room: copy in the left five columns, photographs in the right six, one column free. */
+  @container (width >= 56rem) {
+    .chapter {
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: 32px;
+      align-items: start;
+    }
+
+    .copy {
+      display: block;
+      grid-column: 1 / span 5;
+    }
+
+    .media {
+      grid-column: 7 / span 6;
+    }
+
+    .services {
+      margin-top: 40px;
+    }
+
+    /* Sized to the column, so the longest name ends before the photographs begin. */
+    .name {
+      font-size: clamp(4.5rem, 10.2cqw, 9rem);
+      white-space: nowrap;
+    }
+  }
+
+  /* On a tall enough screen the copy stays in view while the photographs scroll past. */
+  @media (height >= 46rem) {
+    @container (width >= 56rem) {
+      .copy {
+        position: sticky;
+        top: calc(var(--nav-height) + 32px);
+      }
+    }
+  }
+</style>

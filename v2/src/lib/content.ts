@@ -23,7 +23,8 @@ export const COPY = {
   intro: {
     line: "Elegís las piezas, las armás con tus manos y te llevás algo que no tiene nadie más.",
   },
-  worlds: { label: "Mundos" },
+  // `brandTag` is written on the gift tag that hangs beside the Brands photographs.
+  worlds: { label: "Mundos", brandTag: "Tu marca" },
   how: {
     heading: "Cómo funciona",
     steps: [

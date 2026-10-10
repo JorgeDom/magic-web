@@ -318,7 +318,7 @@ The logo's organic letterforms are artwork. Communication type supports the logo
 | Token | Size | Weight | Line height | Tracking | Use |
 |---|---|---|---|---|---|
 | `{typography.claim}` | 52 → 168px | 600 | 0.90 | -0.025em | "MAKE SOME MAGIC." in the hero. Uppercase. Once. |
-| `{typography.display}` | 64 → 208px | 600 | 0.90 | -0.03em | Opening cards: world names, "Cómo funciona" |
+| `{typography.display}` | 64 → 208px | 600 | 0.90 | -0.03em | World names (capped at 144px on desktop, to fit the copy column) and "Cómo funciona" |
 | `{typography.headline}` | 32 → 56px | 500 | 1.05 | -0.02em | Section headings |
 | `{typography.statement}` | 26 → 48px | 400 | 1.18 | -0.015em | Long quotations and statements (not used on the page at present) |
 | `{typography.title}` | 22 → 28px | 500 | 1.20 | -0.01em | Step names, service names |
@@ -361,23 +361,23 @@ Voice (brand book p.34): short, warm, confident, light. Never babyish, never ove
 
 ### The world chapter (one layout, four intensities)
 
-A world is two beats: a full-screen opening card with its name, then its services beside its media.
+A world is one section: its name and line, its services, and its photographs, together. There is no separate title screen.
 
 ```
-1. Opening card (100svh)                     2. Services and media
-┌───────────────────────────────────────┐    ┌───────────────────────────────────────┐
-│                                       │    │ Service ─────────────   ┌───────────┐ │
-│                                       │    │ Service ─────────────   │           │ │
-│                                       │    │ Service ─────────────   │   media   │ │
-│ Kids                                  │    │ [ Reservá ]             │   4 : 5   │ │
-│ One line in Spanish.                  │    │                         └───────────┘ │
-└───────────────────────────────────────┘    └───────────────────────────────────────┘
+Desktop (the copy stays in view while the photographs scroll past)
+┌──────────────────────────────────────────────────────┐
+│ Kids                              ┌───────┐          │
+│ One line in Spanish.              │ photo │ ┌───────┐│
+│ Service ─────────────             │ 4 : 5 │ │ photo ││
+│ Service ─────────────             └───────┘ │ 4 : 5 ││
+│ [ Reservá ]                       ┌───────┐ └───────┘│
+└──────────────────────────────────────────────────────┘
         [ Kids · Teens · Grown Ups · Brands ]  ← navigator pill, bottom centre
 ```
 
-On phones the second beat stacks: media first, then services and the button.
+On phones it reads top to bottom: name and line, the photographs as a row to swipe, then services and the button.
 
-Every world uses this exact structure. The opening card is what the star-warp reveals (see Motion). Services are plain text rows separated by hairlines, not chips or cards. Worlds are not numbered (they are not a sequence). Only "How it works" is numbered, because it is one; it opens with the same kind of card.
+Every world uses this exact structure. The whole section is what the star-warp reveals (see Motion): the star opens onto the world's first screen, name and all, and the section then scrolls on. On desktop the name is sized to the copy column, so the longest ("Grown Ups") ends before the photographs begin. Services are plain text rows separated by hairlines, not chips or cards. Worlds are not numbered (they are not a sequence). Only "How it works" is numbered, because it is one; it still opens with a full-screen card.
 
 ### Whitespace
 
@@ -471,9 +471,9 @@ The string is threaded like a real piece, outward from the star and graduating s
 
 ### Star-warp (between worlds)
 
-As one world ends, a star-shaped aperture opens from the centre of the viewport, over the outgoing world, and grows until it clears the screen. Through it you see the next world's opening card: its ground and its name. It is scrubbed by scroll, lasts 70% of a viewport of scrolling, and starts slowly so the shape reads as a star before it floods. The outgoing world stays visible and usable outside the star. The same aperture closes the worlds, opening from Brands onto "Cómo funciona" and the cream ground.
+As one world ends, a star-shaped aperture opens from the centre of the viewport, over the outgoing world, and grows until it clears the screen. Through it you see the next world itself: the first screen of its section, with its ground, its name and the start of its photographs. It is scrubbed by scroll, lasts 70% of a viewport of scrolling, and starts slowly so the shape reads as a star before it floods. The outgoing world stays visible and usable outside the star. The same aperture closes the worlds, opening from Brands onto "Cómo funciona" and the cream ground.
 
-It is built as a CSS `clip-path` polygon traced from the logo star and sized by one custom property (`--k`), driven by a view timeline; GSAP drives the same property where scroll timelines are missing. Reduced motion, or no support and no JavaScript: the opening card is simply a card, and grounds change with no transition.
+It is built as a CSS `clip-path` polygon traced from the logo star and sized by one custom property (`--k`), driven by a view timeline; GSAP drives the same property where scroll timelines are missing. The section it reveals may be several screens tall: it pins for the length of the warp, then lets go and scrolls normally. Reduced motion, or no support and no JavaScript: each world is simply a section, and grounds change with no transition.
 
 ### Native first
 
@@ -500,8 +500,8 @@ Same layout. Three dials: **ground**, **radius**, **tempo**.
 | Tempo | Slow, soft | Quick, with overshoot | Unhurried, decelerating | Very slow, linear, cinematic |
 | Duration / scrub | 1200ms / 1.2 | 360ms / 0.3 | 900ms / 0.8 | 1400ms / 1.5 |
 | Easing | `{motion.ease-soft}` | `{motion.ease-snap}` | `{motion.ease-editorial}` | `{motion.ease-cinema}` |
-| Signature interaction | Beads and charms float and drift toward the pointer; touch one and it bobs | Charms hang from a chain and swing with scroll velocity; drag to stack them | Photographs unveil behind a slow mask, like turning a page | A full-bleed film pushes in slowly as letterbox bars open |
-| Reduced motion | Beads at rest | Charms hang still | Photographs shown | Poster frame, play on request |
+| Signature interaction | Beads and charms float and drift toward the pointer; touch one and it bobs | Beaded charm straps, clipped to the photographs' corners, swing with scroll velocity; pull one and let go | Photographs unveil behind a slow mask, like turning a page; a strand of pearls lies across the corner of the spread | A gift tag tied to the photographs turns a few degrees as the page moves. With film: it pushes in slowly as letterbox bars open |
+| Reduced motion | Beads at rest | Straps hang still | Photographs shown, pearls in place | Tag at rest; poster frame, play on request |
 
 Kids is the only world that unlocks the full palette, and it does so through objects (beads, charms) on a cream ground, so the page stays calm. Brands is the quietest: MAgic! supports the host brand instead of competing with it (brand book p.28).
 
@@ -511,7 +511,9 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 
 **`world-navigator`**: sticky while the four worlds are on screen, absent elsewhere. A cream pill at the bottom centre of the viewport at every size, where it never covers a world's media or copy. Four text labels in `{typography.label}`; the active one sits on a chocolate fill with the micro star beside it. Active state is conveyed by the fill, the star and `aria-current`, never by colour alone. Its colours are fixed so it reads on every ground. Each label is a link that jumps to its world with a cross-fade (View Transitions) and moves focus to the world's heading.
 
-**`opening-card`**: a full-height card in the section's ground with one line of display type at the bottom left. Used to open each world and "Cómo funciona". When it follows a world it is revealed by the star-warp.
+**`opening-card`**: a block at least one screen tall in the section's ground, revealed by the star-warp when it follows a world. Each world is one such card, holding the whole section. "Cómo funciona" uses it as a full-screen title card with one line of display type at the bottom left.
+
+**`world decorations`**: one object per world, in the bead language of the closing necklace (round, cube and tube beads, seed beads, gold findings), placed at the corners of the photographs and never across their middle. Teens: charm straps with letter beads spelling the studio's name, in lavender, cream and chocolate. Grown Ups: a strand of cream pearls with one rosa bead between gold spacers. Brands: a cream gift tag with a sage eyelet, reading "Tu marca", with one small gold star. Kids keeps its floating beads. Each has the contact shadow.
 
 **`button-primary`**: chocolate fill, cream text, pill, 52px tall, minimum 44px touch target. Press: `scale(0.97)`. Focus: 2px `{colors.focus}` ring with a 3px offset (cream ring on chocolate). On chocolate grounds it inverts (`button-primary-on-dark`).
 
