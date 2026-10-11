@@ -1,0 +1,32 @@
+---
+// A candy cane, for Navidad: a white cane with red stripes, its crook at the top so it can be
+// hooked over an edge. Size it with a height utility or from a wrapper.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const CANE = "M13 74V25a10.5 10.5 0 0 1 21 0v7";
+---
+
+<svg
+  viewBox="0 0 44 80"
+  aria-hidden="true"
+  focusable="false"
+  fill="none"
+  stroke-linecap="round"
+  class:list={["block aspect-[44/80]", className]}
+>
+  <path d={CANE} stroke="#faf7f1" stroke-width="10"></path>
+  {/* The stripes: the same line, dashed, and cut square so they read as bands. */}
+  <path
+    d={CANE}
+    stroke="#d2635d"
+    stroke-width="10"
+    stroke-linecap="butt"
+    stroke-dasharray="6 9"
+    stroke-dashoffset="3"
+  ></path>
+  {/* The same small highlight as the beads, lit from the top left. */}
+  <path d="M10 62V34" stroke="rgb(255 255 255 / 0.55)" stroke-width="2"></path>
+</svg>

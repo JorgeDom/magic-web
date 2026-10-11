@@ -1,0 +1,264 @@
+---
+// Fechas especiales: the seasonal dates, for companies. One door per date, each in that date's
+// own colours, with its charm hanging inside: a door with a page opens it, the others say
+// "Muy pronto". The section is kept to one screen. Its moment is the charms being lowered into
+// their doors as it arrives; a door's charm also swings when the door is pointed at.
+import { COPY } from "../lib/content";
+import { SHOWN_EVENTS, hasPage, paletteStyle } from "../lib/events";
+import Motif from "./Motif.astro";
+import Wash from "./Wash.astro";
+---
+
+{SHOWN_EVENTS.length > 0 && (
+  <section
+    id="temporada"
+    aria-labelledby="temporada-titulo"
+    class="relative isolate overflow-x-clip bg-ground text-ink"
+  >
+    <Wash set="seasons" fade="both" />
+    <div class="shell py-(--section)">
+      <h2 id="temporada-titulo" tabindex="-1" class="text-headline">
+        {COPY.seasons.heading}
+      </h2>
+      <p class="mt-4 max-w-measure text-lead text-ink-muted">{COPY.seasons.line}</p>
+
+      <ul role="list" class="doors">
+        {SHOWN_EVENTS.map((event, index) => {
+          const open = hasPage(event);
+          const Face = open ? "a" : "div";
+          return (
+            <li class="door" style={`${paletteStyle(event.palette)};--i:${index}`}>
+              <Face href={open ? `/${event.slug}` : undefined} class="face">
+                <span aria-hidden="true" class="charm">
+                  <span class="swing">
+                    <span class="cord" />
+                    <span class="bead seed" />
+                    <span class="bead round" />
+                    <span class="bead spacer" />
+                    <span class="motif">
+                      <Motif kind={event.motif} class="h-full" />
+                    </span>
+                  </span>
+                </span>
+                <div class="words">
+                  <h3 class="font-display text-headline">{event.name}</h3>
+                  <span class="mt-2 block text-lead text-ink-muted">
+                    {open ? event.teaser : COPY.seasons.soon}
+                  </span>
+                  {open && (
+                    <span class="go">
+                      {COPY.seasons.open}
+                      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                        <path
+                          d="M5 12h14m-6-6 6 6-6 6"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </div>
+              </Face>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  /* Phones: the doors stack, each a short band. With room they stand side by side. */
+  .doors {
+    --u: 15px;
+    display: grid;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .door {
+    display: grid;
+    min-height: 136px;
+    overflow: clip;
+    border-radius: var(--radius-lg);
+    background: var(--ground);
+    color: var(--ink);
+  }
+
+  .face {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px 22px;
+  }
+
+  .words {
+    display: block;
+    /* Clear of the charm, which hangs on the right. */
+    max-width: calc(100% - var(--u) * 5.5);
+  }
+
+  .go {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 14px;
+    font-size: var(--text-label);
+    font-weight: 500;
+    line-height: var(--text-label--line-height);
+  }
+
+  .go svg {
+    transition: translate var(--duration-ui) var(--ease-editorial);
+  }
+
+  /* The charm hangs from the door's top edge: cord, two beads, a gold spacer, then the piece. */
+  .charm {
+    position: absolute;
+    top: 0;
+    right: calc(var(--u) * 2.4);
+    filter: drop-shadow(0 6px 8px rgb(76 64 57 / 0.2));
+  }
+
+  .swing {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    transform-origin: center top;
+  }
+
+  .cord {
+    width: 1.5px;
+    height: calc(var(--u) * 1.3);
+    margin-bottom: -2px;
+    background: var(--ink);
+    opacity: 0.55;
+  }
+
+  .bead {
+    display: block;
+    flex: none;
+    border-radius: 9999px;
+  }
+
+  .seed {
+    width: calc(var(--u) * 0.3);
+    height: calc(var(--u) * 0.3);
+    background: var(--ink);
+  }
+
+  .round {
+    width: calc(var(--u) * 0.86);
+    height: calc(var(--u) * 0.86);
+    background: var(--event-soft);
+  }
+
+  .spacer {
+    width: calc(var(--u) * 0.78);
+    height: calc(var(--u) * 0.14);
+    background: var(--color-gold);
+  }
+
+  .motif {
+    display: block;
+    height: calc(var(--u) * 3);
+    margin-top: 1px;
+  }
+
+  @media (width >= 64rem) {
+    .doors {
+      --u: clamp(17px, 1.5vw, 22px);
+      display: flex;
+      gap: 16px;
+      height: clamp(340px, 50svh, 500px);
+      margin-top: 56px;
+    }
+
+    .door {
+      flex: 1;
+      min-width: 0;
+      transition: flex-grow 520ms var(--ease-editorial);
+    }
+
+    .face {
+      padding: 32px;
+    }
+
+    .charm {
+      right: calc(var(--u) * 3);
+    }
+
+    .cord {
+      height: calc(var(--u) * 3.2);
+    }
+
+    .motif {
+      height: calc(var(--u) * 3.6);
+    }
+  }
+
+  /* A door with a page answers the pointer and the keyboard: it widens and its charm swings. */
+  a.face:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -6px;
+    border-radius: var(--radius-lg);
+  }
+
+  @media (hover: hover) and (width >= 64rem) {
+    .door:has(a.face:hover) {
+      flex-grow: 1.4;
+    }
+  }
+
+  a.face:hover .go svg,
+  a.face:focus-visible .go svg {
+    translate: 4px 0;
+  }
+
+  @keyframes charm-swing {
+    0% {
+      rotate: 0deg;
+    }
+    22% {
+      rotate: 10deg;
+    }
+    48% {
+      rotate: -7deg;
+    }
+    72% {
+      rotate: 4deg;
+    }
+    100% {
+      rotate: 0deg;
+    }
+  }
+
+  /* Lowered in from above the door, a beat after the door before it. */
+  @keyframes charm-lower {
+    from {
+      translate: 0 -105%;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    a.face:hover .swing,
+    a.face:focus-visible .swing {
+      animation: charm-swing 1400ms var(--ease-soft);
+    }
+
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .charm {
+        animation: charm-lower var(--ease-snap) both;
+        animation-timeline: view();
+        animation-range: entry calc(30% + var(--i) * 12%) cover calc(34% + var(--i) * 6%);
+      }
+    }
+  }
+</style>

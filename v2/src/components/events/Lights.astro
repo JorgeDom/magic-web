@@ -1,0 +1,79 @@
+---
+// A string of lights for Navidad, hung in swags under the top bar: red, gold, cream and green
+// bulbs that glow and dim, each a little out of step with the next. With reduced motion they
+// are simply lit. It lies across the top of its parent, which must be positioned.
+const SWAGS = 14;
+const BULBS = [0.14, 0.32, 0.5, 0.68, 0.86];
+const COLOURS = ["#ef7f73", "#f3c969", "#faf7f1", "#9fc7a9"];
+// The wire is one curve, in a 200 x 80 box: this is its height at each point along it.
+const sag = (t: number) => 8 + 116 * t * (1 - t);
+---
+
+<div aria-hidden="true" class="lights">
+  {Array.from({ length: SWAGS }, (_, swag) => (
+    <svg viewBox="0 0 200 80" focusable="false" class="swag">
+      <path d="M0 8Q100 66 200 8" class="wire" />
+      {BULBS.map((t, bulb) => {
+        const x = 200 * t;
+        const y = sag(t);
+        const index = swag * BULBS.length + bulb;
+        const colour = COLOURS[index % COLOURS.length];
+        return (
+          <g style={`color:${colour};--wait:${((index * 0.47) % 2.6).toFixed(2)}s`}>
+            <rect x={x - 2.6} y={y - 1} width="5.2" height="4.4" rx="1" class="cap" />
+            <ellipse cx={x} cy={y + 9.5} rx="5" ry="6.8" class="bulb" />
+          </g>
+        );
+      })}
+    </svg>
+  ))}
+</div>
+
+<style>
+  .lights {
+    position: absolute;
+    top: var(--nav-height);
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .swag {
+    flex: none;
+    width: clamp(150px, 17vw, 230px);
+    overflow: visible;
+  }
+
+  .wire {
+    fill: none;
+    stroke: rgb(250 247 241 / 0.35);
+    stroke-width: 1.2;
+  }
+
+  .cap {
+    fill: #c9b88f;
+  }
+
+  .bulb {
+    fill: currentColor;
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+
+  @keyframes glow {
+    from {
+      opacity: 0.4;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bulb {
+      animation: glow 1300ms ease-in-out var(--wait) infinite alternate;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+// A cobweb spun in a top left corner, for Halloween: spokes fanning out from the corner,
+// joined by threads that sag between them. Drawn in lines, in the colour of the text around it
+// (currentColor). Place its top left on the corner and size it by width.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+// Drawn in a 200 x 200 box, from the corner at 0, 0.
+const SPOKES = [2, 24, 46, 68, 88].map((degrees) => (degrees * Math.PI) / 180);
+const RINGS = [46, 90, 136, 182];
+const at = (radius: number, angle: number) =>
+  [radius * Math.cos(angle), radius * Math.sin(angle)] as const;
+const fixed = (value: number) => value.toFixed(1);
+const web = [
+  ...SPOKES.map((angle) => {
+    const [x, y] = at(196, angle);
+    return `M0 0L${fixed(x)} ${fixed(y)}`;
+  }),
+  ...RINGS.flatMap((radius) =>
+    SPOKES.slice(0, -1).map((angle, index) => {
+      const [x1, y1] = at(radius, angle);
+      const [x2, y2] = at(radius, SPOKES[index + 1]!);
+      // The thread sags toward the corner between its two spokes.
+      const [cx, cy] = [((x1 + x2) / 2) * 0.84, ((y1 + y2) / 2) * 0.84];
+      return `M${fixed(x1)} ${fixed(y1)}Q${fixed(cx)} ${fixed(cy)} ${fixed(x2)} ${fixed(y2)}`;
+    }),
+  ),
+].join("");
+---
+
+<svg
+  viewBox="0 0 200 200"
+  aria-hidden="true"
+  focusable="false"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.1"
+  stroke-linecap="round"
+  class:list={["block aspect-square", className]}
+>
+  <path d={web} vector-effect="non-scaling-stroke"></path>
+</svg>

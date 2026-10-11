@@ -1,0 +1,20 @@
+---
+// A seasonal date's charm (see lib/events.ts), hanging in its door on the home page: a satin
+// bow for Octubre Rosa, a bat for Halloween, a snowflake for Navidad. Size it with a height
+// utility. The bow takes the date's two colours, the bat its accent, the snowflake its ink.
+import type { SeasonalEvent } from "../lib/events";
+import Bow from "./Bow.astro";
+import Bat from "./events/Bat.astro";
+import Snowflake from "./events/Snowflake.astro";
+
+interface Props {
+  kind: SeasonalEvent["motif"];
+  class?: string;
+}
+
+const { kind, class: className } = Astro.props;
+---
+
+{kind === "bow" && <Bow class={className} />}
+{kind === "bat" && <Bat class:list={["text-(--event)", className]} />}
+{kind === "snowflake" && <Snowflake class={className} />}

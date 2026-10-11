@@ -3,30 +3,32 @@
 Open work on the v2 site. `main` is live on magic.com.py: every push to `main` deploys, every
 other branch gets a preview link (see README, "Deploying").
 
-## Next: "Activaciones de temporada" (seasonal activations)
+## Seasonal dates ("Fechas especiales")
 
-Not an events calendar: a showcase of what MAgic! can set up for brands on each date, ending
-in "contact us". Mostly brand activations.
+Built: the home section before the closing phrase, the floating cue, and a page per date:
+`/octubrerosa`, `/halloween`, `/navidad`. Everything is in `src/lib/events.ts`; the copy for the
+section itself is `COPY.seasons` in `src/lib/content.ts`. See "Seasonal dates" in DESIGN.md.
 
-- [ ] **Placement.** Inside the Brands world, after its gallery, so the star-warp into
-      "Cómo funciona" stays intact.
-- [ ] **One card per date.** Month, the date's name, one line on what MAgic! sets up, a photo
-      or a bead motif (pink ribbon, pumpkin, star), and a "Cotizá esta activación" button.
-- [ ] **WhatsApp message per card.** "Hola MAgic! Quiero cotizar una activación de
-      _Octubre Rosa_ para mi marca."
-- [ ] **Colours from the palette only.** Octubre Rosa → rosa. Halloween → peach and chocolate
-      (orange and black are not in the palette). Navidad → sage and gold.
-- [ ] **Calendar order, starting from the next date** (in October, Octubre Rosa comes first).
-- [ ] **Layout.** A swipe row on phones, a grid on desktop.
-- [ ] **Content in `src/lib/content.ts`.** One list; add or remove dates there.
-
-To decide before building:
-
-- [ ] Which dates: San Valentín, Día de la Mujer, Día de la Madre, Día del Padre, Día del
-      Niño, Octubre Rosa, Halloween, Navidad? Add or remove.
-- [ ] What MAgic! offers for each (one line each): from the studio, or drafted and approved.
-- [ ] Photos per date, if any (otherwise bead motifs).
-- [ ] Section title and intro line ("Activaciones de temporada" + one line).
+- [x] Octubre Rosa photographs (in `src/assets/photos/events`).
+- [ ] **Halloween and Navidad are not published** (`live: false` in `src/lib/events.ts`): their
+      doors say "Muy pronto" and their pages are not built. Set `live: true` to publish one, and
+      to preview it locally.
+- [ ] **Halloween and Navidad are first drafts.** Their four experiences are the Octubre Rosa
+      formats in each date's theme, and their colours are a proposal. Replace both with the
+      studio's own campaign for each date, in `src/lib/events.ts`. Each page has its own scene
+      (a night sky; a snowy night), built in `src/pages/[event].astro` and `src/components/events`.
+- [ ] **Halloween and Navidad photographs**, in `src/assets/photos/events`, clean (no text):
+      `halloween` (cover), `halloween-charms`, `halloween-totes`, `halloween-remeras`,
+      `halloween-copas`; `navidad` (cover), `navidad-charms`, `navidad-copas`, `navidad-velas`,
+      `navidad-totes`. The Halloween cover is cropped to a tall arch, the Navidad cover to a circle (it sits in a snow globe), the rest to a square. Add a line each
+      to `PHOTO_ALT` in `src/lib/content.ts`.
+- [ ] **Review the draft copy** for Octubre Rosa: the section heading and line, the lead, the
+      experiences heading and the WhatsApp message. The four experiences use the Instagram
+      slides' own wording.
+- [ ] **A preview image per date** for links shared on WhatsApp and Instagram (the pages use the
+      site's general one for now).
+- [ ] More dates, if wanted: San Valentín, Día de la Mujer, Día de la Madre, Día del Padre, Día
+      del Niño.
 
 ## Before publishing the legal notice
 

@@ -1,0 +1,34 @@
+---
+// A satin bow: two loops, a knot and two tails. It is Octubre Rosa's charm, and it ties the
+// ribbon on that date's page. Loops and tails take --event-soft, the knot --event; size it
+// with a height utility, as with the star.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 120 100"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["block aspect-[6/5]", className]}
+>
+  <g fill="var(--event-soft, var(--color-rosa))">
+    {/* Tails first, so the loops and the knot sit over them. */}
+    <path d="M55 44 40 95l11-8 6 11 5-52z"></path>
+    <path d="M65 44 80 95l-11-8-6 11-5-52z"></path>
+    <path d="M60 40C42 12 6 6 6 34c0 26 36 20 54 8z"></path>
+    <path d="M60 40c18-28 54-34 54-6 0 26-36 20-54 8z"></path>
+  </g>
+  {/* A small highlight on the left loop, lit from the top left like the beads. */}
+  <path
+    d="M17 31c3-9 12-12 22-9"
+    fill="none"
+    stroke="rgb(255 255 255 / 0.55)"
+    stroke-width="3.4"
+    stroke-linecap="round"
+  ></path>
+  <circle cx="60" cy="41" r="9.5" fill="var(--event, var(--color-rosa))"></circle>
+</svg>

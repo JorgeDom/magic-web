@@ -1,0 +1,208 @@
+---
+// A small floating cue for the seasonal dates, so nobody has to scroll the whole page to find
+// them. It names the section, not any one date, and jumps to it: "Fechas especiales". It is in
+// the site's own colours (chocolate, cream, the gold star), like the booking button in the top
+// bar. It drops in once the hero has gone, with its star swinging once, and leaves when that
+// section is on screen or already behind. On phones it sits above the world navigator while
+// the worlds are on screen.
+import { COPY } from "../lib/content";
+import { SHOWN_EVENTS } from "../lib/events";
+import Star from "./Star.astro";
+---
+
+{SHOWN_EVENTS.length > 0 && (
+  <a
+    href="#temporada"
+    data-season-cue
+    data-show="false"
+    aria-hidden="true"
+    tabindex="-1"
+    class="cue"
+  >
+    <span aria-hidden="true" class="piece">
+      <Star class="h-full" />
+    </span>
+    <span class="label">
+      <span class="name">{COPY.seasons.heading}</span>
+      <span class="hint">{COPY.seasons.cue}</span>
+    </span>
+  </a>
+)}
+
+<style>
+  .cue {
+    position: fixed;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    /* Above the worlds and their navigator, below the top bar. */
+    z-index: 45;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    min-height: 52px;
+    padding: 8px 18px 8px 12px;
+    /* The fine cream edge keeps it apart from the chocolate grounds (Brands, the footer). */
+    border: 1.5px solid rgb(250 247 241 / 0.32);
+    border-radius: var(--radius-pill);
+    background: var(--color-chocolate);
+    box-shadow: var(--shadow-contact);
+    color: var(--color-cream);
+    transition:
+      translate 520ms var(--ease-snap),
+      opacity 240ms ease-out,
+      bottom 320ms var(--ease-editorial),
+      visibility 0s;
+  }
+
+  /* Away: below the edge of the screen, and out of reach of the keyboard and the pointer. */
+  .cue[data-show="false"] {
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 150%;
+    transition:
+      translate 320ms var(--ease-editorial),
+      opacity 240ms ease-out,
+      visibility 0s 320ms;
+  }
+
+  .piece {
+    display: block;
+    height: 26px;
+    transform-origin: center;
+  }
+
+  .label {
+    display: grid;
+    gap: 2px;
+    line-height: 1.15;
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .hint {
+    font-size: 0.8125rem;
+    color: rgb(250 247 241 / 0.8);
+  }
+
+  .cue:active {
+    scale: 0.97;
+  }
+
+  /* Phones: the world navigator owns the bottom of the screen while the worlds are in view. */
+  @media (width < 64rem) {
+    /* Smaller, and the name alone: there is little room and a lot under it. */
+    .cue {
+      min-height: 44px;
+      padding: 6px 14px 6px 10px;
+    }
+
+    .piece {
+      height: 24px;
+    }
+
+    .hint {
+      display: none;
+    }
+
+    .cue[data-lift="true"] {
+      bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (width >= 64rem) {
+    .cue {
+      bottom: 24px;
+      left: max(24px, env(safe-area-inset-left));
+    }
+  }
+
+  @keyframes cue-swing {
+    0% {
+      rotate: 0deg;
+    }
+    20% {
+      rotate: -16deg;
+    }
+    45% {
+      rotate: 11deg;
+    }
+    70% {
+      rotate: -6deg;
+    }
+    100% {
+      rotate: 0deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cue[data-show="true"] .piece {
+      animation: cue-swing 1500ms var(--ease-soft) 380ms;
+    }
+
+    .cue:hover .piece {
+      animation: cue-swing 1500ms var(--ease-soft);
+    }
+  }
+</style>
+
+<script>
+  import { jumpTo } from "../lib/client";
+
+  const cue = document.querySelector<HTMLAnchorElement>("[data-season-cue]");
+  const hero = document.getElementById("inicio");
+  const section = document.getElementById("temporada");
+  const worlds = document.getElementById("mundos");
+
+  if (cue && hero && section) {
+    let pastHero = false;
+    let ahead = true; // the section is still below the screen
+
+    const update = () => {
+      const show = pastHero && ahead;
+      cue.dataset.show = String(show);
+      // Reachable by keyboard and assistive tech only while it is on screen.
+      cue.tabIndex = show ? 0 : -1;
+      cue.setAttribute("aria-hidden", String(!show));
+    };
+
+    new IntersectionObserver(([entry]) => {
+      pastHero = !entry?.isIntersecting;
+      update();
+    }).observe(hero);
+
+    new IntersectionObserver(([entry]) => {
+      if (!entry) return;
+      ahead = !entry.isIntersecting && entry.boundingClientRect.top > 0;
+      update();
+    }).observe(section);
+
+    if (worlds) {
+      new IntersectionObserver(([entry]) => {
+        cue.dataset.lift = String(Boolean(entry?.isIntersecting));
+      }).observe(worlds);
+    }
+
+    cue.addEventListener("click", (event) => {
+      event.preventDefault();
+      history.pushState(null, "", cue.hash);
+      jumpTo(section, document.getElementById("temporada-titulo"));
+      // Sections on the way are laid out only when they come near (see `deferred`), so the
+      // first jump lands on an estimate. Once they have their real heights, land again.
+      let tries = 0;
+      const settle = () => {
+        const off =
+          section.getBoundingClientRect().top -
+          parseFloat(getComputedStyle(cue).getPropertyValue("--nav-height"));
+        if (Math.abs(off) < 4 || tries++ >= 6) return;
+        section.scrollIntoView({ behavior: "instant", block: "start" });
+        requestAnimationFrame(settle);
+      };
+      requestAnimationFrame(settle);
+    });
+  }
+</script>

@@ -1,0 +1,27 @@
+---
+// A small spider, for Halloween, seen from above: two round parts and eight legs. It takes the
+// colour of the text around it (currentColor). Hang it from a thread drawn by the caller.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<svg
+  viewBox="-16 -14 32 30"
+  aria-hidden="true"
+  focusable="false"
+  fill="currentColor"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  class:list={["block aspect-[32/30]", className]}
+>
+  <path
+    d="M-5-2-14-8M-6 1l-9-1M-6 4l-8 5M-4 7l-6 8M5-2l9-6M6 1l9-1M6 4l8 5M4 7l6 8"
+    fill="none"
+  ></path>
+  <circle cx="0" cy="4" r="6.4"></circle>
+  <circle cx="0" cy="-4" r="3.8"></circle>
+</svg>

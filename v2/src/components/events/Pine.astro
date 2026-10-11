@@ -1,0 +1,67 @@
+---
+// A sprig of pine, for Navidad: a curved stem with needles down both sides, shorter toward
+// the tip. Size it with a height utility or from a wrapper; mirror it with a transform.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+// The stem is a curve from the cut end (4, 50) to the tip (114, 12), in a 120 x 64 box.
+const P0 = [4, 50] as const;
+const P1 = [62, 44] as const;
+const P2 = [114, 12] as const;
+const needles: string[] = [];
+for (let t = 0.06; t <= 0.97; t += 0.062) {
+  const u = 1 - t;
+  const x = u * u * P0[0] + 2 * u * t * P1[0] + t * t * P2[0];
+  const y = u * u * P0[1] + 2 * u * t * P1[1] + t * t * P2[1];
+  const heading = Math.atan2(
+    2 * u * (P1[1] - P0[1]) + 2 * t * (P2[1] - P1[1]),
+    2 * u * (P1[0] - P0[0]) + 2 * t * (P2[0] - P1[0]),
+  );
+  const length = 17 * (1 - 0.5 * t);
+  for (const side of [-1, 1]) {
+    const angle = heading + side * 0.78;
+    const tipX = x + length * Math.cos(angle);
+    const tipY = y + length * Math.sin(angle);
+    needles.push(`M${x.toFixed(1)} ${y.toFixed(1)}L${tipX.toFixed(1)} ${tipY.toFixed(1)}`);
+  }
+}
+---
+
+<svg
+  viewBox="0 0 120 64"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["block aspect-[120/64]", className]}
+>
+  <path d={needles.filter((_, index) => index % 2 === 0).join("")} class="needle deep"></path>
+  <path d={needles.filter((_, index) => index % 2 === 1).join("")} class="needle"></path>
+  <path d={`M${P0.join(" ")}Q${P1.join(" ")} ${P2.join(" ")}`} class="stem"></path>
+</svg>
+
+<style>
+  svg {
+    overflow: visible;
+  }
+
+  path {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .needle {
+    stroke: #7fb08f;
+    stroke-width: 2.4;
+  }
+
+  .deep {
+    stroke: #5c9474;
+  }
+
+  .stem {
+    stroke: #8a6f52;
+    stroke-width: 2.2;
+  }
+</style>

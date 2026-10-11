@@ -1,8 +1,10 @@
-// The photographs in src/assets/photos, looked up by file name (without extension, any case).
+// The photographs in src/assets/photos and its subfolders (the seasonal dates' photos live in
+// photos/events), looked up by file name (without extension, any case). Names must be unique
+// across folders.
 import type { ImageMetadata } from "astro";
 
 const files = import.meta.glob<{ default: ImageMetadata }>(
-  "../assets/photos/*.{jpg,jpeg,png,webp,avif,tif,tiff}",
+  "../assets/photos/**/*.{jpg,jpeg,png,webp,avif,tif,tiff}",
   { eager: true },
 );
 

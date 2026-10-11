@@ -68,6 +68,19 @@ export const COPY = {
     rights: "Todos los derechos reservados.",
     legal: "Aviso legal y privacidad",
   },
+  // The seasonal dates (see lib/events.ts for the dates themselves). All of it speaks to
+  // companies. First draft, to be revised by the studio.
+  seasons: {
+    heading: "Fechas especiales",
+    line: "Experiencias creativas para tu equipo, pensadas para cada fecha del año.",
+    open: "Ver experiencias",
+    soon: "Muy pronto.",
+    cue: "Ideas para tu empresa",
+    audience: "Para empresas",
+    see: "Ver experiencias",
+    back: "Volver al inicio",
+    region: "Experiencias de",
+  },
   film: { play: "Reproducir video", pause: "Pausar video" },
   notFound: {
     title: "No encontramos esa página.",
@@ -170,6 +183,15 @@ export const PHOTO_ALT: Record<string, string> = {
   "brands-3":
     "En el mostrador de una tienda, una anfitriona de MAgic! le pone un charm con la letra A y un moño a la cartera de una clienta",
   "brands-4": "Manos atan un moño verde sobre cajas de regalo de MAgic! listas para entregar",
+  octubrerosa:
+    "Mesa con mantel rosa: bandejas con cuentas y perlas, dijes dorados, una tijera y una bolsita de tela de MAgic!",
+  "octubrerosa-remeras":
+    "Manos aplican un sticker con un lazo rosa y flores sobre una remera blanca",
+  "octubrerosa-totes":
+    "Un neceser y una bolsa de tela cruda con parches de lazo rosa y flores; una mano pasa una planchita",
+  "octubrerosa-copas": "Manos pintan un lazo rosa y flores sobre una copa de cristal",
+  "octubrerosa-velas":
+    "Una vela con moño rosa y manos armando una pulsera de perlas con dijes de lazo y flor",
   making:
     "Manos enhebrando un collar de perlas sobre una mesa rosa con cuentas y bolsitas de MAgic!",
   details: "Mesa con mantel rosa, perlas, cadenas doradas, pinzas y bolsitas de tela de MAgic!",

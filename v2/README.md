@@ -35,6 +35,7 @@ src/components/           One file per section; each holds its own markup, style
 src/global.css            Design tokens (colours, type, radii, world modes) and scroll primitives
 src/lib/content.ts        Every word on the page, and the four worlds
 src/lib/site.ts           Business facts (WhatsApp, Instagram, city, legal identity) and env switches
+src/lib/events.ts         The seasonal dates: their doors on the home page and their own pages (/octubrerosa)
 src/lib/client.ts         Browser helpers shared by the components' scripts
 src/lib/star.ts           The star's outline, traced from the logo
 src/lib/star3d.ts         The WebGL star (loaded on capable desktops only)

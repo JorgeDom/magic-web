@@ -34,7 +34,19 @@ const pool = (
 ): Pool => ({ colour, x, y, size, strength, drift });
 
 type WashSet =
-  "hero" | "intro" | "how-card" | "how" | "making" | "final" | "lost" | "legal" | WorldId;
+  | "hero"
+  | "intro"
+  | "how-card"
+  | "how"
+  | "making"
+  | "seasons"
+  | "final"
+  | "octubrerosa"
+  | "halloween"
+  | "navidad"
+  | "lost"
+  | "legal"
+  | WorldId;
 
 // On cream, muted text needs the wash beneath it to stay under about 0.28, so stronger pools
 // are centred in a corner or off the edge, where only their faint outer part can reach copy.
@@ -84,6 +96,31 @@ const SETS: Record<WashSet, Pool[]> = {
     pool("lavender", 102, 10, 50, 0.4, 80),
     pool("peach", -2, 44, 46, 0.36, -70),
     pool("sage", 98, 80, 44, 0.34, 60),
+  ],
+  seasons: [
+    pool("rosa", 102, 16, 46, 0.34, 60),
+    pool("peach", -2, 78, 44, 0.3, -60),
+    pool("sage", 58, 104, 40, 0.24, 40),
+  ],
+  // A date's page (lib/events.ts) has its own ground; these lie on Octubre Rosa's pink.
+  octubrerosa: [
+    pool("cream", 6, 4, 60, 0.7, 40),
+    pool("rosa", 104, 6, 46, 0.24, -50),
+    pool("cream", 96, 48, 60, 0.6, 60),
+    pool("rosa", -8, 74, 44, 0.18, -60),
+    pool("lavender", 50, 101, 40, 0.22, 40),
+  ],
+  // Halloween's ground is dark: faint glows only, so its light text keeps its contrast.
+  halloween: [
+    pool("lavender", 102, 6, 50, 0.24, -50),
+    pool("peach", -6, 58, 46, 0.14, 60),
+    pool("lavender", 56, 102, 44, 0.18, 40),
+  ],
+  // Navidad's ground is dark too: a little green light, low, behind the snow.
+  navidad: [
+    pool("sage", 102, 4, 50, 0.2, -50),
+    pool("sage", -6, 56, 46, 0.14, 60),
+    pool("blue", 58, 102, 44, 0.12, 40),
   ],
   final: [
     pool("rosa", 4, 84, 62, 0.38, -70),

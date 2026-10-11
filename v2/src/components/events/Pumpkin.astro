@@ -1,0 +1,104 @@
+---
+// A carved pumpkin, for Halloween, with a candle inside: the face glows and flickers. Size it
+// with a height utility or from a wrapper.
+interface Props {
+  /** Which face it wears: a grin, or a small round "o". */
+  face?: "grin" | "o";
+  class?: string;
+}
+
+const { face = "grin", class: className } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 100 92"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["block aspect-[100/92]", className]}
+>
+  <path d="M46 27c0-11 5-16 12-17l2 7c-4 1-6 4-6 10z" class="stem"></path>
+  {/* Three lobes: the outer two behind, the middle one in front. */}
+  <ellipse cx="31" cy="56" rx="23" ry="28" class="shade"></ellipse>
+  <ellipse cx="69" cy="56" rx="23" ry="28" class="shade"></ellipse>
+  <ellipse cx="50" cy="55" rx="22" ry="31" class="skin"></ellipse>
+  <path d="M30 34c-5 14-5 30 0 44M70 34c5 14 5 30 0 44" class="rib"></path>
+  <g class="glow">
+    {face === "grin" ? (
+      <>
+        <path d="m33 49 9-9 4 12zm34 0-9-9-4 12z" />
+        <path d="m29 62 9 6 6-6 6 7 6-7 6 6 9-6c-6 17-36 17-42 0z" />
+      </>
+    ) : (
+      <>
+        <circle cx="39" cy="47" r="5" />
+        <circle cx="61" cy="47" r="5" />
+        <ellipse cx="50" cy="66" rx="7" ry="8" />
+      </>
+    )}
+  </g>
+  {/* The same small highlight as the beads, lit from the top left. */}
+  <path d="M18 44c2-8 6-13 12-16" class="shine"></path>
+</svg>
+
+<style>
+  .skin {
+    fill: var(--color-peach);
+  }
+
+  .shade {
+    fill: #e08a57;
+  }
+
+  .stem {
+    fill: #7d8a63;
+  }
+
+  .rib {
+    fill: none;
+    stroke: #c9743f;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    opacity: 0.6;
+  }
+
+  .shine {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.45);
+    stroke-width: 3.4;
+    stroke-linecap: round;
+  }
+
+  .glow {
+    fill: #ffe29a;
+    filter: drop-shadow(0 0 3px rgb(255 205 110 / 0.9));
+  }
+
+  /* A candle, not a lamp: the light wavers, never in step with the pumpkin beside it. */
+  @keyframes candle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    18% {
+      opacity: 0.78;
+    }
+    33% {
+      opacity: 0.95;
+    }
+    52% {
+      opacity: 0.7;
+    }
+    71% {
+      opacity: 0.92;
+    }
+    86% {
+      opacity: 0.82;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .glow {
+      animation: candle var(--candle, 2600ms) ease-in-out infinite;
+    }
+  }
+</style>

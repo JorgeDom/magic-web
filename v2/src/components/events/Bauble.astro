@@ -1,0 +1,36 @@
+---
+// A tree bauble, for Navidad, hanging on its thread from a gold cap. `colour` is any CSS
+// colour. Size it with a height utility or from a wrapper.
+interface Props {
+  colour: string;
+  class?: string;
+}
+
+const { colour, class: className } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 40 66"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["block aspect-[40/66]", className]}
+>
+  <path d="M20 0v13" fill="none" stroke="rgb(250 247 241 / 0.6)" stroke-width="1.2"></path>
+  <rect x="15" y="12" width="10" height="6.5" rx="1.6" fill="var(--color-gold)"></rect>
+  <circle cx="20" cy="40" r="19" fill={colour}></circle>
+  {/* A band round its middle, and the same small highlight as the beads. */}
+  <path
+    d="M2 38c11 6 25 6 36 0"
+    fill="none"
+    stroke="rgb(255 255 255 / 0.4)"
+    stroke-width="2.2"
+    stroke-linecap="round"
+  ></path>
+  <path
+    d="M9 32c2-6 6-9 11-10"
+    fill="none"
+    stroke="rgb(255 255 255 / 0.6)"
+    stroke-width="3"
+    stroke-linecap="round"
+  ></path>
+</svg>

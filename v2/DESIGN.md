@@ -225,7 +225,7 @@ The brand's formula is the test for every decision: **expressive colour + discip
 
 **Page rhythm (ground colours)**
 
-Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown Ups) → chocolate (Brands) → cream (How it works) → cream (The Making) → cream (Final CTA) → chocolate (footer).
+Cream hero → cream intro → cream (Kids) → peach (Teens) → blush (Grown Ups) → chocolate (Brands) → cream (How it works) → cream (The Making) → cream (Fechas especiales, with one door per date in that date's colours) → cream (Final CTA) → chocolate (footer).
 
 **Personality** (brand book p.3): creative, sophisticated, joyful, warm, detail-led, contemporary. **Never:** childish, school-craft, cheap DIY, cold corporate, cluttered.
 
@@ -536,6 +536,32 @@ Kids is the only world that unlocks the full palette, and it does so through obj
 **`footer`**: chocolate ground. The monochrome logo from the brand book, then WhatsApp and Instagram (each a line icon in a ring that fills on hover, with the number or handle beside it) and "Asunción, Paraguay" in hairline-separated columns. The city only, never a street address, and no hours. Below: the copyright.
 
 **Inner pages** (the 404; later `/legal`, drafted in `src/pages/_legal.astro`): the nav already solid, one cream ground with a light wash, the footer. The 404 tells its message in the bead language: a cut thread with its beads spilled across the table, falling once as the page opens.
+
+## Seasonal dates
+
+What MAgic! sets up for companies around each date (Octubre Rosa, Halloween, Navidad). Not a calendar: a showcase that ends in "write to us". Everything is driven by one list, `src/lib/events.ts`.
+
+**Their own colours.** Each date brings its own palette, matching its Instagram campaign: a ground, an ink, an accent for large type and graphics, and a companion colour for ribbons and details. This is the one place hex values outside the brand palette are allowed, and they apply only to that date's door and page. Ink on ground always passes AA; the accent need only pass 3:1 and is never used for reading text.
+
+**`Fechas especiales`** (home page, before the closing phrase): a heading, one line, and one door per date, kept to a single screen. A door is a panel in the date's ground with its name, one line and a charm hanging inside from a cord with two beads and a gold spacer: a satin bow for Octubre Rosa, a bat for Halloween, a snowflake for Navidad. A date with a page is a link ("Ver experiencias"); one without says "Muy pronto". The charms are lowered into their doors as the section arrives; a door widens and its charm swings when pointed at. Side by side on desktop, stacked on phones.
+
+**`season-cue`**: a small floating pill, bottom left, that names the section ("Fechas especiales"), not any one date, in the site's own colours: chocolate, cream type, the gold star. It jumps to the section. It drops in once the hero has gone, with its star swinging once, and leaves when that section is on screen or behind. On phones it shows the name only and sits above the world navigator while the worlds are on screen.
+
+**Date pages** (`magic.com.py/<slug>`): three short blocks shared by every date. The name, set as the date's own lockup in its accent, with one line, the WhatsApp button and a cover photograph. Then the experiences: four across on desktop, a row to swipe on phones, each a square photograph, a title and one sentence. Then a closing panel with the closing phrase and the same WhatsApp button, whose message names the date.
+
+Around those blocks each date has **its own scene**. No two pages share their graphics:
+
+| | Octubre Rosa | Halloween (draft) | Navidad (draft) |
+|---|---|---|---|
+| Scene | A satin ribbon | A night sky | A snowy night |
+| Ground / ink | Pink #F6E2E0 / chocolate | Aubergine #33293A / cream | Pine #1F3A2F / cream |
+| The name | Deep rosa #C25767 | Peach #F3A172 | Warm gold #F3C969 |
+| Behind the top | The ribbon, edge to edge | Stars, a cobweb, a spider on its thread, lightning now and then | A string of coloured lights; snow falls over the whole page |
+| Cover | An arch, with a bow tied on its crown | An arch before a full moon, bats about it, carved pumpkins at its foot | A snow globe on a red stand, on pine, the star above it |
+| On the photographs | (the ribbon runs behind the row) | In turn: a cobweb in the corner, a bat with its wings out, a spider on its thread, a sleeping bat | In turn: a bauble, a candy cane, a star on a thread, holly |
+| Closing panel | Chocolate, a bow tied on its corner | Cream, pumpkins sitting on it, one last bat | A red gift box: lid, bow, snow settled on top |
+
+**Motion on these pages.** Octubre Rosa follows the site's rule: its ribbon unrolls once and then with scroll. Halloween and Navidad are the exception to "nothing moves by itself": snow falls, wings beat, candles flicker, lights glow and lightning strikes for as long as the page is open, because the studio asked for atmosphere on these pages. To keep that from costing legibility: the lightning is two brief, soft flashes on long, unequal cycles (13s and 19s), never a strobe; snow is kept faint (at most 30%) and passes behind the copy, which is full ink with a soft halo of its ground; bright stars are placed only where there is no copy. With reduced motion every scene is still and there is no lightning.
 
 ## Do's and Don'ts
 

@@ -1,0 +1,249 @@
+---
+// Halloween's sky, behind the top of its page: a few stars, a cobweb in the corner, a spider
+// let down on its thread, and lightning. Two bolts strike now and then, each on its own long
+// cycle so they never fall into a rhythm: a quick double flicker, then nothing for many
+// seconds. With reduced motion there is no lightning and nothing moves.
+//
+// It fills its parent, which must be positioned.
+import Cobweb from "./Cobweb.astro";
+import Spider from "./Spider.astro";
+
+// Stars: x %, y %, size px, twinkle seconds. Bright ones are kept clear of the copy, which is
+// on the left with room and at the top on phones, so there is a set for each; faint ones may
+// lie anywhere, since they are too dim to disturb a line of text.
+type StarSpec = [x: number, y: number, size: number, seconds: number];
+const WIDE: StarSpec[] = [
+  [61, 12, 2, 6.0],
+  [66, 54, 2, 4.4],
+  [73, 86, 3, 5.0],
+  [79, 8, 2, 3.4],
+  [86, 70, 2, 5.8],
+  [93, 40, 3, 4.6],
+  [97, 88, 2, 6.2],
+  [58, 92, 2, 5.4],
+];
+const SMALL: StarSpec[] = [
+  [8, 58, 2, 4.2],
+  [90, 56, 3, 5.6],
+  [50, 54, 2, 3.8],
+  [96, 76, 2, 6.4],
+  [4, 82, 3, 4.8],
+  [68, 97, 2, 5.2],
+];
+const FAINT: StarSpec[] = [
+  [8, 34, 2, 4.2],
+  [23, 18, 2, 3.8],
+  [31, 62, 2, 6.4],
+  [38, 9, 2, 4.8],
+  [44, 78, 2, 5.2],
+  [15, 88, 2, 5.6],
+  [52, 30, 2, 3.6],
+];
+const STARS = [
+  ...WIDE.map((star) => ({ star, zone: "wide" })),
+  ...SMALL.map((star) => ({ star, zone: "small" })),
+  ...FAINT.map((star) => ({ star, zone: "faint" })),
+];
+---
+
+<div aria-hidden="true" class="sky">
+  <span class="flash one"></span>
+  <span class="flash two"></span>
+  {STARS.map(({ star: [x, y, size, seconds], zone }) => (
+    <span
+      class:list={["dot", zone]}
+      style={`left:${x}%;top:${y}%;width:${size}px;height:${size}px;--twinkle:${seconds}s`}
+    />
+  ))}
+  <span class="web">
+    <Cobweb class="w-full" />
+  </span>
+  <svg viewBox="0 0 80 140" focusable="false" class="bolt one">
+    <polyline points="52,0 38,40 50,43 28,86 42,89 18,140"></polyline>
+  </svg>
+  <svg viewBox="0 0 80 140" focusable="false" class="bolt two">
+    <polyline points="30,0 44,36 32,40 54,82 40,86 60,140"></polyline>
+  </svg>
+  <span class="spider">
+    <span class="thread"></span>
+    <span class="body">
+      <Spider class="w-full" />
+    </span>
+  </span>
+</div>
+
+<style>
+  .sky {
+    position: absolute;
+    inset: 0;
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .dot {
+    position: absolute;
+    border-radius: 9999px;
+    background: var(--color-cream);
+    opacity: var(--peak);
+    --low: 0.25;
+    --peak: 0.9;
+  }
+
+  .dot.faint {
+    --low: 0.08;
+    --peak: 0.24;
+  }
+
+  .dot.wide {
+    display: none;
+  }
+
+  .web {
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    display: block;
+    width: clamp(104px, 15vw, 200px);
+    color: var(--event-soft);
+    opacity: 0.38;
+  }
+
+  /* The spider hangs from under the top bar and rides its thread up and down. */
+  .spider {
+    position: absolute;
+    top: 0;
+    right: 9%;
+    display: grid;
+    justify-items: center;
+    color: var(--event-soft);
+  }
+
+  .thread {
+    width: 1px;
+    height: calc(var(--nav-height) + clamp(48px, 13svh, 150px));
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .spider .body {
+    display: block;
+    width: 22px;
+    margin-top: -3px;
+  }
+
+  /* Lightning: a jagged bolt and a wash of light around it, both dark until they strike. */
+  .bolt,
+  .flash {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .bolt {
+    top: var(--nav-height);
+    height: clamp(140px, 34svh, 300px);
+    filter: drop-shadow(0 0 8px rgb(190 176 255 / 0.9));
+  }
+
+  .bolt polyline {
+    fill: none;
+    stroke: #f3eeff;
+    stroke-width: 3;
+    stroke-linejoin: miter;
+  }
+
+  .bolt.one {
+    left: 14%;
+  }
+
+  .bolt.two {
+    left: 58%;
+    height: clamp(110px, 26svh, 230px);
+  }
+
+  .flash {
+    inset: 0;
+  }
+
+  .flash.one {
+    background: radial-gradient(60% 70% at 18% 0%, rgb(208 198 255 / 0.3), transparent 70%);
+  }
+
+  .flash.two {
+    background: radial-gradient(55% 60% at 62% 0%, rgb(208 198 255 / 0.24), transparent 70%);
+  }
+
+  @media (width >= 64rem) {
+    .dot.wide {
+      display: block;
+    }
+
+    .dot.small {
+      display: none;
+    }
+
+    .spider {
+      right: auto;
+      left: 55%;
+    }
+  }
+
+  @keyframes twinkle {
+    from {
+      opacity: var(--low);
+    }
+    to {
+      opacity: var(--peak);
+    }
+  }
+
+  @keyframes spider-ride {
+    from {
+      translate: 0 -26px;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* Two flickers inside a third of a second, then dark for the rest of the cycle. */
+  @keyframes strike {
+    0%,
+    60% {
+      opacity: 0;
+    }
+    60.5% {
+      opacity: 1;
+    }
+    61.2% {
+      opacity: 0.1;
+    }
+    62% {
+      opacity: 0.9;
+    }
+    63.2% {
+      opacity: 0.25;
+    }
+    64.5%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dot {
+      animation: twinkle var(--twinkle) ease-in-out infinite alternate;
+    }
+
+    .spider {
+      animation: spider-ride 5200ms var(--ease-soft) infinite alternate;
+    }
+
+    .one {
+      animation: strike 13s linear 2.5s infinite;
+    }
+
+    .two {
+      animation: strike 19s linear 8s infinite;
+    }
+  }
+</style>

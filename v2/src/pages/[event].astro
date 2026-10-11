@@ -1,0 +1,977 @@
+---
+// A seasonal date's own page (magic.com.py/octubrerosa): what MAgic! sets up for companies
+// around it, in that date's colours, ending in a WhatsApp message written for it. Three short
+// blocks, so there is little to scroll: the name, the experiences, the call to action.
+//
+// The blocks are shared; the scene is the date's own (`page.scene` in lib/events.ts):
+//
+//   ribbon  Octubre Rosa. A satin ribbon runs through the page and is tied in a bow over the
+//           cover and on the closing panel. It unrolls as the page opens.
+//   night   Halloween. A night sky with stars, a cobweb and a spider, and lightning now and
+//           then; a full moon rises behind the cover with bats about it and carved pumpkins at
+//           its foot; each photograph has its own visitor (a cobweb, a bat, a spider, a sleeping bat); pumpkins
+//           sit on the closing panel.
+//   snow    Navidad. Snow falls across the whole page under a string of lights; the cover is
+//           a snow globe on pine; each photograph is trimmed (a bauble, a candy cane, a star, holly);
+//           the closing panel is a gift box.
+//
+// These scenes keep moving while the page is open (snow, wingbeats, candlelight, lightning),
+// which the rest of the site does not do: it is the studio's choice for these pages. With
+// reduced motion every scene is still, and there is no lightning.
+import Base from "../components/Base.astro";
+import Bow from "../components/Bow.astro";
+import Button from "../components/Button.astro";
+import Footer from "../components/Footer.astro";
+import Media from "../components/Media.astro";
+import Nav from "../components/Nav.astro";
+import Ribbon from "../components/Ribbon.astro";
+import Star from "../components/Star.astro";
+import Wash from "../components/Wash.astro";
+import Bat from "../components/events/Bat.astro";
+import Bauble from "../components/events/Bauble.astro";
+import CandyCane from "../components/events/CandyCane.astro";
+import Cobweb from "../components/events/Cobweb.astro";
+import Holly from "../components/events/Holly.astro";
+import Lights from "../components/events/Lights.astro";
+import NightSky from "../components/events/NightSky.astro";
+import Pine from "../components/events/Pine.astro";
+import Pumpkin from "../components/events/Pumpkin.astro";
+import Snowfall from "../components/events/Snowfall.astro";
+import Spider from "../components/events/Spider.astro";
+import { COPY } from "../lib/content";
+import { SHOWN_EVENTS, hasPage, paletteStyle, panelStyle, type SeasonalEvent } from "../lib/events";
+import { SITE } from "../lib/site";
+
+export function getStaticPaths() {
+  return SHOWN_EVENTS.filter(hasPage).map((event) => ({
+    params: { event: event.slug },
+    props: { event },
+  }));
+}
+
+interface Props {
+  event: SeasonalEvent;
+}
+
+const { event } = Astro.props;
+const page = event.page!;
+const scene = page.scene;
+// The page's wash, by date (the pools are listed in components/Wash.astro).
+const WASHES = { octubrerosa: "octubrerosa", halloween: "halloween", navidad: "navidad" } as const;
+const wash = WASHES[event.slug as keyof typeof WASHES];
+// Snow passes behind the copy, so on that page secondary copy is full ink, not muted.
+const pageStyle = `${paletteStyle(event.palette)}${scene === "snow" ? ";--ink-muted:var(--ink)" : ""}`;
+
+// Halloween's bats, about the cover. Where each one flies, as a percentage of the cover's box:
+// on phones (little room either side), then with room. Then its width (% of the cover), how
+// far it wanders (px), and how long one pass takes (s). `onMoon` ones are dark, as silhouettes.
+const BATS = [
+  { small: [-4, -7], wide: [-44, -6], size: 22, wander: [26, -14], seconds: 7, onMoon: true },
+  { small: [24, -13], wide: [-16, -20], size: 14, wander: [-18, 12], seconds: 9, onMoon: true },
+  { small: [76, -9], wide: [84, -18], size: 17, wander: [22, 16], seconds: 8, onMoon: false },
+  { small: [94, 24], wide: [108, 26], size: 12, wander: [-16, -18], seconds: 10, onMoon: false },
+  { small: [-8, 50], wide: [-34, 58], size: 11, wander: [20, 14], seconds: 11, onMoon: false },
+];
+const batStyle = (bat: (typeof BATS)[number], index: number) =>
+  [
+    `--sx:${bat.small[0]}%`,
+    `--sy:${bat.small[1]}%`,
+    `--wx:${bat.wide[0]}%`,
+    `--wy:${bat.wide[1]}%`,
+    `--size:${bat.size}%`,
+    `--dx:${bat.wander[0]}px`,
+    `--dy:${bat.wander[1]}px`,
+    `--pass:${bat.seconds}s`,
+    `--i:${index}`,
+    `--flap:${260 + index * 34}ms`,
+  ].join(";");
+
+// What visits each photograph, in turn, so no two in a row are alike.
+const NIGHT_TRIM = ["web", "flyer", "spider", "sleeper"] as const;
+const SNOW_TRIM = ["bauble", "cane", "ornament", "holly"] as const;
+// Where a hanging piece hangs along the top of its photograph (%), and how slowly it sways.
+const HANG_AT = [22, 68, 70, 74];
+const hangStyle = (index: number, base: number) =>
+  `--at:${HANG_AT[index % HANG_AT.length]}%;--sway:${base + index * 650}ms`;
+---
+
+<Base title={`${event.name} para empresas | ${SITE.name}`} description={page.description}>
+  <Nav solid />
+  <main
+    id="contenido"
+    data-scene={scene}
+    style={pageStyle}
+    class="relative isolate overflow-x-clip bg-ground text-ink"
+  >
+    {wash && <Wash set={wash} />}
+    {scene === "snow" && <Snowfall />}
+
+    <section aria-labelledby="fecha-titulo" class:list={["hero", scene]}>
+      {scene === "ribbon" && (
+        <div aria-hidden="true" class="hero-ribbon unroll">
+          <Ribbon d="M-2 93C20 98 42 93 60 77S86 51 102 56" />
+        </div>
+      )}
+      {scene === "night" && <NightSky />}
+      {scene === "snow" && <Lights />}
+
+      <div class="shell hero-grid">
+        <div class="intro">
+          <p class="flex items-center gap-2.5 text-label">
+            <Star class="h-4" />
+            {COPY.seasons.audience}
+          </p>
+          <h1 id="fecha-titulo" class="title">
+            {page.title.map((line) => (
+              <span class:list={["block", line.accent && "accent"]}>{line.text} </span>
+            ))}
+          </h1>
+          <p class="mt-6 max-w-measure text-lead text-ink-muted lg:mt-8">{page.lead}</p>
+          <div class="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:gap-4 lg:mt-10">
+            <Button whatsapp={page.cta.message}>{page.cta.label}</Button>
+            <Button href="#experiencias" variant="quiet">
+              {COPY.seasons.see}
+            </Button>
+          </div>
+        </div>
+
+        <div class:list={["cover", scene]}>
+          {scene === "ribbon" && (
+            <>
+              <div aria-hidden="true" class="cover-ribbon unroll">
+                <Ribbon d="M-2 60C22 70 40 50 60 62S88 52 102 58" />
+              </div>
+              <Media
+                photo={page.cover.photo}
+                shot={page.cover.shot}
+                sizes="(min-width: 64rem) 34vw, 78vw"
+                class="frame"
+              />
+              <span aria-hidden="true" class="tie">
+                <Bow class="h-full" />
+              </span>
+            </>
+          )}
+          {scene === "night" && (
+            <>
+              <span aria-hidden="true" class="moon" />
+              <Media
+                photo={page.cover.photo}
+                shot={page.cover.shot}
+                sizes="(min-width: 64rem) 34vw, 78vw"
+                class="frame"
+              />
+              {BATS.map((bat, index) => (
+                <span
+                  aria-hidden="true"
+                  class:list={["bat", bat.onMoon && "on-moon"]}
+                  style={batStyle(bat, index)}
+                >
+                  <span class="wander">
+                    <Bat class="w-full" />
+                  </span>
+                </span>
+              ))}
+              <span aria-hidden="true" class="pumpkin big">
+                <Pumpkin class="w-full" />
+              </span>
+              <span aria-hidden="true" class="pumpkin little" style="--candle:3400ms">
+                <Pumpkin face="o" class="w-full" />
+              </span>
+            </>
+          )}
+          {scene === "snow" && (
+            <>
+              <span aria-hidden="true" class="topper">
+                <Star class="h-full" />
+              </span>
+              <div class="globe">
+                <Media
+                  photo={page.cover.photo}
+                  shot={page.cover.shot}
+                  sizes="(min-width: 64rem) 30vw, 78vw"
+                  aspect="aspect-square"
+                  class="frame"
+                />
+                <span aria-hidden="true" class="glass" />
+              </div>
+              <span aria-hidden="true" class="stand" />
+              <span aria-hidden="true" class="sprig left">
+                <Pine class="w-full" />
+              </span>
+              <span aria-hidden="true" class="sprig right">
+                <Pine class="w-full" />
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <section id="experiencias" aria-labelledby="experiencias-titulo" class="pt-(--section)">
+      <div class="shell">
+        <h2 id="experiencias-titulo" tabindex="-1" class="text-headline">
+          {page.experiencesHeading}
+        </h2>
+        <div class="row">
+          {scene === "ribbon" && (
+            <div aria-hidden="true" class="row-ribbon unroll-on-scroll">
+              <Ribbon d="M-2 46C18 30 34 64 52 48S84 32 102 52" />
+            </div>
+          )}
+          <ul
+            role="list"
+            tabindex="0"
+            aria-label={`${COPY.seasons.region} ${event.name}`}
+            class="experiences"
+          >
+            {page.experiences.map((experience, index) => (
+              <li>
+                <Media
+                  photo={experience.photo}
+                  shot={experience.shot}
+                  sizes="(min-width: 64rem) 22vw, 72vw"
+                  aspect="aspect-square"
+                  scroll="unveil"
+                />
+                {scene === "night" && (
+                  <>
+                    {NIGHT_TRIM[index % 4] === "web" && (
+                      <span aria-hidden="true" class="corner-web">
+                        <Cobweb class="w-full" />
+                      </span>
+                    )}
+                    {NIGHT_TRIM[index % 4] === "flyer" && (
+                      <span aria-hidden="true" class="flyer" style="--flap:420ms">
+                        <Bat class="w-full" />
+                      </span>
+                    )}
+                    {NIGHT_TRIM[index % 4] === "spider" && (
+                      <span aria-hidden="true" class="hang crawler" style={hangStyle(index, 4200)}>
+                        <span class="string" />
+                        <Spider class="w-full" />
+                      </span>
+                    )}
+                    {NIGHT_TRIM[index % 4] === "sleeper" && (
+                      <span aria-hidden="true" class="hang sleeper" style={hangStyle(index, 4200)}>
+                        <Bat hanging class="w-full" />
+                      </span>
+                    )}
+                  </>
+                )}
+                {scene === "snow" && (
+                  <>
+                    {SNOW_TRIM[index % 4] === "bauble" && (
+                      <span aria-hidden="true" class="hang" style={hangStyle(index, 3600)}>
+                        <Bauble colour="#ef7f73" class="w-full" />
+                      </span>
+                    )}
+                    {SNOW_TRIM[index % 4] === "cane" && (
+                      <span aria-hidden="true" class="hang cane" style={hangStyle(index, 3600)}>
+                        <CandyCane class="w-full" />
+                      </span>
+                    )}
+                    {SNOW_TRIM[index % 4] === "ornament" && (
+                      <span aria-hidden="true" class="hang ornament" style={hangStyle(index, 3600)}>
+                        <span class="string" />
+                        <Star class="w-full" />
+                      </span>
+                    )}
+                    {SNOW_TRIM[index % 4] === "holly" && (
+                      <span aria-hidden="true" class="holly">
+                        <Holly class="w-full" />
+                      </span>
+                    )}
+                  </>
+                )}
+                <h3 class="mt-5 text-title">{experience.title}</h3>
+                <p class="mt-2 text-ink-muted">{experience.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="cierre-titulo" class="closing shell py-(--section)">
+      {scene === "ribbon" && (
+        <div aria-hidden="true" class="closing-ribbon unroll-on-scroll">
+          <Ribbon d="M-2 34C20 20 40 46 60 36S88 22 102 32" />
+        </div>
+      )}
+      <div style={panelStyle(event.palette)} class:list={["panel bg-ground text-ink", scene]}>
+        {scene === "ribbon" && (
+          <span aria-hidden="true" class="knot">
+            <Bow class="h-full" />
+          </span>
+        )}
+        {scene === "night" && (
+          <>
+            <span aria-hidden="true" class="perch big">
+              <Pumpkin class="w-full" />
+            </span>
+            <span aria-hidden="true" class="perch little" style="--candle:3100ms">
+              <Pumpkin face="o" class="w-full" />
+            </span>
+            <span aria-hidden="true" class="stray" style="--flap:290ms">
+              <span class="wander" style="--dx:-22px;--dy:12px;--pass:8s">
+                <Bat class="w-full" />
+              </span>
+            </span>
+          </>
+        )}
+        {scene === "snow" && (
+          <>
+            <svg
+              viewBox="0 0 100 20"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+              class="drift"
+            >
+              <path d="M0 20v-8c6-8 12-8 18-2s12 6 20-2 14-6 22 1 16 7 24-1 12-4 16 2v10z" />
+            </svg>
+            <span aria-hidden="true" class="lid" />
+            <span aria-hidden="true" class="gift-bow">
+              <Bow class="h-full" />
+            </span>
+          </>
+        )}
+        <h2 id="cierre-titulo" class="text-headline">
+          {page.closing.phrase}
+        </h2>
+        <p class="mt-4 text-lead text-ink-muted">{page.closing.note}</p>
+        <div class="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+          <Button whatsapp={page.cta.message}>{page.cta.label}</Button>
+          <Button href="/" variant="quiet">
+            {COPY.seasons.back}
+          </Button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /* ---------- Shared blocks ---------- */
+
+  /* The name: phones read it first, then see the cover. With room they sit side by side. */
+  .hero {
+    position: relative;
+    padding-top: calc(var(--nav-height) + clamp(24px, 5svh, 56px));
+  }
+
+  /* Under the string of lights. */
+  .hero.snow {
+    padding-top: calc(var(--nav-height) + clamp(72px, 12svh, 120px));
+  }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    row-gap: 56px;
+  }
+
+  /* The name is the date's own lockup: light, then its last word heavy and in its colour. */
+  .title {
+    margin-top: 18px;
+    font-size: clamp(3.75rem, min(16vw, 19svh), 9.5rem);
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+  }
+
+  .accent {
+    color: var(--event);
+    font-weight: 600;
+  }
+
+  /* The cover photograph stands in an arch: a half circle over a plain base. */
+  .cover {
+    --media-radius: 50% 50% 24px 24px / 40% 40% 24px 24px;
+    position: relative;
+    width: min(78%, 21rem);
+    margin-inline: auto;
+  }
+
+  .cover > :global(.frame) {
+    position: relative;
+  }
+
+  /* Room above the cover for what rises over it: the moon, the star. */
+  .cover.night,
+  .cover.snow {
+    margin-top: 28px;
+  }
+
+  .row {
+    position: relative;
+    margin-top: 40px;
+  }
+
+  /* Phones: a row to swipe, one experience and the edge of the next in view. */
+  .experiences {
+    --media-radius: var(--radius-md);
+    position: relative;
+    display: flex;
+    gap: 14px;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .experiences::-webkit-scrollbar {
+    display: none;
+  }
+
+  .experiences > li {
+    position: relative;
+    flex: 0 0 72%;
+    scroll-snap-align: start;
+  }
+
+  .closing {
+    position: relative;
+  }
+
+  .panel {
+    position: relative;
+    padding: clamp(56px, 9svh, 96px) clamp(24px, 6vw, 80px);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .panel > p {
+    max-width: 30rem;
+    margin-inline: auto;
+  }
+
+  @media (width >= 64rem) {
+    .hero-grid {
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: 32px;
+      align-items: center;
+      min-height: calc(84svh - var(--nav-height));
+    }
+
+    .intro {
+      grid-column: 1 / span 7;
+    }
+
+    .cover {
+      grid-column: 9 / span 4;
+      width: 100%;
+      max-width: 24rem;
+      justify-self: end;
+    }
+
+    .cover.night,
+    .cover.snow {
+      margin-top: 0;
+    }
+
+    .row {
+      margin-top: 56px;
+    }
+
+    .experiences {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+    }
+  }
+
+  /* Something hanging over the top edge of a photograph, swaying a little. */
+  .hang {
+    position: absolute;
+    top: 0;
+    left: var(--at);
+    display: block;
+    width: clamp(28px, 3vw, 42px);
+    transform-origin: center top;
+    filter: drop-shadow(0 5px 6px rgb(0 0 0 / 0.3));
+  }
+
+  /* The thread a spider or an ornament hangs by. */
+  .string {
+    display: block;
+    width: 1.5px;
+    height: clamp(30px, 4.4vw, 60px);
+    margin-inline: auto;
+    background: currentColor;
+  }
+
+  /* Halloween's four: a web spun in the corner, a bat landed on the top edge with its wings
+     out, a spider let down on its thread, and a bat asleep. */
+  .sleeper,
+  .crawler {
+    color: #2a2130;
+  }
+
+  .crawler {
+    width: clamp(22px, 2.3vw, 32px);
+  }
+
+  .corner-web {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 52%;
+    color: var(--color-cream);
+    opacity: 0.85;
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+    pointer-events: none;
+  }
+
+  .flyer {
+    position: absolute;
+    top: 0;
+    right: 9%;
+    display: block;
+    width: 40%;
+    translate: 0 -52%;
+    color: var(--event-soft);
+    filter: drop-shadow(0 5px 6px rgb(0 0 0 / 0.35));
+  }
+
+  /* Navidad's four: a bauble, a candy cane hooked over the edge, a star on a thread, and holly
+     pinned to the corner. */
+  .cane {
+    width: clamp(30px, 3.2vw, 44px);
+    translate: 0 -24%;
+    transform-origin: 60% 14%;
+  }
+
+  .ornament {
+    color: rgb(250 247 241 / 0.7);
+  }
+
+  .ornament .string {
+    height: clamp(18px, 2.4vw, 32px);
+  }
+
+  .holly {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 38%;
+    translate: 14% -42%;
+    rotate: 10deg;
+    filter: drop-shadow(0 5px 6px rgb(0 0 0 / 0.3));
+  }
+
+  @keyframes sway {
+    from {
+      rotate: -6deg;
+    }
+    to {
+      rotate: 6deg;
+    }
+  }
+
+  /* Where things move behind the copy, each line carries a soft halo of its own ground. */
+  main:is([data-scene="snow"], [data-scene="night"]) :is(h1, h2, h3, p) {
+    text-shadow:
+      0 0 5px var(--ground),
+      0 0 12px var(--ground);
+  }
+
+  /* ---------- Octubre Rosa: the ribbon ---------- */
+
+  /* The bow sits on the crown of the arch. */
+  .tie {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: block;
+    height: clamp(62px, 17vw, 104px);
+    translate: -50% -52%;
+    transform-origin: 50% 40%;
+  }
+
+  /* Ribbons run behind their block, from one edge of the screen to the other. */
+  .hero-ribbon {
+    position: absolute;
+    inset: 0;
+    display: none;
+  }
+
+  .cover-ribbon {
+    position: absolute;
+    inset: 0 -50vw;
+  }
+
+  .row-ribbon {
+    position: absolute;
+    top: 6%;
+    right: calc(var(--bleed) * -1);
+    left: calc(var(--bleed) * -1);
+    height: 46%;
+  }
+
+  .closing-ribbon {
+    position: absolute;
+    top: var(--section);
+    right: calc(var(--bleed) * -1);
+    left: calc(var(--bleed) * -1);
+    height: 55%;
+  }
+
+  /* Tied on the panel's corner, as on a gift. */
+  .knot {
+    position: absolute;
+    top: 0;
+    left: clamp(20px, 5vw, 64px);
+    display: block;
+    height: clamp(58px, 8vw, 92px);
+    translate: 0 -54%;
+    rotate: -8deg;
+    transform-origin: 50% 40%;
+  }
+
+  @media (width >= 64rem) {
+    /* One ribbon for the whole block: under the copy, then up behind the arch. */
+    .hero-ribbon {
+      display: block;
+    }
+
+    .cover-ribbon {
+      display: none;
+    }
+  }
+
+  @keyframes ribbon-unroll {
+    from {
+      clip-path: inset(-50% 100% -50% 0);
+    }
+    to {
+      clip-path: inset(-50% 0 -50% 0);
+    }
+  }
+
+  @keyframes land {
+    from {
+      opacity: 0;
+      scale: 0.3;
+      rotate: -24deg;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+      rotate: 0deg;
+    }
+  }
+
+  @keyframes knot-turn {
+    from {
+      rotate: -16deg;
+    }
+    to {
+      rotate: -2deg;
+    }
+  }
+
+  /* ---------- Halloween: the night ---------- */
+
+  /* A full moon behind the arch, up and to the left, with a soft halo. */
+  .moon {
+    position: absolute;
+    top: -9%;
+    left: -24%;
+    display: block;
+    width: 80%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle at 30% 34%, rgb(76 64 57 / 0.09) 0 8%, transparent 9%),
+      radial-gradient(circle at 62% 58%, rgb(76 64 57 / 0.07) 0 6%, transparent 7%),
+      radial-gradient(circle at 42% 72%, rgb(76 64 57 / 0.06) 0 4%, transparent 5%), #f4e6c3;
+    box-shadow: 0 0 70px 18px rgb(244 230 195 / 0.22);
+  }
+
+  .bat {
+    position: absolute;
+    top: var(--sy);
+    left: var(--sx);
+    display: block;
+    width: var(--size);
+    color: var(--event-soft);
+  }
+
+  .bat.on-moon {
+    color: #2a2130;
+  }
+
+  .wander {
+    display: block;
+  }
+
+  /* Carved pumpkins on the doorstep, one either side. */
+  .pumpkin {
+    position: absolute;
+    display: block;
+    filter: drop-shadow(0 8px 8px rgb(0 0 0 / 0.35));
+  }
+
+  .pumpkin.big {
+    bottom: -7%;
+    left: -11%;
+    width: 40%;
+  }
+
+  .pumpkin.little {
+    right: -7%;
+    bottom: -5%;
+    width: 25%;
+  }
+
+  /* On the closing panel they sit on its top edge; a last bat is off to the right. */
+  .perch {
+    position: absolute;
+    top: 0;
+    display: block;
+    filter: drop-shadow(0 6px 6px rgb(0 0 0 / 0.3));
+  }
+
+  .perch.big {
+    left: clamp(18px, 5vw, 64px);
+    width: clamp(72px, 9.5vw, 116px);
+    translate: 0 -80%;
+  }
+
+  .perch.little {
+    left: calc(clamp(18px, 5vw, 64px) + clamp(64px, 8.6vw, 104px));
+    width: clamp(44px, 5.6vw, 68px);
+    translate: 0 -78%;
+  }
+
+  .stray {
+    position: absolute;
+    top: 0;
+    right: clamp(24px, 9vw, 120px);
+    display: block;
+    width: clamp(54px, 7vw, 86px);
+    translate: 0 -150%;
+    color: var(--event-soft);
+  }
+
+  @media (width >= 64rem) {
+    .bat {
+      top: var(--wy);
+      left: var(--wx);
+    }
+
+    .moon {
+      top: -20%;
+      left: -52%;
+      width: 100%;
+    }
+
+    .pumpkin.big {
+      left: -22%;
+    }
+  }
+
+  @keyframes moonrise {
+    from {
+      opacity: 0;
+      translate: 0 26%;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes bat-arrive {
+    from {
+      opacity: 0;
+      scale: 0.2;
+      translate: 0 60px;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes bat-wander {
+    from {
+      translate: 0 0;
+      rotate: -5deg;
+    }
+    to {
+      translate: var(--dx) var(--dy);
+      rotate: 6deg;
+    }
+  }
+
+  /* ---------- Navidad: the snow ---------- */
+
+  /* The cover is a snow globe: the photograph in a glass ball, on a stand, on pine. */
+  .cover.snow {
+    --media-radius: 50%;
+  }
+
+  .globe {
+    position: relative;
+  }
+
+  .glass {
+    position: absolute;
+    inset: 0;
+    display: block;
+    border: 6px solid rgb(250 247 241 / 0.9);
+    border-radius: 9999px;
+    box-shadow:
+      inset 0 0 0 2px rgb(255 255 255 / 0.22),
+      0 0 60px rgb(250 247 241 / 0.14);
+    pointer-events: none;
+  }
+
+  /* The light on the glass: an arc near the top left. */
+  .glass::after {
+    position: absolute;
+    top: 9%;
+    left: 9%;
+    width: 36%;
+    aspect-ratio: 1;
+    border: 5px solid transparent;
+    border-top-color: rgb(255 255 255 / 0.6);
+    border-radius: 9999px;
+    content: "";
+    rotate: -38deg;
+  }
+
+  .stand {
+    position: relative;
+    display: block;
+    width: 62%;
+    height: clamp(30px, 8vw, 54px);
+    margin: -3% auto 0;
+    background: linear-gradient(#c9b88f 0 16%, #b4473f 16% 100%);
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+  }
+
+  .topper {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+    display: block;
+    height: clamp(52px, 13vw, 84px);
+    translate: -50% -64%;
+    transform-origin: 50% 60%;
+    filter: drop-shadow(0 0 14px rgb(236 175 66 / 0.55));
+  }
+
+  .sprig {
+    position: absolute;
+    bottom: -2%;
+    display: block;
+    width: 52%;
+  }
+
+  .sprig.left {
+    left: -20%;
+    scale: -1 1;
+    rotate: 12deg;
+  }
+
+  .sprig.right {
+    right: -20%;
+    rotate: -12deg;
+  }
+
+  /* The closing panel is a gift: a lid, a bow on it, and snow settled along the top. */
+  .panel.snow {
+    padding-top: clamp(84px, 13svh, 128px);
+  }
+
+  .lid {
+    position: absolute;
+    inset: 0 0 auto;
+    display: block;
+    height: clamp(26px, 4svh, 38px);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: rgb(0 0 0 / 0.16);
+  }
+
+  .drift {
+    position: absolute;
+    bottom: calc(100% - 3px);
+    left: 26px;
+    width: calc(100% - 52px);
+    height: 16px;
+    fill: var(--color-cream);
+  }
+
+  .gift-bow {
+    --event-soft: var(--color-cream);
+    --event: var(--color-gold);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: block;
+    height: clamp(64px, 9vw, 100px);
+    translate: -50% -58%;
+    filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.25));
+  }
+
+  /* ---------- Motion ---------- */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .unroll {
+      animation: ribbon-unroll 1500ms var(--ease-editorial) 150ms both;
+    }
+
+    .tie {
+      animation: land 620ms var(--ease-snap) 1050ms both;
+    }
+
+    .hang {
+      animation: sway var(--sway) var(--ease-soft) infinite alternate;
+    }
+
+    .moon {
+      animation: moonrise 1600ms var(--ease-editorial) 100ms both;
+    }
+
+    .bat {
+      animation: bat-arrive 900ms var(--ease-editorial) calc(700ms + var(--i) * 160ms) both;
+    }
+
+    .wander {
+      animation: bat-wander var(--pass) var(--ease-soft) infinite alternate;
+    }
+
+    .topper {
+      animation: land 700ms var(--ease-snap) 500ms both;
+    }
+
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .unroll-on-scroll {
+        animation: ribbon-unroll linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 48%;
+      }
+
+      .knot {
+        animation: knot-turn linear both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+    }
+  }
+</style>

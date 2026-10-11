@@ -1,0 +1,26 @@
+---
+// A snowflake, for Navidad: six arms, each with two pairs of barbs. Drawn in lines, in the
+// colour of the text around it (currentColor). Size it with a height utility or from a wrapper.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const ARMS = [0, 60, 120, 180, 240, 300];
+---
+
+<svg
+  viewBox="-50 -50 100 100"
+  aria-hidden="true"
+  focusable="false"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="5.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={["block aspect-square", className]}
+>
+  {ARMS.map((turn) => (
+    <path d="M0 0V-44M0-30l-10-9M0-30l10-9M0-16l-8-7M0-16l8-7" transform={`rotate(${turn})`} />
+  ))}
+</svg>
